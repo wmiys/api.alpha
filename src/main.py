@@ -1,22 +1,39 @@
 from flask import Flask
+from flask import jsonify
+from flask import request
 from markupsafe import escape
+from User import User
+from Utilities import Utilities
 app = Flask(__name__)
 
 @app.route('/')
 def home():
     return 'home page'
 
-@app.route('/user/<username>')
-def show_user_profile(username):
-    # show the user profile for that user
-    return 'User %s' % escape(username)
+@app.route('/users', methods=['POST', 'GET'])
+def users():
+    if request.method == 'POST':
+        new_user = User()
 
-@app.route('/post/<int:post_id>')
-def show_post(post_id):
-    # show the post with the given id, the id is an integer
-    return 'Post %d' % post_id
+        # set the user properties
+        new_user.email      = request.form['email']
+        new_user.password   = request.form['password']
+        new_user.name_first = request.form['name_first']
+        new_user.name_last  = request.form['name_last']
+        new_user.birth_date = request.form['birth_date']
+        
+        new_user.insert()
 
-@app.route('/path/<path:subpath>')
-def show_subpath(subpath):
-    # show the subpath after /path/
-    return 'Subpath %s' % escape(subpath)
+        new_user.fetch()
+
+        return jsonify(new_user.__dict__)
+
+    else:
+        return 'sup'
+
+@app.route('/users/<int:user_id>', methods=['GET'])
+def user(user_id):
+    if request.method == 'GET':
+        user = User(id=user_id)
+        user.fetch()
+        return jsonify(user.__dict__)
