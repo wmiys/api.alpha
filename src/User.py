@@ -29,7 +29,7 @@ class User:
             return
                 
         from DB import DB
-        db_data = DB.get_user(self)
+        db_data = DB.get_user(self.id)
 
         self.email      = db_data.email
         self.password   = db_data.password

@@ -38,11 +38,11 @@ class DB:
         return mycursor.lastrowid
 
     @staticmethod
-    def get_user(user: User):
+    def get_user(user_id: int):
         mycursor = DB.mydb.cursor(named_tuple=True)
 
         sql = 'SELECT * FROM Users where id = %s'
-        parms = (user.id,)
+        parms = (user_id,)
         
         mycursor.execute(sql, parms)
         result = mycursor.fetchone()
