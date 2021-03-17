@@ -23,7 +23,6 @@ def users():
         new_user.birth_date = request.form['birth_date']
         
         new_user.insert()
-
         new_user.fetch()
 
         return jsonify(new_user.__dict__)
