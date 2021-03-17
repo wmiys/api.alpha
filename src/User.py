@@ -1,5 +1,6 @@
+from DB import DB
+
 class User:
-    
     def __init__(self, id=None,email=None,password=None,name_first=None,name_last=None,birth_date=None,created_on=None):
         self.id         = id
         self.email      = email
@@ -19,7 +20,6 @@ class User:
 
     
     def insert(self):
-        from DB import DB
         user_id = DB.insert_user(email=self.email, password=self.password, name_first=self.name_first, name_last=self.name_last, birth_date=self.birth_date)
         self.id = user_id
 
@@ -28,7 +28,6 @@ class User:
         if self.id is None:
             return
                 
-        from DB import DB
         db_data = DB.get_user(self.id)
 
         self.email      = db_data.email

@@ -1,7 +1,6 @@
 from Utilities import Utilities
 import mysql.connector
 from typing import Type
-from User import User
 
 class DB:
     
