@@ -20,7 +20,7 @@ class User:
     
     def insert(self):
         from DB import DB
-        user_id = DB.insert_user(self)
+        user_id = DB.insert_user(email=self.email, password=self.password, name_first=self.name_first, name_last=self.name_last, birth_date=self.birth_date)
         self.id = user_id
 
     def fetch(self):

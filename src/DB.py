@@ -21,7 +21,7 @@ class DB:
         return users 
 
     @staticmethod
-    def insert_user(user: User):
+    def insert_user(email: str, password: str, name_first: str, name_last: str, birth_date: str):
         mycursor = DB.mydb.cursor(prepared=True)
         
         sql = """
@@ -30,8 +30,7 @@ class DB:
         (%s, %s, %s, %s, %s)
         """
 
-        parm_values = (user.email, user.password, user.name_first, user.name_last, user.birth_date)
-
+        parm_values = (email, password, name_first, name_last, birth_date)
         mycursor.execute(sql, parm_values)
 
         DB.mydb.commit()
