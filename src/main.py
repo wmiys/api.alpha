@@ -4,7 +4,11 @@ from flask import request
 from markupsafe import escape
 from User import User
 from Utilities import Utilities
+from flask_cors import CORS
+
+
 app = Flask(__name__)
+CORS(app)
 
 @app.route('/')
 def home():

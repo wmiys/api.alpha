@@ -8,10 +8,11 @@ class DB:
     SQL_CONNECTION_DATA_FILE = '.mysql-info.json'
 
     configData = Utilities.readJsonFile(SQL_CONNECTION_DATA_FILE)
-    mydb = mysql.connector.connect(**configData)
+    mydb = mysql.connector.connect(user=configData['user'], password=configData['passwd'], host=configData['host'], database=configData['database'])
 
     @staticmethod
     def get_users():
+        DB.mydb.reconnect()
         mycursor = DB.mydb.cursor(named_tuple=True)
         sql = 'SELECT * FROM Users'
         mycursor.execute(sql)
@@ -21,6 +22,7 @@ class DB:
 
     @staticmethod
     def insert_user(email: str, password: str, name_first: str, name_last: str, birth_date: str):
+        DB.mydb.reconnect()
         mycursor = DB.mydb.cursor(prepared=True)
         
         sql = """
@@ -38,6 +40,7 @@ class DB:
 
     @staticmethod
     def get_user(user_id: int):
+        DB.mydb.reconnect()
         mycursor = DB.mydb.cursor(named_tuple=True)
 
         sql = 'SELECT * FROM Users where id = %s'
