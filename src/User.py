@@ -37,3 +37,5 @@ class User:
         self.birth_date = db_data.birth_date
         self.created_on = db_data.created_on
 
+        
+

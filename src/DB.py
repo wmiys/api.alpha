@@ -51,6 +51,19 @@ class DB:
         
         return result
 
+    @staticmethod
+    def getUserIDFromEmailPassword(email: str, password: str):
+        DB.mydb.reconnect()
+        mycursor = DB.mydb.cursor(named_tuple=True)
+
+        sql = 'SELECT u.id FROM Users u WHERE u.email = %s AND u.password = %s'
+        parms = (email, password)
+
+        mycursor.execute(sql, parms)
+        result = mycursor.fetchone()
+        
+        return result
+
 
 
         
