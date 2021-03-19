@@ -1,10 +1,12 @@
-from flask import Flask
-from flask import jsonify
-from flask import request
+import flask
+from flask import Flask, jsonify, request, current_app, abort
+from flask_cors import CORS
+from functools import wraps, update_wrapper
 from markupsafe import escape
 from User import User
 from Utilities import Utilities
-from flask_cors import CORS
+from Login import Login
+
 
 
 app = Flask(__name__)
@@ -12,7 +14,14 @@ CORS(app)
 
 @app.route('/')
 def home():
-    return 'home page'
+    
+    return jsonify(request.authorization)
+    # return jsonify(dict(request.headers))
+
+    # return jsonify(request.headers.__dict__)
+    # return ''
+
+    # return 
 
 @app.route('/users', methods=['POST', 'GET'])
 def users():
@@ -40,3 +49,23 @@ def user(user_id):
         user = User(id=user_id)
         user.fetch()
         return jsonify(user.__dict__)
+
+
+@app.route('/login', methods=['GET'])
+def login():
+    userID = Login.isValidLoginAttempt(request.args['email'], request.args['password'])
+
+    if userID == None:
+        flask.abort(404)
+
+
+    user = User(id=userID)
+    user.fetch()
+    return jsonify(user.__dict__)
+
+
+
+
+
+
+
