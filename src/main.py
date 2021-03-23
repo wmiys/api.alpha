@@ -7,8 +7,6 @@ from User import User
 from Utilities import Utilities
 from Login import Login
 
-
-
 app = Flask(__name__)
 CORS(app)
 
@@ -42,6 +40,7 @@ def users():
 
 @app.route('/users/<int:user_id>', methods=['GET'])
 def user(user_id):
+    # make sure the user is authorized
     clientID = Login.getUserID(request.authorization.username, request.authorization.password)
 
     if clientID != user_id:
@@ -52,16 +51,13 @@ def user(user_id):
 
     return jsonify(user.as_dict(return_password=False))
 
-    # return jsonify(user.__dict__)
-
-
 @app.route('/login', methods=['GET'])
 def login():
     userID = Login.getUserID(request.args['email'], request.args['password'])
 
+    # make sure the user is authorized
     if userID == None:
         flask.abort(404)
-
 
     user = User(id=userID)
     user.fetch()
