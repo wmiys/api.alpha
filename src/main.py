@@ -13,15 +13,12 @@ app = Flask(__name__)
 CORS(app)
 
 @app.route('/')
-def home():
-    
-    return jsonify(request.authorization)
-    # return jsonify(dict(request.headers))
+def home():    
+    if request.authorization:
+        return jsonify(request.authorization)
+    else:
+        return 'no'
 
-    # return jsonify(request.headers.__dict__)
-    # return ''
-
-    # return 
 
 @app.route('/users', methods=['POST', 'GET'])
 def users():
@@ -45,15 +42,22 @@ def users():
 
 @app.route('/users/<int:user_id>', methods=['GET'])
 def user(user_id):
-    if request.method == 'GET':
-        user = User(id=user_id)
-        user.fetch()
-        return jsonify(user.__dict__)
+    clientID = Login.getUserID(request.authorization.username, request.authorization.password)
+
+    if clientID != user_id:
+        flask.abort(403)
+
+    user = User(id=user_id)
+    user.fetch()
+
+    return jsonify(user.as_dict(return_password=False))
+
+    # return jsonify(user.__dict__)
 
 
 @app.route('/login', methods=['GET'])
 def login():
-    userID = Login.isValidLoginAttempt(request.args['email'], request.args['password'])
+    userID = Login.getUserID(request.args['email'], request.args['password'])
 
     if userID == None:
         flask.abort(404)
@@ -61,7 +65,7 @@ def login():
 
     user = User(id=userID)
     user.fetch()
-    return jsonify(user.__dict__)
+    return jsonify(user.as_dict(False))
 
 
 

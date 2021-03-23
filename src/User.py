@@ -1,5 +1,6 @@
 from DB import DB
 
+
 class User:
     def __init__(self, id=None,email=None,password=None,name_first=None,name_last=None,birth_date=None,created_on=None):
         self.id         = id
@@ -36,6 +37,19 @@ class User:
         self.name_last  = db_data.name_last
         self.birth_date = db_data.birth_date
         self.created_on = db_data.created_on
+    
+    # return the object as a dict without the password
+    def as_dict(self, return_password=False):
+        # create a dict from the user fields
+        result = self.__dict__
+
+        if return_password == False:
+            del result['password']      # remove the password field
+
+        return result
+
+
+
 
         
 

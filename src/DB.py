@@ -10,8 +10,11 @@ class DB:
     configData = Utilities.readJsonFile(SQL_CONNECTION_DATA_FILE)
     mydb = mysql.connector.connect(user=configData['user'], password=configData['passwd'], host=configData['host'], database=configData['database'])
 
+    
     @staticmethod
     def get_users():
+        """Returns a list of users
+        """
         DB.mydb.reconnect()
         mycursor = DB.mydb.cursor(named_tuple=True)
         sql = 'SELECT * FROM Users'
@@ -22,6 +25,15 @@ class DB:
 
     @staticmethod
     def insert_user(email: str, password: str, name_first: str, name_last: str, birth_date: str):
+        """Insert a user into the Database
+
+        Args:
+            email (str): email
+            password (str): password
+            name_first (str): first name
+            name_last (str): last name
+            birth_date (str): birth day
+        """        
         DB.mydb.reconnect()
         mycursor = DB.mydb.cursor(prepared=True)
         
