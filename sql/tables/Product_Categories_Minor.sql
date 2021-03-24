@@ -6,5 +6,5 @@ CREATE TABLE `Product_Categories_Minor` (
   UNIQUE KEY `id` (`id`),
   UNIQUE KEY `name` (`name`),
   KEY `product_categories_major_id` (`product_categories_major_id`),
-  CONSTRAINT `Product_Categories_Minor_ibfk_1` FOREIGN KEY (`product_categories_major_id`) REFERENCES `Product_Categories_Minor` (`id`) ON UPDATE CASCADE
+  CONSTRAINT `Product_Categories_Minor_ibfk_1` FOREIGN KEY (`product_categories_major_id`) REFERENCES `Product_Categories_Major` (`id`) ON UPDATE CASCADE
 ) ENGINE=INNODB DEFAULT CHARSET=UTF8 COLLATE=UTF8_UNICODE_CI;
