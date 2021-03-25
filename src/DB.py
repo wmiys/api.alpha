@@ -75,6 +75,20 @@ class DB:
         result = mycursor.fetchone()
         
         return result
+    
+    @staticmethod
+    def searchLocations(query: str, num_results: int=20):
+        DB.mydb.reconnect()
+        mycursor = DB.mydb.cursor(named_tuple=True)
+
+        parms = [query, num_results]
+        result_args = mycursor.callproc('Search_Locations', parms)
+
+        result = next(mycursor.stored_results())
+
+        return result.fetchall()
+
+
 
 
 
