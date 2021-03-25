@@ -9,5 +9,6 @@ CREATE TABLE `Locations` (
     `ranking` INT(11) DEFAULT NULL,
     `county_name` VARCHAR(150) COLLATE UTF8_UNICODE_CI DEFAULT NULL,
     PRIMARY KEY (`id`),
-    UNIQUE KEY `id` (`id`)
+    UNIQUE KEY `id` (`id`),
+    FULLTEXT KEY `fts_locations` (`city`,`state_id`,`state_name`)
 ) ENGINE=INNODB DEFAULT CHARSET=UTF8 COLLATE=UTF8_UNICODE_CI;
