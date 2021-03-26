@@ -2,7 +2,9 @@ import json
 
 class Utilities:
 
-    # return the data from the local .tables.config file
+    #------------------------------------------------------
+    # return the data from the specified json file
+    #------------------------------------------------------
     @staticmethod
     def readJsonFile(file_name_path):
         with open(file_name_path) as configFile:
