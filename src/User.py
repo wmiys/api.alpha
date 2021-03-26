@@ -1,7 +1,16 @@
+#************************************************************************************
+#
+# This class handles all the requests for a single user.
+#
+#************************************************************************************
+
 from DB import DB
 
-
 class User:
+
+    #------------------------------------------------------
+    # Constructor
+    #------------------------------------------------------
     def __init__(self, id=None,email=None,password=None,name_first=None,name_last=None,birth_date=None,created_on=None):
         self.id         = id
         self.email      = email
@@ -11,6 +20,9 @@ class User:
         self.birth_date = birth_date
         self.created_on = created_on
 
+    #------------------------------------------------------
+    # Returns the user object as a string
+    #------------------------------------------------------
     def __str__(self):
         output = ''
 
@@ -19,11 +31,16 @@ class User:
 
         return output
 
-    
+    #------------------------------------------------------
+    # Insert the user object into the database
+    #------------------------------------------------------
     def insert(self):
         user_id = DB.insert_user(email=self.email, password=self.password, name_first=self.name_first, name_last=self.name_last, birth_date=self.birth_date)
         self.id = user_id
 
+    #------------------------------------------------------
+    # Retrieve the user info from the database
+    #------------------------------------------------------
     def fetch(self):
         # don't do anything if the user id isn't set
         if self.id is None:
@@ -38,7 +55,9 @@ class User:
         self.birth_date = db_data.birth_date
         self.created_on = db_data.created_on
     
+    #------------------------------------------------------
     # return the object as a dict without the password
+    #------------------------------------------------------
     def as_dict(self, return_password=False):
         # create a dict from the user fields
         result = self.__dict__
