@@ -7,9 +7,10 @@ from User import User
 from Utilities import Utilities
 from Login import Login
 from DB import DB
-from product_categories_major import ProductCategoriesMajor
-from product_categories_minor import ProductCategoriesMinor
-from product_categories_sub import ProductCategoriesSub
+# from product_categories_major import ProductCategoriesMajor
+# from product_categories_minor import ProductCategoriesMinor
+# from product_categories_sub import ProductCategoriesSub
+from Product_Categories import ProductCategories
 
 app = Flask(__name__)
 CORS(app)
@@ -96,44 +97,31 @@ def productCatgories():
 # all major categories
 @app.route('/product-categories/major', methods=['GET'])
 def productCategoriesMajors():
-    major_categories = ProductCategoriesMajor()
-
-    return jsonify(major_categories.getAll())
+    return jsonify(ProductCategories.getMajors())
 
 # single major category
 @app.route('/product-categories/major/<int:major_id>', methods=['GET'])
 def productCategoriesMajor(major_id):
-    major_categories = ProductCategoriesMajor()
-
-    return jsonify(major_categories.get(major_id))
-
+    return jsonify(ProductCategories.getMajor(major_id))
 
 # all minor categories of a major
 @app.route('/product-categories/major/<int:major_id>/minor', methods=['GET'])
 def productCategoriesMinors(major_id):
-    sub_categories = ProductCategoriesMinor(major_id)
-
-    return jsonify(sub_categories.getAll())
+    return jsonify(ProductCategories.getMinors(major_id))
 
 # single minor category
 @app.route('/product-categories/major/<int:major_id>/minor/<int:minor_id>', methods=['GET'])
 def productCategoriesMinor(major_id, minor_id):
-    sub_categories = ProductCategoriesMinor(major_id)
-
-    return jsonify(sub_categories.get(minor_id))
+    return jsonify(ProductCategories.getMinor(minor_id))
 
 # all sub categories of a minor
 @app.route('/product-categories/major/<int:major_id>/minor/<int:minor_id>/sub', methods=['GET'])
 def productCategoriesSubs(major_id, minor_id):
-    sub_categories = ProductCategoriesSub(minor_id)
-
-    return jsonify(sub_categories.getAll())
+    return jsonify(ProductCategories.getSubs(minor_id))
 
 # single sub category
 @app.route('/product-categories/major/<int:major_id>/minor/<int:minor_id>/sub/<int:sub_id>', methods=['GET'])
 def productCategoriesSub(major_id, minor_id, sub_id):
-    sub_categories = ProductCategoriesSub(minor_id)
-
-    return jsonify(sub_categories.get(sub_id))
+    return jsonify(ProductCategories.getSub(sub_id))
 
 
