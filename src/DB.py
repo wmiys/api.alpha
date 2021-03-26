@@ -3,19 +3,29 @@ import mysql.connector
 from typing import Type
 
 class DB:
-    
     # static properties
     SQL_CONNECTION_DATA_FILE = '.mysql-info.json'
-
     configData = Utilities.readJsonFile(SQL_CONNECTION_DATA_FILE)
-    mydb = mysql.connector.connect(user=configData['user'], password=configData['passwd'], host=configData['host'], database=configData['database'])
+    mydb = mysql.connector.connect(user=configData['user'], password=configData['passwd'],
+                                   host=configData['host'], database=configData['database'])
 
-    
+    @staticmethod
+    def check_connection():
+        try:
+            DB.mydb.ping(reconnect=True, attempts=3, delay=1)
+        except mysql.connector.Error as err:
+            mydb = DB.init_db()
+
+    @staticmethod
+    def init_db():
+        return mysql.connector.connect(user=DB.configData['user'], password=DB.configData['passwd'],
+                                       host=DB.configData['host'], database=DB.configData['database'])
+
     @staticmethod
     def get_users():
         """Returns a list of users
         """
-        DB.mydb.reconnect()
+        DB.check_connection()
         mycursor = DB.mydb.cursor(named_tuple=True)
         sql = 'SELECT * FROM Users'
         mycursor.execute(sql)
@@ -34,7 +44,7 @@ class DB:
             name_last (str): last name
             birth_date (str): birth day
         """        
-        DB.mydb.reconnect()
+        DB.check_connection()
         mycursor = DB.mydb.cursor(prepared=True)
         
         sql = """
@@ -52,7 +62,7 @@ class DB:
 
     @staticmethod
     def get_user(user_id: int):
-        DB.mydb.reconnect()
+        DB.check_connection()
         mycursor = DB.mydb.cursor(named_tuple=True)
 
         sql = 'SELECT * FROM Users where id = %s'
@@ -65,7 +75,7 @@ class DB:
 
     @staticmethod
     def getUserIDFromEmailPassword(email: str, password: str):
-        DB.mydb.reconnect()
+        DB.check_connection()
         mycursor = DB.mydb.cursor(named_tuple=True)
 
         sql = 'SELECT u.id FROM Users u WHERE u.email = %s AND u.password = %s'
@@ -78,7 +88,7 @@ class DB:
     
     @staticmethod
     def searchLocations(query: str, num_results: int=20):
-        DB.mydb.reconnect()
+        DB.check_connection()
         mycursor = DB.mydb.cursor(named_tuple=True)
 
         parms = [query, num_results]
@@ -87,6 +97,8 @@ class DB:
         result = next(mycursor.stored_results())
 
         return result.fetchall()
+
+    
 
 
 

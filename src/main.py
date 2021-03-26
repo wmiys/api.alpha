@@ -74,8 +74,8 @@ def searchLocations():
         flask.abort(400)
 
     # if no per_page argument was given or it's gt 100, set it to the default (20)
-    per_page = int(request.args.get('per_page'))
-    if per_page == None or per_page > 100:
+    per_page = request.args.get('per_page')
+    if per_page == None or int(per_page) > 100:
         per_page = 20
     
     search_results = DB.searchLocations(query=query, num_results=per_page)
