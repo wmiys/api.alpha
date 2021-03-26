@@ -129,6 +129,21 @@ class DB:
         return result.fetchall()
 
     #------------------------------------------------------
+    # Get all the product categories
+    #------------------------------------------------------
+    @staticmethod
+    def getProductCategories():
+        DB.check_connection()
+        mycursor = DB.mydb.cursor(named_tuple=True)
+
+        sql = 'SELECT * FROM All_Categories'
+
+        mycursor.execute(sql)
+        product_categories = mycursor.fetchall()
+        return product_categories
+
+
+    #------------------------------------------------------
     # return all major categories
     #------------------------------------------------------
     @staticmethod

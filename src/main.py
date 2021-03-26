@@ -122,7 +122,7 @@ def searchLocations():
 #------------------------------------------------------
 @app.route('/product-categories', methods=['GET'])
 def productCatgories():
-    return 'All categories'
+    return jsonify(ProductCategories.getAll())
 
 #------------------------------------------------------
 # all major categories
