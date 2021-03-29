@@ -1,4 +1,5 @@
 import json
+import uuid
 
 class Utilities:
 
@@ -10,3 +11,15 @@ class Utilities:
         with open(file_name_path) as configFile:
             configData = json.loads(configFile.read())
             return configData
+    
+    # ------------------------------------------------------
+    # Returns a UUID
+    #------------------------------------------------------
+    @staticmethod
+    def getUUID(as_string: bool=True):
+        newUUUID = uuid.uuid4()
+        
+        if as_string == True:
+            return str(newUUUID)
+        else:
+            return newUUUID
