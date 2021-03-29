@@ -8,6 +8,7 @@ CREATE TABLE `Products` (
   `price_full` decimal(10,2) unsigned NOT NULL,
   `price_half` decimal(10,2) unsigned NOT NULL,
   `image` char(41) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `created_on` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   UNIQUE KEY `id` (`id`),
   KEY `user_id` (`user_id`),
