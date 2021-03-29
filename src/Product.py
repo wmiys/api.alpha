@@ -49,8 +49,6 @@ class Product:
         self.image                     = db_row.image
         self.created_on                = db_row.created_on
 
-
-
     #------------------------------------------------------
     # Fetch the product data from the database
     #------------------------------------------------------

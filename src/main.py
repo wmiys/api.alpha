@@ -199,6 +199,7 @@ def products(user_id):
     if clientID != user_id:
         flask.abort(403)
 
+
     newProduct                           = Product()
     newProduct.name                      = str(request.form['name'])
     newProduct.description               = str(request.form['description'])
