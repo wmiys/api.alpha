@@ -282,6 +282,69 @@ class DB:
         sub_category = mycursor.fetchone()
 
         return sub_category
+    
+    #------------------------------------------------------
+    # create a new product
+    #------------------------------------------------------
+    @staticmethod
+    def insertProduct(user_id: int, name: str, description: str, product_categories_sub_id: int, location_id: int, price_full: float, price_half: float, image: str):
+        DB.check_connection()
+        mycursor = DB.mydb.cursor(prepared=True)
+        
+        sql = """
+        INSERT INTO Products
+        (user_id, name, description, product_categories_sub_id, location_id, price_full, price_half, image) VALUES
+        (%s, %s, %s, %s, %s, %s, %s, %s)
+        """
+
+        parms = (user_id, name, description, product_categories_sub_id, location_id, price_full, price_half, image)
+        mycursor.execute(sql, parms)
+        DB.mydb.commit()
+
+        return mycursor.lastrowid
+
+    #------------------------------------------------------
+    # Returns a product row
+    #
+    # Returns:
+    #  - id
+    #  - user_id
+    #  - name
+    #  - description
+    #  - product_categories_sub_id
+    #  - location_id
+    #  - price_full
+    #  - price_half
+    #  - image
+    #  - created_on
+    #------------------------------------------------------
+    @staticmethod
+    def getProduct(id: int):
+        DB.check_connection()
+        mycursor = DB.mydb.cursor(named_tuple=True)
+
+        sql = """
+        SELECT p.id                     AS id,
+            p.user_id                   AS user_id,
+            p.name                      AS name,
+            p.description               AS description,
+            p.product_categories_sub_id AS product_categories_sub_id,
+            p.location_id               AS location_id,
+            p.price_full                AS price_full,
+            p.price_half                AS price_half,
+            p.image                     AS image,
+            p.created_on                AS created_on
+        FROM   Products p
+        WHERE  p.id = %s
+        GROUP  BY p.id
+        LIMIT  1 
+        """
+
+        parms = (id,)
+        mycursor.execute(sql, parms)
+        product = mycursor.fetchone()
+
+        return product
 
 
 

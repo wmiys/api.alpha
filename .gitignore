@@ -2,3 +2,4 @@ __pycache__/
 .mysql-info.json
 .tables-view/
 .vscode/
+product-images/

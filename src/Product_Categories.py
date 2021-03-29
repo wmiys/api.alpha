@@ -28,7 +28,7 @@ class ProductCategories:
             if major not in majors:     # no duplicates
                 majors.append(major)
             
-            minor = dict(id=category.minor_id, name=category.minor_id, product_categories_major_id=category.major_id, sub=[])
+            minor = dict(id=category.minor_id, name=category.minor_name, product_categories_major_id=category.major_id, sub=[])
 
             if minor not in minors:     # no duplicates
                 minors.append(minor)

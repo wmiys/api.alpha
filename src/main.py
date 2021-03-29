@@ -4,7 +4,7 @@
 #
 #************************************************************************************
 import flask
-from flask import Flask, jsonify, request, current_app, abort
+from flask import Flask, jsonify, request, current_app
 from flask_cors import CORS
 from functools import wraps, update_wrapper
 from markupsafe import escape
@@ -12,6 +12,9 @@ from User import User
 from Login import Login
 from DB import DB
 from Product_Categories import ProductCategories
+from Product import Product
+from Utilities import Utilities
+import os
 
 app = Flask(__name__)
 CORS(app)
@@ -165,5 +168,62 @@ def productCategoriesSubs(major_id, minor_id):
 @app.route('/product-categories/major/<int:major_id>/minor/<int:minor_id>/sub/<int:sub_id>', methods=['GET'])
 def productCategoriesSub(major_id, minor_id, sub_id):
     return jsonify(ProductCategories.getSub(sub_id))
+
+
+#************************************************************************************
+#
+#                           Products
+#
+#************************************************************************************
+
+#------------------------------------------------------
+# Retrieve a product
+#------------------------------------------------------
+@app.route('/users/<int:user_id>/products/<int:product_id>', methods=['GET'])
+def product(user_id, product_id):
+    product = Product(id=product_id)
+    return jsonify(product.get())
+
+
+#------------------------------------------------------
+# User productus
+#------------------------------------------------------
+@app.route('/users/<int:user_id>/products', methods=['POST'])
+def products(user_id):
+    # make sure the client provided authentication
+    if request.authorization == None:
+        flask.abort(401)
+
+    # make sure the user is authorized
+    clientID = Login.getUserID(request.authorization.username, request.authorization.password)
+    if clientID != user_id:
+        flask.abort(403)
+
+
+    newProduct                           = Product()
+    newProduct.name                      = str(request.form['name'])
+    newProduct.description               = str(request.form['description'])
+    newProduct.product_categories_sub_id = int(request.form['product_categories_sub_id'])
+    newProduct.location_id               = int(request.form['location_id'])
+    newProduct.price_full                = float(request.form['price_full'])
+    newProduct.price_half                = float(request.form['price_half'])
+    newProduct.user_id                   = int(user_id)
+
+    # image
+    if request.files.get('image') != None:
+        raw_img = request.files['image']                                # get the image from the request
+        file_ext = os.path.splitext(raw_img.filename)[1]                # get the extension
+        img_file_name = str(Utilities.getUUID()) + file_ext             # merge the extension with a UUID
+        raw_img.save(os.path.join('product-images', img_file_name))     # save the image
+        newProduct.image = img_file_name
+    else:
+        newProduct.image = None
+
+
+    newProduct.insert()
+
+    return jsonify(newProduct.get())
+
+
 
 
