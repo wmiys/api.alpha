@@ -345,8 +345,40 @@ class DB:
         product = mycursor.fetchone()
 
         return product
+    
+    @staticmethod
+    def getUserProducts(user_id: int):
+        DB.check_connection()
+        mycursor = DB.mydb.cursor(named_tuple=True)
 
+        sql = """
+        SELECT p.id                     AS id,
+            p.user_id                   AS user_id,
+            p.name                      AS name,
+            p.description               AS description,
+            p.product_categories_sub_id AS product_categories_sub_id,
+            sub.name 					AS product_categories_sub_name,
+            p.location_id               AS location_id,
+            l.city						AS location_city,
+            l.state_id  				AS location_state_id,
+            l.state_name  				AS location_state_name,
+            p.price_full                AS price_full,
+            p.price_half                AS price_half,
+            p.image                     AS image,
+            p.created_on                AS created_on
+        FROM   Products p
+        LEFT JOIN Locations l ON p.location_id = l.id
+        LEFT JOIN Product_Categories_Sub sub ON p.product_categories_sub_id = sub.id
+        WHERE  p.user_id = %s
+        GROUP  BY p.id
+        ORDER BY p.name ASC
+        """
 
+        parms = (user_id,)
+        mycursor.execute(sql, parms)
+        products = mycursor.fetchall()
+
+        return products
 
 
 
