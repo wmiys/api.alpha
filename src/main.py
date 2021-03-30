@@ -19,6 +19,30 @@ import os
 app = Flask(__name__)
 CORS(app)
 
+
+g_client_id = None
+
+
+def login_required(f):
+    @wraps(f)
+    def wrap(*args, **kwargs):
+        # if user is not logged in, redirect to login page
+        if not request.authorization:
+            flask.abort(401)
+        
+        # make sure the user is authorized
+        clientID = Login.getUserID(request.authorization.username, request.authorization.password)
+        if clientID == None:
+            flask.abort(401)
+        
+        global g_client_id
+        g_client_id = clientID
+
+        # finally call f. f() now haves access to g.user
+        return f(*args, **kwargs)
+
+    return wrap
+
 #************************************************************************************
 #
 #                                   Index
@@ -58,11 +82,10 @@ def users():
 # Get a single user
 #------------------------------------------------------
 @app.route('/users/<int:user_id>', methods=['GET'])
+@login_required
 def user(user_id):
     # make sure the user is authorized
-    clientID = Login.getUserID(request.authorization.username, request.authorization.password)
-
-    if clientID != user_id:
+    if g_client_id != user_id:
         flask.abort(403)
 
     user = User(id=user_id)
@@ -177,28 +200,14 @@ def productCategoriesSub(major_id, minor_id, sub_id):
 #************************************************************************************
 
 #------------------------------------------------------
-# Retrieve a product
-#------------------------------------------------------
-@app.route('/users/<int:user_id>/products/<int:product_id>', methods=['GET'])
-def product(user_id, product_id):
-    product = Product(id=product_id)
-    return jsonify(product.get())
-
-
-#------------------------------------------------------
-# User productus
+# Create a new product
 #------------------------------------------------------
 @app.route('/users/<int:user_id>/products', methods=['POST'])
-def products(user_id):
-    # make sure the client provided authentication
-    if request.authorization == None:
-        flask.abort(401)
-
+@login_required
+def userProductsPost(user_id):    
     # make sure the user is authorized
-    clientID = Login.getUserID(request.authorization.username, request.authorization.password)
-    if clientID != user_id:
+    if g_client_id != user_id:
         flask.abort(403)
-
 
     newProduct                           = Product()
     newProduct.name                      = str(request.form['name'])
@@ -219,11 +228,31 @@ def products(user_id):
     else:
         newProduct.image = None
 
-
     newProduct.insert()
 
     return jsonify(newProduct.get())
 
 
+#------------------------------------------------------
+# Fetch all of a user's products
+#------------------------------------------------------
+@app.route('/users/<int:user_id>/products', methods=['GET'])
+@login_required
+def userProductsGet(user_id):
+    # make sure the user is authorized
+    if g_client_id != user_id:
+        flask.abort(403)
+
+    userProducts = DB.getUserProducts(user_id)
+
+    return jsonify(userProducts)
 
 
+#------------------------------------------------------
+# Retrieve a single user product
+#------------------------------------------------------
+@app.route('/users/<int:user_id>/products/<int:product_id>', methods=['GET'])
+@login_required
+def product(user_id, product_id):
+    product = Product(id=product_id)
+    return jsonify(product.get())
