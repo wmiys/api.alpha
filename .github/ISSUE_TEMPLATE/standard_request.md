@@ -1,7 +1,7 @@
 ---
-name: Feature request
+name: Standard Issue
 about: Suggest an idea for this project
-title: "[file-name]: Issue_Title"
+title: "[file_name]: Issue_Title"
 labels: ''
 assignees: rrickgauer
 
