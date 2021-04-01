@@ -23,3 +23,7 @@ class Utilities:
             return str(newUUUID)
         else:
             return newUUUID
+    
+    @staticmethod
+    def lineBreak(num_lines: int=1):
+        print("\n" * num_lines)
