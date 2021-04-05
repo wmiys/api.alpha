@@ -214,6 +214,7 @@ def userProductsPost(user_id):
     newProduct.description               = str(request.form['description'])
     newProduct.product_categories_sub_id = int(request.form['product_categories_sub_id'])
     newProduct.location_id               = int(request.form['location_id'])
+    newProduct.dropoff_distance          = int(request.form['dropoff_distance'])
     newProduct.price_full                = float(request.form['price_full'])
     newProduct.price_half                = float(request.form['price_half'])
     newProduct.user_id                   = int(user_id)
