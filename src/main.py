@@ -210,12 +210,13 @@ def userProductsPost(user_id):
         flask.abort(403)
 
     newProduct                           = Product()
-    newProduct.name                      = str(request.form['name'])
-    newProduct.description               = str(request.form['description'])
-    newProduct.product_categories_sub_id = int(request.form['product_categories_sub_id'])
-    newProduct.location_id               = int(request.form['location_id'])
-    newProduct.price_full                = float(request.form['price_full'])
-    newProduct.price_half                = float(request.form['price_half'])
+    newProduct.name                      = str(request.form.get('name'))
+    newProduct.description               = str(request.form.get('description'))
+    newProduct.product_categories_sub_id = int(request.form.get('product_categories_sub_id'))
+    newProduct.location_id               = int(request.form.get('location_id'))
+    newProduct.dropoff_distance          = int(request.form.get('dropoff_distance'))
+    newProduct.price_full                = float(request.form.get('price_full'))
+    newProduct.price_half                = float(request.form.get('price_half'))
     newProduct.user_id                   = int(user_id)
 
     # image
