@@ -258,3 +258,13 @@ def userProductsGet(user_id):
 def product(user_id, product_id):
     product = Product(id=product_id)
     return jsonify(product.get())
+
+
+#************************************************************************************
+#
+#                           Main loop
+#
+#************************************************************************************
+if __name__ == "__main__":
+    app.run(debug=True, host="0.0.0.0", port=5000)
+
