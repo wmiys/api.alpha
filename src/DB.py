@@ -328,20 +328,33 @@ class DB:
 
         return mycursor.lastrowid
 
+
     #------------------------------------------------------
     # Returns a product row
     #
-    # Returns:
-    #  - id
-    #  - user_id
-    #  - name
-    #  - description
-    #  - product_categories_sub_id
-    #  - location_id
-    #  - price_full
-    #  - price_half
-    #  - image
-    #  - created_on
+    # Fields:
+    #   - id
+    #   - name
+    #   - description
+    #   - product_categories_sub_id
+    #   - product_categories_sub_name
+    #   - product_categories_minor_id
+    #   - product_categories_minor_name
+    #   - product_categories_major_id
+    #   - product_categories_major_name
+    #   - location_id
+    #   - location_city
+    #   - location_state_id
+    #   - location_state_name
+    #   - dropoff_distance
+    #   - price_full
+    #   - price_half
+    #   - image
+    #   - created_on
+    #   - user_id
+    #   - user_email
+    #   - user_name_first
+    #   - user_name_last
     #------------------------------------------------------
     @staticmethod
     def getProduct(id: int):
@@ -362,6 +375,33 @@ class DB:
 
         return product
     
+    #------------------------------------------------------
+    # Returns all of a user's products
+    #
+    # Product Fields:
+    #   - id
+    #   - name
+    #   - description
+    #   - product_categories_sub_id
+    #   - product_categories_sub_name
+    #   - product_categories_minor_id
+    #   - product_categories_minor_name
+    #   - product_categories_major_id
+    #   - product_categories_major_name
+    #   - location_id
+    #   - location_city
+    #   - location_state_id
+    #   - location_state_name
+    #   - dropoff_distance
+    #   - price_full
+    #   - price_half
+    #   - image
+    #   - created_on
+    #   - user_id
+    #   - user_email
+    #   - user_name_first
+    #   - user_name_last
+    #------------------------------------------------------
     @staticmethod
     def getUserProducts(user_id: int):
         DB.check_connection()
