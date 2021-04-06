@@ -17,6 +17,7 @@ from Utilities import Utilities
 import os
 
 app = Flask(__name__)
+app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
 CORS(app)
 
 
@@ -66,11 +67,11 @@ def users():
     new_user = User()
 
     # set the user properties
-    new_user.email      = request.form['email']
-    new_user.password   = request.form['password']
-    new_user.name_first = request.form['name_first']
-    new_user.name_last  = request.form['name_last']
-    new_user.birth_date = request.form['birth_date']
+    new_user.email      = request.form.get('email')
+    new_user.password   = request.form.get('password')
+    new_user.name_first = request.form.get('name_first')
+    new_user.name_last  = request.form.get('name_last')
+    new_user.birth_date = request.form.get('birth_date')
     
     new_user.insert()
     new_user.fetch()

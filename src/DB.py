@@ -46,7 +46,19 @@ class DB:
         """
         DB.check_connection()
         mycursor = DB.mydb.cursor(named_tuple=True)
-        sql = 'SELECT * FROM Users'
+        
+        sql = """
+        SELECT 
+            u.id as id,
+            u.email as email,
+            u.password as password,
+            u.name_first as name_first,
+            u.name_last as name_last,
+            u.created_on as created_on,
+            DATE_FORMAT(u.birth_date, '%Y-%m-%d') as birth_date
+        FROM Users u 
+        """
+
         mycursor.execute(sql)
         users = mycursor.fetchall()
 
@@ -90,7 +102,20 @@ class DB:
         DB.check_connection()
         mycursor = DB.mydb.cursor(named_tuple=True)
 
-        sql = 'SELECT * FROM Users where id = %s'
+        sql = """
+        SELECT 
+            u.id as id,
+            u.email as email,
+            u.password as password,
+            u.name_first as name_first,
+            u.name_last as name_last,
+            u.created_on as created_on,
+            DATE_FORMAT(u.birth_date, '%Y-%m-%d') as birth_date
+        FROM Users u
+        WHERE 
+            u.id = %s
+        LIMIT 1
+        """
         parms = (user_id,)
         
         mycursor.execute(sql, parms)
