@@ -15,14 +15,14 @@ from Product_Categories import ProductCategories
 from Product import Product
 from Utilities import Utilities
 import os
+from Globals import Globals
 
 app = Flask(__name__)
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
 CORS(app)
 
-
-g_client_id = None
-
+# setup the global variables container
+requestGlobals = Globals(client_id=None)
 
 def login_required(f):
     @wraps(f)
@@ -36,8 +36,8 @@ def login_required(f):
         if clientID == None:
             flask.abort(401)
         
-        global g_client_id
-        g_client_id = clientID
+        global requestGlobals
+        requestGlobals.client_id = clientID
 
         # finally call f. f() now haves access to g.user
         return f(*args, **kwargs)
@@ -86,7 +86,7 @@ def users():
 @login_required
 def user(user_id):
     # make sure the user is authorized
-    if g_client_id != user_id:
+    if requestGlobals.client_id != user_id:
         flask.abort(403)
 
     user = User(id=user_id)
@@ -207,7 +207,7 @@ def productCategoriesSub(major_id, minor_id, sub_id):
 @login_required
 def userProductsPost(user_id):    
     # make sure the user is authorized
-    if g_client_id != user_id:
+    if requestGlobals.client_id != user_id:
         flask.abort(403)
 
     newProduct                           = Product()
@@ -247,7 +247,7 @@ def userProductsPost(user_id):
 @login_required
 def userProductsGet(user_id):
     # make sure the user is authorized
-    if g_client_id != user_id:
+    if requestGlobals.client_id != user_id:
         flask.abort(403)
 
     userProducts = DB.getUserProducts(user_id)
