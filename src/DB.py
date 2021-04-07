@@ -312,7 +312,7 @@ class DB:
     # create a new product
     #------------------------------------------------------
     @staticmethod
-    def insertProduct(user_id: int, name: str, description: str, product_categories_sub_id: int, location_id: int, dropoff_distance: int, price_full: float, price_half: float, image: str):
+    def insertProduct(user_id, name, description=None, product_categories_sub_id=None, location_id=None, dropoff_distance=None, price_full=None, price_half=None, image=None):
         DB.check_connection()
         mycursor = DB.mydb.cursor(prepared=True)
         
