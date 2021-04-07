@@ -67,11 +67,11 @@ def users():
     new_user = User()
 
     # set the user properties
-    new_user.email      = request.form.get('email')
-    new_user.password   = request.form.get('password')
-    new_user.name_first = request.form.get('name_first')
-    new_user.name_last  = request.form.get('name_last')
-    new_user.birth_date = request.form.get('birth_date')
+    new_user.email      = request.form.get('email') or None
+    new_user.password   = request.form.get('password') or None
+    new_user.name_first = request.form.get('name_first') or None
+    new_user.name_last  = request.form.get('name_last') or None
+    new_user.birth_date = request.form.get('birth_date') or None
     
     new_user.insert()
     new_user.fetch()
