@@ -45,7 +45,7 @@ class Product:
         self.description               = db_row.description
         self.product_categories_sub_id = db_row.product_categories_sub_id
         self.location_id               = db_row.location_id
-        self.dropoff_distance          = db.dropoff_distance
+        self.dropoff_distance          = db_row.dropoff_distance
         self.price_full                = db_row.price_full
         self.price_half                = db_row.price_half
         self.image                     = db_row.image

@@ -211,16 +211,21 @@ def userProductsPost(user_id):
         flask.abort(403)
 
     newProduct                           = Product()
-    newProduct.name                      = str(request.form.get('name'))
-    newProduct.description               = str(request.form.get('description'))
-    newProduct.product_categories_sub_id = int(request.form.get('product_categories_sub_id'))
-    newProduct.location_id               = int(request.form.get('location_id'))
-    newProduct.dropoff_distance          = int(request.form.get('dropoff_distance'))
-    newProduct.price_full                = float(request.form.get('price_full'))
-    newProduct.price_half                = float(request.form.get('price_half'))
-    newProduct.user_id                   = int(user_id)
+    newProduct.name                      = request.form.get('name') or None
+    newProduct.description               = request.form.get('description') or None
+    newProduct.product_categories_sub_id = request.form.get('product_categories_sub_id') or None
+    newProduct.location_id               = request.form.get('location_id') or None
+    newProduct.dropoff_distance          = request.form.get('dropoff_distance') or None
+    newProduct.price_full                = request.form.get('price_full') or None
+    newProduct.price_half                = request.form.get('price_half') or None
+    newProduct.user_id                   = user_id
 
-    # image
+
+    # set a default product name if it's null
+    if newProduct.name == None:
+        newProduct.name = 'New Product'
+    
+    # retrieve the image file if one was supplied
     if request.files.get('image') != None:
         raw_img = request.files['image']                                # get the image from the request
         file_ext = os.path.splitext(raw_img.filename)[1]                # get the extension
