@@ -5,9 +5,12 @@
 #************************************************************************************
 
 from DB import DB
+from Utilities import Utilities
+from typing import Optional
 
 class Product:
 
+    
     #------------------------------------------------------
     # Constructor
     #------------------------------------------------------
@@ -31,6 +34,19 @@ class Product:
     def insert(self):
         self.id = DB.insertProduct(self.user_id, self.name, self.description, self.product_categories_sub_id, self.location_id, self.dropoff_distance, self.price_full, self.price_half, self.image, self.minimum_age)
     
+    
+    #------------------------------------------------------
+    # Update the product database record
+    #------------------------------------------------------
+    def update(self):
+        dbResult = DB.updateProduct(product_id=self.id, name=self.name, description=self.description, 
+                                    product_categories_sub_id=self.product_categories_sub_id,
+                                    location_id=self.location_id, dropoff_distance=self.dropoff_distance, 
+                                    price_full=self.price_full, price_half=self.price_half, image=self.image, 
+                                    minimum_age=self.minimum_age)
+        
+        return dbResult.rowcount
+
     #------------------------------------------------------
     # Loads the product data fields from the database
     #------------------------------------------------------
@@ -63,7 +79,29 @@ class Product:
 
         productDbRow = DB.getProduct(self.id)
         return productDbRow
+    
+    #------------------------------------------------------
+    # Set's the object's properties given a dict
+    #
+    # Returns boolean:
+    #   false: the dict contained an extraneous field
+    #   true: properties were successfully changed
+    #------------------------------------------------------
+    def setPropertyValuesFromDict(self, newPropertyValues: dict):
+        # validate the field before changing the object property
+        if not Utilities.areAllKeysValidProperties(newPropertyValues, self):
+            return False
+
+        # set the object properties
+        for key in newPropertyValues:            
+            setattr(self, key, newPropertyValues[key])
         
+        return True
+
+
+
+
+            
 
         
         
