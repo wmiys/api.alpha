@@ -34,7 +34,6 @@ class Product:
     def insert(self):
         self.id = DB.insertProduct(self.user_id, self.name, self.description, self.product_categories_sub_id, self.location_id, self.dropoff_distance, self.price_full, self.price_half, self.image, self.minimum_age)
     
-    
     #------------------------------------------------------
     # Update the product database record
     #------------------------------------------------------
@@ -93,9 +92,12 @@ class Product:
             return False
 
         # set the object properties
-        for key in newPropertyValues:            
-            setattr(self, key, newPropertyValues[key])
-        
+        for key in newPropertyValues:
+            if newPropertyValues[key]:
+                setattr(self, key, newPropertyValues[key])
+            else:
+                setattr(self, key, None)
+            
         return True
 
 
