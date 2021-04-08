@@ -327,6 +327,36 @@ class DB:
         DB.mydb.commit()
 
         return mycursor.lastrowid
+    
+    #------------------------------------------------------
+    # Update a product
+    #------------------------------------------------------
+    @staticmethod
+    def updateProduct(product_id, name=None, description=None, product_categories_sub_id=None, location_id=None, dropoff_distance=None, price_full=None, price_half=None, image=None, minimum_age=None):
+        DB.check_connection()
+        mycursor = DB.mydb.cursor(prepared=True)
+
+        sql = """
+        UPDATE Products
+        SET
+            name                      = %s,
+            description               = %s,
+            product_categories_sub_id = %s,
+            location_id               = %s,
+            dropoff_distance          = %s,
+            price_full                = %s,
+            price_half                = %s,
+            image                     = %s,
+            minimum_age               = %s
+        WHERE 
+            id = %s
+        """
+
+        parms = (name, description, product_categories_sub_id, location_id, dropoff_distance, price_full, price_half, image, minimum_age, product_id)
+        mycursor.execute(sql, parms)
+        DB.mydb.commit()
+
+        return mycursor
 
 
     #------------------------------------------------------

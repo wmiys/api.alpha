@@ -33,3 +33,12 @@ class Utilities:
         print("\n" * numSpaces)
         print(record)
         print("\n" * numSpaces)
+    
+    @staticmethod
+    def areAllKeysValidProperties(testDict: dict, theObject: object):
+        for key in testDict:
+            if not hasattr(theObject, key):
+                return False
+        
+        return True
+

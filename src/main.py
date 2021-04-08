@@ -257,13 +257,25 @@ def userProductsGet(user_id):
 
 
 #------------------------------------------------------
-# Retrieve a single user product
+# Retrieve/update a single user product
 #------------------------------------------------------
-@app.route('/users/<int:user_id>/products/<int:product_id>', methods=['GET'])
+@app.route('/users/<int:user_id>/products/<int:product_id>', methods=['GET', 'PUT'])
 @login_required
-def product(user_id, product_id):
+def productRequest(user_id, product_id):
+    # load the product data
     product = Product(id=product_id)
+    product.loadData()  # load the product data from the database
+
+    if request.method == 'PUT':
+        # the request body contained a field that does not belong in the product class
+        if not product.setPropertyValuesFromDict(request.form.to_dict()):
+            flask.abort(400)
+        
+        updateResult = product.update()
+
     return jsonify(product.get())
+
+
 
 
 #************************************************************************************
