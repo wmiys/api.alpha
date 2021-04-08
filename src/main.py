@@ -16,6 +16,7 @@ from Product import Product
 from Utilities import Utilities
 import os
 from Globals import Globals
+from UserImage import UserImage
 
 app = Flask(__name__)
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
@@ -234,21 +235,12 @@ def userProductsPost(user_id):
     newProduct.price_half                = request.form.get('price_half') or None
     newProduct.minimum_age               = request.form.get('minimum_age') or None
     newProduct.user_id                   = user_id
-
-
-    # set a default product name if it's null
-    if newProduct.name == None:
-        newProduct.name = 'New Product'
     
     # retrieve the image file if one was supplied
-    if request.files.get('image') != None:
-        raw_img = request.files['image']                                # get the image from the request
-        file_ext = os.path.splitext(raw_img.filename)[1]                # get the extension
-        img_file_name = str(Utilities.getUUID()) + file_ext             # merge the extension with a UUID
-        raw_img.save(os.path.join('product-images', img_file_name))     # save the image
-        newProduct.image = img_file_name
-    else:
-        newProduct.image = None
+    if request.files.get('image'):
+        productImage = UserImage(request.files.get('image'))
+        newImageFileName = Utilities.getUUID(True) + productImage.getFileExtension()
+        newProduct.image = productImage.saveImageFile('product-images', newImageFileName)
 
     newProduct.insert()
 
