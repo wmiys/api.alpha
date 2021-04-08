@@ -312,17 +312,17 @@ class DB:
     # create a new product
     #------------------------------------------------------
     @staticmethod
-    def insertProduct(user_id, name, description=None, product_categories_sub_id=None, location_id=None, dropoff_distance=None, price_full=None, price_half=None, image=None):
+    def insertProduct(user_id, name, description=None, product_categories_sub_id=None, location_id=None, dropoff_distance=None, price_full=None, price_half=None, image=None, minimum_age=None):
         DB.check_connection()
         mycursor = DB.mydb.cursor(prepared=True)
         
         sql = """
         INSERT INTO Products
-        (user_id, name, description, product_categories_sub_id, location_id, dropoff_distance, price_full, price_half, image) VALUES
-        (%s, %s, %s, %s, %s, %s, %s, %s, %s)
+        (user_id, name, description, product_categories_sub_id, location_id, dropoff_distance, price_full, price_half, image, minimum_age) VALUES
+        (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
         """
 
-        parms = (user_id, name, description, product_categories_sub_id, location_id, dropoff_distance, price_full, price_half, image)
+        parms = (user_id, name, description, product_categories_sub_id, location_id, dropoff_distance, price_full, price_half, image, minimum_age)
         mycursor.execute(sql, parms)
         DB.mydb.commit()
 

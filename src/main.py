@@ -218,6 +218,7 @@ def userProductsPost(user_id):
     newProduct.dropoff_distance          = request.form.get('dropoff_distance') or None
     newProduct.price_full                = request.form.get('price_full') or None
     newProduct.price_half                = request.form.get('price_half') or None
+    newProduct.minimum_age               = request.form.get('minimum_age') or None
     newProduct.user_id                   = user_id
 
 

@@ -11,7 +11,7 @@ class Product:
     #------------------------------------------------------
     # Constructor
     #------------------------------------------------------
-    def __init__(self, id=None, user_id=None, name=None, description=None, product_categories_sub_id=None, location_id=None, dropoff_distance=None, price_full=None, price_half=None, image=None, created_on=None):
+    def __init__(self, id=None, user_id=None, name=None, description=None, product_categories_sub_id=None, location_id=None, dropoff_distance=None, price_full=None, price_half=None, image=None, minimum_age=None, created_on=None):
         self.id                        = id
         self.user_id                   = user_id
         self.name                      = name
@@ -22,13 +22,14 @@ class Product:
         self.price_full                = price_full
         self.price_half                = price_half
         self.image                     = image
+        self.minimum_age               = minimum_age
         self.created_on                = created_on
     
     #------------------------------------------------------
     # Insert the product into the database
     #------------------------------------------------------
     def insert(self):
-        self.id = DB.insertProduct(self.user_id, self.name, self.description, self.product_categories_sub_id, self.location_id, self.dropoff_distance, self.price_full, self.price_half, self.image)
+        self.id = DB.insertProduct(self.user_id, self.name, self.description, self.product_categories_sub_id, self.location_id, self.dropoff_distance, self.price_full, self.price_half, self.image, self.minimum_age)
     
     #------------------------------------------------------
     # Loads the product data fields from the database
@@ -49,6 +50,7 @@ class Product:
         self.price_full                = db_row.price_full
         self.price_half                = db_row.price_half
         self.image                     = db_row.image
+        self.minimum_age               = db_row.minimum_age
         self.created_on                = db_row.created_on
 
     #------------------------------------------------------

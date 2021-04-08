@@ -9,13 +9,10 @@ CREATE TABLE `Products` (
     `price_full` DECIMAL(10,2) UNSIGNED DEFAULT NULL,
     `price_half` DECIMAL(10,2) UNSIGNED DEFAULT NULL,
     `image` CHAR(41) COLLATE UTF8_UNICODE_CI DEFAULT NULL,
+    `minimum_age` TINYINT(3) UNSIGNED DEFAULT NULL,
     `created_on` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (`id`),
     UNIQUE KEY `id` (`id`),
     KEY `user_id` (`user_id`),
-    KEY `Products_ibfk_2` (`product_categories_sub_id`),
-    KEY `Products_ibfk_3` (`location_id`),
-    CONSTRAINT `Products_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `Users` (`id`) ON UPDATE CASCADE,
-    CONSTRAINT `Products_ibfk_2` FOREIGN KEY (`product_categories_sub_id`) REFERENCES `Product_Categories_Sub` (`id`) ON UPDATE CASCADE,
-    CONSTRAINT `Products_ibfk_3` FOREIGN KEY (`location_id`) REFERENCES `Locations` (`id`) ON UPDATE CASCADE
+    CONSTRAINT `Products_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `Users` (`id`) ON UPDATE CASCADE
 ) ENGINE=INNODB DEFAULT CHARSET=UTF8 COLLATE=UTF8_UNICODE_CI;
