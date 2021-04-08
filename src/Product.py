@@ -7,6 +7,7 @@
 from DB import DB
 from Utilities import Utilities
 from typing import Optional
+from UserImage import UserImage
 
 class Product:
 
@@ -99,6 +100,21 @@ class Product:
                 setattr(self, key, None)
             
         return True
+    
+    #------------------------------------------------------
+    # takes an raw image file, saves it locally, and sets the image field in the database to the image file name as saved on the server
+    #
+    # parms:
+    #   newImageFile - the raw image file
+    #   relative_image_directory_path - the folder name to save the image to
+    #------------------------------------------------------
+    def setImagePropertyFromImageFile(self, newImageFile: object, relative_image_directory_path: str):
+        if not newImageFile:
+            return
+
+        productImage = UserImage(newImageFile)
+        newImageFileName = Utilities.getUUID(True) + productImage.getFileExtension()
+        self.image = productImage.saveImageFile(relative_image_directory_path, newImageFileName)
 
 
 

@@ -16,8 +16,8 @@ from Product import Product
 from Utilities import Utilities
 import os
 from Globals import Globals
-from UserImage import UserImage
 
+# setup the flask application
 app = Flask(__name__)
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
 CORS(app)
@@ -235,13 +235,11 @@ def userProductsPost(user_id):
     newProduct.price_half                = request.form.get('price_half') or None
     newProduct.minimum_age               = request.form.get('minimum_age') or None
     newProduct.user_id                   = user_id
-    
-    # retrieve the image file if one was supplied
-    if request.files.get('image'):
-        productImage = UserImage(request.files.get('image'))
-        newImageFileName = Utilities.getUUID(True) + productImage.getFileExtension()
-        newProduct.image = productImage.saveImageFile('product-images', newImageFileName)
 
+    # set the image if one was uploaded
+    if request.files.get('image'):
+        newProduct.setImagePropertyFromImageFile(request.files.get('image'), 'product-images')
+    
     newProduct.insert()
 
     return jsonify(newProduct.get())
