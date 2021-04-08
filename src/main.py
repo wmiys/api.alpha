@@ -236,7 +236,7 @@ def userProductsPost(user_id):
 
     # set the image if one was uploaded
     if request.files.get('image'):
-        newProduct.setImagePropertyFromImageFile(request.files.get('image'), 'product-images')
+        newProduct.setImagePropertyFromImageFile(request.files.get('image'), Product.LOCAL_SERVER_COVER_PHOTO_DIRECTORY)
     
     newProduct.insert()
 
@@ -257,7 +257,11 @@ def productRequest(user_id, product_id):
         # the request body contained a field that does not belong in the product class
         if not product.setPropertyValuesFromDict(request.form.to_dict()):
             flask.abort(400)
-        
+
+        # set the image if one was uploaded
+        if request.files.get('image'):
+            product.setImagePropertyFromImageFile(request.files.get('image'), Product.LOCAL_SERVER_COVER_PHOTO_DIRECTORY)
+
         updateResult = product.update()
 
         return ('', 200)

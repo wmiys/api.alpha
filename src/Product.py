@@ -11,6 +11,7 @@ from UserImage import UserImage
 
 class Product:
 
+    LOCAL_SERVER_COVER_PHOTO_DIRECTORY = 'product-images'
     
     #------------------------------------------------------
     # Constructor
