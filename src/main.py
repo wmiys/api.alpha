@@ -201,6 +201,20 @@ def productCategoriesSub(major_id, minor_id, sub_id):
 #************************************************************************************
 
 #------------------------------------------------------
+# Fetch all of a user's products
+#------------------------------------------------------
+@app.route('/users/<int:user_id>/products', methods=['GET'])
+@login_required
+def userProductsGet(user_id):
+    # make sure the user is authorized
+    if requestGlobals.client_id != user_id:
+        flask.abort(403)
+
+    userProducts = DB.getUserProducts(user_id)
+
+    return jsonify(userProducts)
+
+#------------------------------------------------------
 # Create a new product
 #------------------------------------------------------
 @app.route('/users/<int:user_id>/products', methods=['POST'])
@@ -239,21 +253,6 @@ def userProductsPost(user_id):
     newProduct.insert()
 
     return jsonify(newProduct.get())
-
-
-#------------------------------------------------------
-# Fetch all of a user's products
-#------------------------------------------------------
-@app.route('/users/<int:user_id>/products', methods=['GET'])
-@login_required
-def userProductsGet(user_id):
-    # make sure the user is authorized
-    if requestGlobals.client_id != user_id:
-        flask.abort(403)
-
-    userProducts = DB.getUserProducts(user_id)
-
-    return jsonify(userProducts)
 
 
 #------------------------------------------------------
