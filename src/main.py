@@ -273,7 +273,11 @@ def productRequest(user_id, product_id):
         
         updateResult = product.update()
 
-    return jsonify(product.get())
+        return ('', 200)
+    else:
+        return jsonify(product.get())
+
+    
 
 
 
