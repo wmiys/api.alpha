@@ -225,16 +225,14 @@ def userProductsPost(user_id):
     if requestGlobals.client_id != user_id:
         flask.abort(403)
 
-    newProduct                           = Product()
-    newProduct.name                      = request.form.get('name') or None
-    newProduct.description               = request.form.get('description') or None
-    newProduct.product_categories_sub_id = request.form.get('product_categories_sub_id') or None
-    newProduct.location_id               = request.form.get('location_id') or None
-    newProduct.dropoff_distance          = request.form.get('dropoff_distance') or None
-    newProduct.price_full                = request.form.get('price_full') or None
-    newProduct.price_half                = request.form.get('price_half') or None
-    newProduct.minimum_age               = request.form.get('minimum_age') or None
-    newProduct.user_id                   = user_id
+    newProduct = Product()
+
+    # set the object properties from the fields in the request body
+    # if the request body contains an invalid field, abort
+    if not newProduct.setPropertyValuesFromDict(request.form.to_dict()):
+        flask.abort(400)
+
+    newProduct.user_id = user_id    # user_id is in the URI
 
     # set the image if one was uploaded
     if request.files.get('image'):
