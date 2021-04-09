@@ -17,6 +17,7 @@ from Utilities import Utilities
 import os
 from Globals import Globals
 
+# setup the flask application
 app = Flask(__name__)
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
 CORS(app)
@@ -201,47 +202,6 @@ def productCategoriesSub(major_id, minor_id, sub_id):
 #************************************************************************************
 
 #------------------------------------------------------
-# Create a new product
-#------------------------------------------------------
-@app.route('/users/<int:user_id>/products', methods=['POST'])
-@login_required
-def userProductsPost(user_id):    
-    # make sure the user is authorized
-    if requestGlobals.client_id != user_id:
-        flask.abort(403)
-
-    newProduct                           = Product()
-    newProduct.name                      = request.form.get('name') or None
-    newProduct.description               = request.form.get('description') or None
-    newProduct.product_categories_sub_id = request.form.get('product_categories_sub_id') or None
-    newProduct.location_id               = request.form.get('location_id') or None
-    newProduct.dropoff_distance          = request.form.get('dropoff_distance') or None
-    newProduct.price_full                = request.form.get('price_full') or None
-    newProduct.price_half                = request.form.get('price_half') or None
-    newProduct.minimum_age               = request.form.get('minimum_age') or None
-    newProduct.user_id                   = user_id
-
-
-    # set a default product name if it's null
-    if newProduct.name == None:
-        newProduct.name = 'New Product'
-    
-    # retrieve the image file if one was supplied
-    if request.files.get('image') != None:
-        raw_img = request.files['image']                                # get the image from the request
-        file_ext = os.path.splitext(raw_img.filename)[1]                # get the extension
-        img_file_name = str(Utilities.getUUID()) + file_ext             # merge the extension with a UUID
-        raw_img.save(os.path.join('product-images', img_file_name))     # save the image
-        newProduct.image = img_file_name
-    else:
-        newProduct.image = None
-
-    newProduct.insert()
-
-    return jsonify(newProduct.get())
-
-
-#------------------------------------------------------
 # Fetch all of a user's products
 #------------------------------------------------------
 @app.route('/users/<int:user_id>/products', methods=['GET'])
@@ -254,6 +214,33 @@ def userProductsGet(user_id):
     userProducts = DB.getUserProducts(user_id)
 
     return jsonify(userProducts)
+
+#------------------------------------------------------
+# Create a new product
+#------------------------------------------------------
+@app.route('/users/<int:user_id>/products', methods=['POST'])
+@login_required
+def userProductsPost(user_id):    
+    # make sure the user is authorized
+    if requestGlobals.client_id != user_id:
+        flask.abort(403)
+
+    newProduct = Product()
+
+    # set the object properties from the fields in the request body
+    # if the request body contains an invalid field, abort
+    if not newProduct.setPropertyValuesFromDict(request.form.to_dict()):
+        flask.abort(400)
+
+    newProduct.user_id = user_id    # user_id is in the URI
+
+    # set the image if one was uploaded
+    if request.files.get('image'):
+        newProduct.setImagePropertyFromImageFile(request.files.get('image'), Product.LOCAL_SERVER_COVER_PHOTO_DIRECTORY)
+    
+    newProduct.insert()
+
+    return jsonify(newProduct.get())
 
 
 #------------------------------------------------------
@@ -270,16 +257,16 @@ def productRequest(user_id, product_id):
         # the request body contained a field that does not belong in the product class
         if not product.setPropertyValuesFromDict(request.form.to_dict()):
             flask.abort(400)
-        
+
+        # set the image if one was uploaded
+        if request.files.get('image'):
+            product.setImagePropertyFromImageFile(request.files.get('image'), Product.LOCAL_SERVER_COVER_PHOTO_DIRECTORY)
+
         updateResult = product.update()
 
         return ('', 200)
     else:
         return jsonify(product.get())
-
-    
-
-
 
 
 #************************************************************************************
