@@ -268,10 +268,6 @@ def productRequest(user_id, product_id):
     else:
         return jsonify(product.get())
 
-    
-
-
-
 
 #************************************************************************************
 #

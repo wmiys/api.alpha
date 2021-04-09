@@ -8,6 +8,7 @@ from DB import DB
 from Utilities import Utilities
 from typing import Optional
 from UserImage import UserImage
+import os
 
 class Product:
 
@@ -110,8 +111,9 @@ class Product:
     #   relative_image_directory_path - the folder name to save the image to
     #------------------------------------------------------
     def setImagePropertyFromImageFile(self, newImageFile: object, relative_image_directory_path: str):
-        if not newImageFile:
-            return
+        # remove the old image
+        if self.image:
+            os.remove(os.path.join(relative_image_directory_path, self.image))
 
         productImage = UserImage(newImageFile)
         newImageFileName = Utilities.getUUID(True) + productImage.getFileExtension()

@@ -14,7 +14,6 @@ class UserImage:
     #------------------------------------------------------
     def getFileExtension(self):
         file_extension = os.path.splitext(self.img_file.filename)[1]
-
         return file_extension
     
     #------------------------------------------------------
