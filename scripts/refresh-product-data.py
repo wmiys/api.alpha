@@ -92,11 +92,11 @@ for stmt in sqlStmts:
 for product in Utilities.getJsonData(PATH_RAW_DATA):
     sql = """
     INSERT INTO Products 
-    (user_id, name, description, product_categories_sub_id, location_id, dropoff_distance, price_half, price_full, image, minimum_age) VALUES
-    (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+    (user_id, name, description, product_categories_sub_id, location_id, dropoff_distance, price_half, price_full, image, minimum_age, created_on) VALUES
+    (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
     """
 
-    parms = (product["user_id"], product["name"], product["description"], product["product_categories_sub_id"], product["location_id"], product["dropoff_distance"], product["price_half"], product["price_full"], product["image"], product["minimum_age"])
+    parms = (product["user_id"], product["name"], product["description"], product["product_categories_sub_id"], product["location_id"], product["dropoff_distance"], product["price_half"], product["price_full"], product["image"], product["minimum_age"], product["created_on"])
     mycursor.execute(sql, parms)
 
 
