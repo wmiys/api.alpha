@@ -14,12 +14,17 @@ from DB import DB
 from Product_Categories import ProductCategories
 from Product import Product
 from Utilities import Utilities
+from Product_Availability import ProductAvailability
 import os
 from Globals import Globals
+from CustomJSONEncoder import CustomJSONEncoder
 
 # setup the flask application
 app = Flask(__name__)
+
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
+# app.json_encoder = CustomJSONEncoder
+
 CORS(app)
 
 # setup the global variables container
@@ -267,6 +272,38 @@ def productRequest(user_id, product_id):
         return ('', 200)
     else:
         return jsonify(product.get())
+
+
+
+#************************************************************************************
+#
+#                           Product Availability
+#
+#************************************************************************************
+
+#------------------------------------------------------
+# Retrieve all the product availabilities of a single product
+#------------------------------------------------------
+@app.route('/users/<int:user_id>/products/<int:product_id>/availability', methods=['GET'])
+@login_required
+def getProductAvailabilities(user_id, product_id):
+    # make sure the user is authorized
+    if requestGlobals.client_id != user_id:
+        flask.abort(403)
+
+    
+    # get the availabilities
+    availabilities = ProductAvailability.getProductAvailabilities(product_id)
+    return jsonify(availabilities)
+
+
+
+
+
+
+
+
+
 
 
 #************************************************************************************
