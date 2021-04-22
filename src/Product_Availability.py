@@ -8,7 +8,22 @@ from DB import DB
 
 
 class ProductAvailability:
+    """Product Availability Model
+    """
 
+    @staticmethod
+    def getProductAvailabilities(product_id: int) -> list:
+        """Returns all product availability records for a single product
+
+        Args:
+            product_id (int): the product id
+
+        Returns:
+            list: all the product availability records in the database
+        """
+        return DB.getProductAvailabilities(product_id)
+    
+    
     #------------------------------------------------------
     # Constructor
     #------------------------------------------------------
@@ -21,10 +36,18 @@ class ProductAvailability:
         self.created_on = created_on
 
 
-    @staticmethod
-    def getProductAvailabilities(product_id: int):
-        return DB.getProductAvailabilities(product_id)
-    
+    def get(self):
+        """Returns the product availability record from the database
+        """
+        # make sure the product id is set
+        if self.id == None:
+            return None
+
+        dbRow = DB.getProductAvailability(self.id)
+        return dbRow
+        
+
+        
 
 
 

@@ -53,6 +53,8 @@ class Product:
     # Loads the product data fields from the database
     #------------------------------------------------------
     def loadData(self):
+        """Loads the product data fields from the database
+        """
         # make sure the product id is set
         if self.id == None:
             return

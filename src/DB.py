@@ -452,11 +452,11 @@ class DB:
         return products
 
 
-    #------------------------------------------------------
-    # Get all the product availability records for a single product
-    #------------------------------------------------------
     @staticmethod
     def getProductAvailabilities(product_id: int):
+        """Get all the product availability records for a single product
+        """
+
         DB.check_connection()
         mycursor = DB.mydb.cursor(named_tuple=True)
 
@@ -469,8 +469,38 @@ class DB:
 
         parms = (product_id,)
         mycursor.execute(sql, parms)
-        products = mycursor.fetchall()
+        availabilities = mycursor.fetchall()
 
-        return products
+        return availabilities
+    
+    @staticmethod
+    def getProductAvailability(id: int):
+        """Get the database record for a single product availability
+
+        Args:
+            id (int): the id of the product 
+
+        Returns:
+            db record
+        """        
+
+        DB.check_connection()
+        mycursor = DB.mydb.cursor(named_tuple=True)
+
+        sql = """
+        SELECT   *
+        FROM     View_Product_Availability pa
+        WHERE    pa.id = %s
+        ORDER BY pa.created_on DESC
+        LIMIT 1
+        """
+
+        parms = (id,)
+        mycursor.execute(sql, parms)
+        availability = mycursor.fetchone()
+
+        return availability
+    
+
 
 
