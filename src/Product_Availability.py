@@ -101,6 +101,12 @@ class ProductAvailability:
 
         dbResult = DB.deleteProductAvailability(self.id)
         return dbResult
+    
+    def insert(self):
+        """Insert the product availability into the database
+        """
+        newProductAvailabilityID = DB.insertProductAvailability(self.product_id, self.starts_on, self.ends_on, self.note)
+        self.id = newProductAvailabilityID
 
         
 
