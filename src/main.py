@@ -297,6 +297,28 @@ def productAvailabilities(user_id: int, product_id: int):
 
 
 #------------------------------------------------------
+# Create a new product availability
+#------------------------------------------------------
+@app.route('/users/<int:user_id>/products/<int:product_id>/availability', methods=['POST'])
+@login_required
+def productAvailabilityPost(user_id: int, product_id: int):
+    # make sure the user is authorized
+    if requestGlobals.client_id != user_id:
+        flask.abort(403)
+
+    # get the availabilities
+    availability = ProductAvailability(product_id=product_id)
+    
+    # set the objects properties to the fields in the request body
+    if not availability.setPropertyValuesFromDict(request.form.to_dict()):
+        flask.abort(400)    # the request body contained a field that does not belong in the product class
+    
+    availability.insert()
+
+    return jsonify(availability.get())
+
+
+#------------------------------------------------------
 # Retrieve all the product availabilities of a single product
 #------------------------------------------------------
 @app.route('/users/<int:user_id>/products/<int:product_id>/availability/<int:product_availability_id>', methods=['GET', 'PUT', 'DELETE'])

@@ -544,6 +544,30 @@ class DB:
         
         return mycursor
 
+    
+    @staticmethod
+    def insertProductAvailability(product_id, starts_on, ends_on, note=None):
+        """Insert a new product availability record
+
+        Returns:
+            mycursor.lastrowid (int): the id of the newly created product availability
+        """
+
+        DB.check_connection()
+        mycursor = DB.mydb.cursor(prepared=True)
+
+        sql = """
+        INSERT INTO Product_Availability 
+        (product_id, starts_on, ends_on, note) VALUES
+        (%s, %s, %s, %s)
+        """
+
+        parms = (product_id, starts_on, ends_on, note)
+        mycursor.execute(sql, parms)
+        DB.mydb.commit()
+        
+        return mycursor.lastrowid
+
 
 
 
