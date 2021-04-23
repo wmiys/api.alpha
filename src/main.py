@@ -299,7 +299,7 @@ def productAvailabilities(user_id: int, product_id: int):
 #------------------------------------------------------
 # Retrieve all the product availabilities of a single product
 #------------------------------------------------------
-@app.route('/users/<int:user_id>/products/<int:product_id>/availability/<int:product_availability_id>', methods=['GET', 'PUT'])
+@app.route('/users/<int:user_id>/products/<int:product_id>/availability/<int:product_availability_id>', methods=['GET', 'PUT', 'DELETE'])
 @login_required
 def productAvailability(user_id: int, product_id: int, product_availability_id: int):
     # make sure the user is authorized
@@ -321,6 +321,15 @@ def productAvailability(user_id: int, product_id: int, product_availability_id: 
         dbResult = availability.update()    # update the database
 
         return jsonify(availability.get())
+        
+    elif request.method == 'DELETE':
+        result = availability.delete()
+
+        if result.rowcount != 1:
+            pass    # error something went wrong
+        
+        return ('', 204)
+
 
 
 #************************************************************************************

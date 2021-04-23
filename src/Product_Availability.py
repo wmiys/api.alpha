@@ -88,6 +88,19 @@ class ProductAvailability:
                 setattr(self, key, None)
             
         return True
+    
+    def delete(self):
+        """Delete the product availability
+
+        Returns:
+            mysql cursor: returns the database cursor used
+        """
+
+        if self.id == None:
+            return
+
+        dbResult = DB.deleteProductAvailability(self.id)
+        return dbResult
 
         
 

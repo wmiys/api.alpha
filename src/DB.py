@@ -525,6 +525,24 @@ class DB:
         DB.mydb.commit()
         
         return mycursor
+    
+    @staticmethod
+    def deleteProductAvailability(id):
+        """Delete a single product availability record
+        """
+        DB.check_connection()
+        mycursor = DB.mydb.cursor(prepared=True)
+
+        sql = """
+        DELETE FROM Product_Availability
+        WHERE id = %s
+        """
+
+        parms = (id,)
+        mycursor.execute(sql, parms)
+        DB.mydb.commit()
+        
+        return mycursor
 
 
 
