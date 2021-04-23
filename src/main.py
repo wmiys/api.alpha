@@ -299,7 +299,7 @@ def productAvailabilities(user_id: int, product_id: int):
 #------------------------------------------------------
 # Retrieve all the product availabilities of a single product
 #------------------------------------------------------
-@app.route('/users/<int:user_id>/products/<int:product_id>/availability/<int:product_availability_id>', methods=['GET'])
+@app.route('/users/<int:user_id>/products/<int:product_id>/availability/<int:product_availability_id>', methods=['GET', 'PUT'])
 @login_required
 def productAvailability(user_id: int, product_id: int, product_availability_id: int):
     # make sure the user is authorized
@@ -307,7 +307,20 @@ def productAvailability(user_id: int, product_id: int, product_availability_id: 
         flask.abort(403)
 
     availability = ProductAvailability(id=product_availability_id)
-    return jsonify(availability.get())
+    
+    if request.method == 'GET':
+        return jsonify(availability.get())
+    
+    elif request.method == 'PUT':
+        availability.loadData() # load the current values into the object properties
+
+        # set the objects properties to the fields in the request body
+        if not availability.setPropertyValuesFromDict(request.form.to_dict()):
+            flask.abort(400)    # the request body contained a field that does not belong in the product class
+    
+        dbResult = availability.update()    # update the database
+
+        return jsonify(availability.get())
 
 
 #************************************************************************************

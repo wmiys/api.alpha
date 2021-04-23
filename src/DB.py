@@ -500,7 +500,32 @@ class DB:
         availability = mycursor.fetchone()
 
         return availability
+
     
+    @staticmethod
+    def updateProductAvailability(id, product_id, starts_on=None, ends_on=None, note=None):
+        """Update a single product availability record
+        """
+        DB.check_connection()
+        mycursor = DB.mydb.cursor(prepared=True)
+
+        sql = """
+        UPDATE Product_Availability
+        SET
+            product_id = %s,
+            starts_on  = %s,
+            ends_on    = %s,
+            note       = %s
+        WHERE 
+            id = %s
+        """
+
+        parms = (product_id, starts_on, ends_on, note, id)
+        mycursor.execute(sql, parms)
+        DB.mydb.commit()
+        
+        return mycursor
+
 
 
 
