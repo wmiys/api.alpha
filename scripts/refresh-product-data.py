@@ -14,6 +14,7 @@ PATH_RAW_DATA = 'raw-product-data.json'
 PATH_GOOD_IMAGES = 'good-images'
 PATH_API_IMAGES = 'C:\\xampp\\htdocs\\files\\api.wmiys\\src\\product-images'
 PATH_MYSQL_INFO = '.mysql-info.json'
+PATH_PRODUCT_AVAILABILITY_SQL = 'Product_Availability.sql'
 
 
 # return a list of files in a directory
@@ -98,6 +99,13 @@ for product in Utilities.getJsonData(PATH_RAW_DATA):
 
     parms = (product["user_id"], product["name"], product["description"], product["product_categories_sub_id"], product["location_id"], product["dropoff_distance"], product["price_half"], product["price_full"], product["image"], product["minimum_age"], product["created_on"])
     mycursor.execute(sql, parms)
+
+
+
+# insert all the product availabilities
+with open(PATH_PRODUCT_AVAILABILITY_SQL) as sqlFile:
+    sql = sqlFile.read()
+    mycursor.execute(sql)
 
 
 mydb.commit()
