@@ -1,19 +1,27 @@
+"""
+Package:        products
+Url Prefix:     /users/<int:user_id>/products
+Description:    Handles all the products routing.
+"""
+
 import flask
 from flask import Blueprint, jsonify, request
-import api_wmiys.Security as Security
-from api_wmiys.Security import requestGlobals
+import api_wmiys.common.Security as Security
+from api_wmiys.common.Security import requestGlobals
 from api_wmiys.DB.DB import DB
 from api_wmiys.products.Product import Product
 
 products = Blueprint('products', __name__)
 
 
-#------------------------------------------------------
-# Fetch all of a user's products
-#------------------------------------------------------
 @products.route('', methods=['GET'])
 @Security.login_required
 def userProductsGet(user_id):
+    """Fetch all of a user's products
+
+    Args:
+        user_id (int): user id
+    """
     # make sure the user is authorized
     if requestGlobals.client_id != user_id:
         flask.abort(403)
@@ -22,12 +30,19 @@ def userProductsGet(user_id):
 
     return jsonify(userProducts)
 
-#------------------------------------------------------
-# Create a new product
-#------------------------------------------------------
+
 @products.route('', methods=['POST'])
 @Security.login_required
-def userProductsPost(user_id):    
+def userProductsPost(user_id):
+    """Create a new product
+
+    Args:
+        user_id (int): user id
+
+    Returns:
+        obj: the new product object
+    """
+
     # make sure the user is authorized
     if requestGlobals.client_id != user_id:
         flask.abort(403)
@@ -50,12 +65,15 @@ def userProductsPost(user_id):
     return jsonify(newProduct.get())
 
 
-#------------------------------------------------------
-# Retrieve/update a single user product
-#------------------------------------------------------
 @products.route('<int:product_id>', methods=['GET', 'PUT'])
 @Security.login_required
 def productRequest(user_id, product_id):
+    """Retrieve/update a single user product
+
+    Args:
+        user_id (int): user's id
+        product_id (int): product's id
+    """
     # load the product data
     product = Product(id=product_id)
     product.loadData()  # load the product data from the database

@@ -1,18 +1,23 @@
+"""
+Package:        search
+Url Prefix:     /search
+Description:    Handles all the search routing.
+"""
+
 import flask
 from flask import Blueprint, jsonify, request
-import api_wmiys.Security as Security
-from api_wmiys.Security import requestGlobals
+import api_wmiys.common.Security as Security
+from api_wmiys.common.Security import requestGlobals
 from api_wmiys.DB.DB import DB
 
 
 search = Blueprint('search', __name__)
 
 
-#------------------------------------------------------
-# Locations
-#------------------------------------------------------
 @search.route('locations', methods=['GET'])
 def searchLocations():
+    """Search for locations
+    """
     query = request.args.get('q')
 
     # make sure the q argumrnt is set by the client

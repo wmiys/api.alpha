@@ -5,9 +5,9 @@
 #************************************************************************************
 
 from api_wmiys.DB.DB import DB
-from api_wmiys.Utilities import Utilities
+from api_wmiys.common.Utilities import Utilities
 from typing import Optional
-from api_wmiys.UserImage import UserImage
+from api_wmiys.common.UserImage import UserImage
 import os
 
 class Product:

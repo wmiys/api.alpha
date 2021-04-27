@@ -4,7 +4,7 @@
 #
 #************************************************************************************
 from api_wmiys.DB.DB import DB
-from api_wmiys.Utilities import Utilities
+from api_wmiys.common.Utilities import Utilities
 
 class ProductAvailability:
     """Product Availability Model

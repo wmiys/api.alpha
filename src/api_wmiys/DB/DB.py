@@ -4,7 +4,7 @@
 #
 #************************************************************************************
 
-from api_wmiys.Utilities import Utilities
+from api_wmiys.common.Utilities import Utilities
 import mysql.connector
 from typing import Type
 import os

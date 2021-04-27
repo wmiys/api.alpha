@@ -1,3 +1,9 @@
+"""
+Package:        product_availability
+Url Prefix:     /product-categories
+Description:    Handles all the product category routing.
+"""
+
 from flask import Blueprint, jsonify
 from api_wmiys.product_categories.Product_Categories import ProductCategories
 import os
@@ -5,52 +11,70 @@ import os
 product_categories = Blueprint('product_categories', __name__)
 
 
-#------------------------------------------------------
-# All categories
-#------------------------------------------------------
 @product_categories.route('', methods=['GET'])
 def productCatgories():
+    """Returns all categories
+    """
     return jsonify(ProductCategories.getAll())
 
-#------------------------------------------------------
-# all major categories
-#------------------------------------------------------
+
 @product_categories.route('major', methods=['GET'])
 def productCategoriesMajors():
+    """Returns all major categories
+    """
     return jsonify(ProductCategories.getMajors())
 
-#------------------------------------------------------
-# single major category
-#------------------------------------------------------
+
 @product_categories.route('major/<int:major_id>', methods=['GET'])
-def productCategoriesMajor(major_id):
+def productCategoriesMajor(major_id: int):
+    """Returns a single major category
+
+    Args:
+        major_id (int): major category id
+    """
     return jsonify(ProductCategories.getMajor(major_id))
 
-#------------------------------------------------------
-# all minor categories of a major
-#------------------------------------------------------
 @product_categories.route('major/<int:major_id>/minor', methods=['GET'])
-def productCategoriesMinors(major_id):
+def productCategoriesMinors(major_id: int):
+    """Returns all minor category children of a major product category
+
+    Args:
+        major_id (int): major category id
+    """
     return jsonify(ProductCategories.getMinors(major_id))
 
-#------------------------------------------------------
-# single minor category
-#------------------------------------------------------
+
 @product_categories.route('major/<int:major_id>/minor/<int:minor_id>', methods=['GET'])
-def productCategoriesMinor(major_id, minor_id):
+def productCategoriesMinor(major_id: int, minor_id: int):
+    """Returns a single minor category
+
+    Args:
+        major_id (int): major product category id
+        minor_id (int): minor product category id
+    """
+    
     return jsonify(ProductCategories.getMinor(minor_id))
 
-#------------------------------------------------------
-# all sub categories of a minor
-#------------------------------------------------------
+
 @product_categories.route('major/<int:major_id>/minor/<int:minor_id>/sub', methods=['GET'])
-def productCategoriesSubs(major_id, minor_id):
+def productCategoriesSubs(major_id: int, minor_id: int):
+    """Returns all sub categories of a minor category
+
+    Args:
+        major_id (int): major product category id
+        minor_id (int): minor product category id
+    """
     return jsonify(ProductCategories.getSubs(minor_id))
 
-#------------------------------------------------------
-# single sub category
-#------------------------------------------------------
+
 @product_categories.route('major/<int:major_id>/minor/<int:minor_id>/sub/<int:sub_id>', methods=['GET'])
-def productCategoriesSub(major_id, minor_id, sub_id):
+def productCategoriesSub(major_id: int, minor_id: int, sub_id: int):
+    """Returns a single sub category
+
+    Args:
+        major_id (int): major product category id
+        minor_id (int): minor product category id
+        sub_id (int): sub product category id
+    """
     return jsonify(ProductCategories.getSub(sub_id))
 

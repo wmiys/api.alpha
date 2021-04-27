@@ -1,6 +1,6 @@
 
 from api_wmiys.login.Login import Login
-from api_wmiys.Globals import Globals
+from api_wmiys.common.Globals import Globals
 import flask
 from flask import request
 from functools import wraps, update_wrapper

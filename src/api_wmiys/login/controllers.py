@@ -1,7 +1,13 @@
+"""
+Package:        login
+Url Prefix:     /login
+Description:    Handles all the routing for loggin in.
+"""
+
 import flask
 from flask import Blueprint, jsonify, request
-import api_wmiys.Security as Security
-from api_wmiys.Security import requestGlobals
+import api_wmiys.common.Security as Security
+from api_wmiys.common.Security import requestGlobals
 from api_wmiys.login.Login import Login
 from api_wmiys.users.User import User
 

@@ -1,6 +1,6 @@
 from flask import Flask
 from flask_cors import CORS
-from api_wmiys.CustomJSONEncoder import CustomJSONEncoder
+from api_wmiys.common.CustomJSONEncoder import CustomJSONEncoder
 from api_wmiys.product_categories.controllers import product_categories
 from api_wmiys.products.controllers import products
 from api_wmiys.users.controllers import routeUser
