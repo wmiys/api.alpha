@@ -4,19 +4,19 @@
 #
 #************************************************************************************
 
-from Utilities import Utilities
+from api_wmiys.Utilities import Utilities
 import mysql.connector
 from typing import Type
+import os
 
 class DB:
     
     #------------------------------------------------------
     # static properties
     #------------------------------------------------------
-    SQL_CONNECTION_DATA_FILE = '.mysql-info.json'
+    SQL_CONNECTION_DATA_FILE = os.getcwd() + '/api_wmiys/DB/' + '.mysql-info.json'
     configData = Utilities.readJsonFile(SQL_CONNECTION_DATA_FILE)
-    mydb = mysql.connector.connect(user=configData['user'], password=configData['passwd'],
-                                   host=configData['host'], database=configData['database'])
+    mydb = mysql.connector.connect(user=configData['user'], password=configData['passwd'], host=configData['host'], database=configData['database'])
 
     #------------------------------------------------------
     # Check the DB connection.
@@ -34,8 +34,7 @@ class DB:
     #------------------------------------------------------
     @staticmethod
     def init_db():
-        return mysql.connector.connect(user=DB.configData['user'], password=DB.configData['passwd'],
-                                       host=DB.configData['host'], database=DB.configData['database'])
+        return mysql.connector.connect(user=DB.configData['user'], password=DB.configData['passwd'], host=DB.configData['host'], database=DB.configData['database'])
 
     #------------------------------------------------------
     # Get all users
