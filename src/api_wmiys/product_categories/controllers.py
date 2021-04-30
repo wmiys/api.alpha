@@ -77,4 +77,3 @@ def productCategoriesSub(major_id: int, minor_id: int, sub_id: int):
         sub_id (int): sub product category id
     """
     return jsonify(ProductCategories.getSub(sub_id))
-
