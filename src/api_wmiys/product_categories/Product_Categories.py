@@ -15,44 +15,7 @@ class ProductCategories:
     @staticmethod
     def getAll():
         categories = DB.getProductCategories()
-
-        majors = []
-        minors = []
-        subs = []
-
-
-        # break down table into major, minor, and sub categories
-        for category in categories:
-            major = dict(id=category.major_id, name=category.major_name, minor=[])
-
-            if major not in majors:     # no duplicates
-                majors.append(major)
-            
-            minor = dict(id=category.minor_id, name=category.minor_name, product_categories_major_id=category.major_id, sub=[])
-
-            if minor not in minors:     # no duplicates
-                minors.append(minor)
-
-            sub = dict(id=category.sub_id, name=category.sub_name, product_categories_minor_id=category.minor_id)
-
-            if sub not in subs:         # no duplicates
-                subs.append(sub)
-
-        # put all sub categories into their parent lists
-        for sub in subs:
-            for minor in minors:
-
-                if minor['id'] == sub['product_categories_minor_id']:
-                    minor['sub'].append(sub)
-
-        # put all minor categories into their parent lists
-        for minor in minors:
-            for major in majors:
-
-                if major['id'] == minor['product_categories_major_id']:
-                    major['minor'].append(minor)
-        
-        return majors
+        return categories
 
     #------------------------------------------------------
     # Retrieve all major categories
