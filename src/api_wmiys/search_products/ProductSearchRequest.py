@@ -1,9 +1,15 @@
+#************************************************************************************
+#
+#                           Product Search Request
+#
+#************************************************************************************
 import datetime
 import typing
 from api_wmiys.DB.DB import DB
 
-
 class ProductSearchRequest:
+    """The product search request is responsible for handling all of the product search requests.
+    """
 
     def __init__(self, location_id=None, starts_on=None, ends_on=None):
         """Constructor for ProductSearchRequest
