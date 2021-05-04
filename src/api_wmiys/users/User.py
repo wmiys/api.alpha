@@ -5,6 +5,7 @@
 #************************************************************************************
 
 from api_wmiys.DB.DB import DB
+from api_wmiys.common.Utilities import Utilities
 
 class User:
 
@@ -66,6 +67,35 @@ class User:
             del result['password']      # remove the password field
 
         return result
+    
+    #------------------------------------------------------
+    # set the property values of the object to the dict passed in.
+    #------------------------------------------------------
+    def setPropertyValuesFromDict(self, newPropertyValues: dict):
+        # validate the field before changing the object property
+        if not Utilities.areAllKeysValidProperties(newPropertyValues, self):
+            return False
+
+        # set the object properties
+        for key in newPropertyValues:
+            if newPropertyValues[key]:
+                setattr(self, key, newPropertyValues[key])
+            else:
+                setattr(self, key, None)
+            
+        return True
+    
+    #------------------------------------------------------
+    # update the database to the field values currently in the object
+    #------------------------------------------------------
+    def update(self):
+        if not self.id:
+            return 0
+
+        updateResult = DB.update_user(id=self.id, email=self.email, password=self.password, name_first=self.name_first, name_last=self.name_last, birth_date=self.birth_date)
+
+        return updateResult.rowcount
+
 
 
 
