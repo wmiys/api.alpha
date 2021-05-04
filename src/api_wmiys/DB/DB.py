@@ -5,6 +5,7 @@
 #************************************************************************************
 
 from api_wmiys.common.Utilities import Utilities
+# import api_wmiys.users.User
 import mysql.connector
 from typing import Type
 import os
@@ -121,6 +122,34 @@ class DB:
         result = mycursor.fetchone()
         
         return result
+    
+    #------------------------------------------------------
+    # Update a user record
+    #------------------------------------------------------
+    @staticmethod
+    def update_user(id, email, password, name_first, name_last, birth_date):
+        DB.check_connection()
+        mycursor = DB.mydb.cursor(prepared=True)
+        
+        sql = """
+        UPDATE Users 
+        SET
+            email = %s,
+            password   = %s,
+            name_first = %s,
+            name_last  = %s,
+            birth_date = %s
+        WHERE
+            id = %s
+        """
+
+        parm_values = (email, password, name_first, name_last, birth_date, id)
+        mycursor.execute(sql, parm_values)
+        DB.mydb.commit()
+
+        return mycursor
+
+        
 
     #------------------------------------------------------
     # Get a user's id from their email/password combination
