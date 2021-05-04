@@ -595,6 +595,30 @@ class DB:
         DB.mydb.commit()
         
         return mycursor.lastrowid
+    
+    @staticmethod
+    def searchProductsCategorySub(location_id, starts_on, ends_on, product_categories_sub_id):
+        """Calls the Search_Products stored procedure in the database
+
+        Args:
+            location_id (int): dropoff location id
+            starts_on (date): when the request starts
+            ends_on (date): when the request ends
+            product_categories_sub_id (int): id of the sub product category that the user wants to search for
+
+        Returns:
+            list: prodcuts that meet the criteria
+        """
+        DB.check_connection()
+        mycursor = DB.mydb.cursor(named_tuple=True)
+
+        parms = [location_id, product_categories_sub_id, starts_on, ends_on]
+        result_args = mycursor.callproc('Search_Products', parms)
+        result = next(mycursor.stored_results())
+
+        return result.fetchall()
+
+        
 
 
 
