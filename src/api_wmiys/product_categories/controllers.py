@@ -4,7 +4,7 @@ Url Prefix:     /product-categories
 Description:    Handles all the product category routing.
 """
 
-from flask import Blueprint, jsonify
+from flask import Blueprint, jsonify, request
 from api_wmiys.product_categories.Product_Categories import ProductCategories
 import os
 
@@ -15,7 +15,15 @@ product_categories = Blueprint('product_categories', __name__)
 def productCatgories():
     """Returns all categories
     """
-    return jsonify(ProductCategories.getAll())
+
+    seperateFlag = request.args.get('seperate')
+
+    if not seperateFlag:
+        return jsonify(ProductCategories.getAll())
+
+    
+    seperateCategories = ProductCategories.getAllSeperate()
+    return jsonify(seperateCategories)
 
 
 @product_categories.route('major', methods=['GET'])
