@@ -38,6 +38,29 @@ def init_query(f):
     return wrap
 
 
+@searchProducts.route('', methods=['GET'])
+@init_query
+@Security.login_required
+def searchAll():
+    searchResult = m_requestParms.searchAll()
+    return jsonify(searchResult)
+
+
+@searchProducts.route('categories/major/<int:product_categories_major_id>', methods=['GET'])
+@init_query
+@Security.login_required
+def searchProductCategoriesMajor(product_categories_major_id):
+    searchResult = m_requestParms.searchCategoriesMinor(product_categories_major_id)
+    return jsonify(searchResult)
+
+
+@searchProducts.route('categories/minor/<int:product_categories_minor_id>', methods=['GET'])
+@init_query
+@Security.login_required
+def searchProductCategoriesMinor(product_categories_minor_id):
+    searchResult = m_requestParms.searchCategoriesMinor(product_categories_minor_id)
+    return jsonify(searchResult)
+
 @searchProducts.route('categories/sub/<int:product_categories_sub_id>', methods=['GET'])
 @init_query
 @Security.login_required

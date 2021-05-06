@@ -6,6 +6,10 @@
 import datetime
 import typing
 from api_wmiys.DB.DB import DB
+from enum import Enum
+import collections
+
+
 
 class ProductSearchRequest:
     """The product search request is responsible for handling all of the product search requests.
@@ -44,6 +48,43 @@ class ProductSearchRequest:
         else:
             return True
 
+    def searchAll(self):
+        """Search for a major product category
+
+        Args:
+            product_categories_major_id (int): id of the major product category
+
+        Returns:
+            list: matching products
+        """
+        
+        return DB.searchProductsAll(self.location_id, self.starts_on, self.ends_on)
+
+    def searchCategoriesMajor(self, product_categories_major_id: int):
+        """Search for a major product category
+
+        Args:
+            product_categories_major_id (int): id of the major product category
+
+        Returns:
+            list: matching products
+        """
+
+        return self.searchCategoriesBase(1, product_categories_major_id)
+
+
+    def searchCategoriesMinor(self, product_categories_minor_id: int):
+        """Search for a minor product category
+
+        Args:
+            product_categories_minor_id (int): id of the minor product category
+
+        Returns:
+            list: matching products
+        """
+
+        return self.searchCategoriesBase(2, product_categories_minor_id)
+        
 
     def searchCategoriesSub(self, product_categories_sub_id: int):
         """Search for a sub product category
@@ -54,9 +95,30 @@ class ProductSearchRequest:
         Returns:
             list: matching products
         """
-        return DB.searchProductsCategorySub(self.location_id, self.starts_on, self.ends_on, product_categories_sub_id)
+
+        return self.searchCategoriesBase(3, product_categories_sub_id)
 
 
+    def searchCategoriesBase(self, product_category_type, product_category_id):
+        """Base function for searchProducts[Major,Minor,Sub] to call
+
+        product_category_type needs to be either 1, 2, or 3:
+
+            1 = major categories
+            2 = minor categories
+            3 = sub categories
+
+
+        Args:
+            product_category_type (int): type of product category to search for
+            product_category_id (int): the id of the product category
+
+        Returns:
+            list: the results of the search query
+        """
+        results = DB.searchProductsByCategory(self.location_id, self.starts_on, self.ends_on, product_category_type, product_category_id)
+
+        return results
 
 
 
