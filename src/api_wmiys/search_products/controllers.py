@@ -10,10 +10,13 @@ import api_wmiys.common.Security as Security
 from api_wmiys.common.Security import requestGlobals
 from api_wmiys.DB.DB import DB
 from api_wmiys.search_products.ProductSearchRequest import ProductSearchRequest
+from api_wmiys.common.Sorting import SortingSearchProducts
 from functools import wraps, update_wrapper
 
 searchProducts = Blueprint('searchProducts', __name__)
 m_requestParms = ProductSearchRequest()
+m_sorting = SortingSearchProducts(SortingSearchProducts.ACCEPTABLE_FIELDS, 'name')
+
 
 def init_query(f):
     """Checks to make sure all the url query parameters are set.
@@ -32,6 +35,20 @@ def init_query(f):
 
         if not m_requestParms.areRequiredPropertiesSet():
             flask.abort(400)    # not all of the properties were specified in the url
+
+        return f(*args, **kwargs)
+
+    return wrap
+
+def init_sorting(f):
+    """Setup the sorting module object fields
+    """
+    @wraps(f)
+    def wrap(*args, **kwargs):
+
+        if request.args.get('sort'):
+            global m_sorting
+            m_sorting.parse_sort_query(request.args.get('sort'))
 
         return f(*args, **kwargs)
 
