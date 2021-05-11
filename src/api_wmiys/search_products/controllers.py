@@ -70,7 +70,7 @@ def searchAll():
 @Security.login_required
 @init_sorting
 def searchProductCategoriesMajor(product_categories_major_id):
-    searchResult = m_requestParms.searchCategoriesMinor(product_categories_major_id, m_sorting)
+    searchResult = m_requestParms.searchCategoriesMajor(product_categories_major_id, m_sorting)
     return jsonify(searchResult)
 
 

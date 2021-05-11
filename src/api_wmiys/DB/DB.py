@@ -647,7 +647,7 @@ class DB:
         mycursor = DB.mydb.cursor(named_tuple=True)
  
         sql = DB.getSearchProductSqlStmtPrefix_() + """
-        AND p.{} = %s
+        AND {} = %s
         ORDER BY {} {}
         """
         
