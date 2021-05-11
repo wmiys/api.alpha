@@ -58,7 +58,7 @@ class ProductSearchRequest:
         Returns:
             list: matching products
         """
-        return DB.searchProducts2(self.location_id, self.starts_on, self.ends_on, sorting)
+        return DB.searchProductsAll(self.location_id, self.starts_on, self.ends_on, sorting)
 
     def searchCategoriesMajor(self, product_categories_major_id: int, oSorting: Sorting):
         """Search for a major product category
@@ -119,7 +119,7 @@ class ProductSearchRequest:
         Returns:
             list: the results of the search query
         """
-        results = DB.searchProductsByCategory2(self.location_id, self.starts_on, self.ends_on, product_category_type, product_category_id, oSorting)
+        results = DB.searchProductsByCategory(self.location_id, self.starts_on, self.ends_on, product_category_type, product_category_id, oSorting)
 
         return results
 
