@@ -56,33 +56,38 @@ def init_sorting(f):
 
 
 @searchProducts.route('', methods=['GET'])
-@init_query
 @Security.login_required
+@init_query
+@init_sorting
 def searchAll():
-    searchResult = m_requestParms.searchAll()
+    # searchResult = m_requestParms.searchAll()
+    searchResult = m_requestParms.searchAll(m_sorting)
     return jsonify(searchResult)
 
 
 @searchProducts.route('categories/major/<int:product_categories_major_id>', methods=['GET'])
 @init_query
 @Security.login_required
+@init_sorting
 def searchProductCategoriesMajor(product_categories_major_id):
-    searchResult = m_requestParms.searchCategoriesMinor(product_categories_major_id)
+    searchResult = m_requestParms.searchCategoriesMinor(product_categories_major_id, m_sorting)
     return jsonify(searchResult)
 
 
 @searchProducts.route('categories/minor/<int:product_categories_minor_id>', methods=['GET'])
-@init_query
 @Security.login_required
+@init_query
+@init_sorting
 def searchProductCategoriesMinor(product_categories_minor_id):
-    searchResult = m_requestParms.searchCategoriesMinor(product_categories_minor_id)
+    searchResult = m_requestParms.searchCategoriesMinor(product_categories_minor_id, m_sorting)
     return jsonify(searchResult)
 
 @searchProducts.route('categories/sub/<int:product_categories_sub_id>', methods=['GET'])
-@init_query
 @Security.login_required
+@init_query
+@init_sorting
 def searchProductCategoriesSub(product_categories_sub_id):
-    searchResult = m_requestParms.searchCategoriesSub(product_categories_sub_id)
+    searchResult = m_requestParms.searchCategoriesSub(product_categories_sub_id, m_sorting)
 
     return jsonify(searchResult)
 
