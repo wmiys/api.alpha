@@ -5,6 +5,7 @@
 #************************************************************************************
 
 from api_wmiys.common.Utilities import Utilities
+from api_wmiys.common.Sorting import Sorting
 # import api_wmiys.users.User
 import mysql.connector
 from typing import Type
@@ -596,52 +597,111 @@ class DB:
         
         return mycursor.lastrowid
 
+    @staticmethod
+    def searchProductsAll(location_id, starts_on, ends_on, oSorting: Sorting):
+        """Search all of the products
+        
+        ---
+        Args:
+
+        - location_id (int): dropoff location id
+        - starts_on (date): when the request starts
+        - ends_on (date): when the request ends
+        - oSorting (Sorting): the sorting type to use
+
+        Returns:
+            list: product search result
+        """        
+
+        DB.check_connection()
+        mycursor = DB.mydb.cursor(named_tuple=True)
+
+        sql =  DB.getSearchProductSqlStmtPrefix_() + """
+        ORDER BY {} {}
+        """
+        sql = sql.format(oSorting.field, oSorting.type)
+
+        parms = (location_id, starts_on, ends_on)
+        mycursor.execute(sql, parms)
+        searchResults = mycursor.fetchall()
+
+        return searchResults
 
     @staticmethod
-    def searchProductsAll(location_id, starts_on, ends_on):
+    def searchProductsByCategory(location_id, starts_on, ends_on, product_category_type, product_category_id, oSorting: Sorting):
         """Calls the Search_Products stored procedure in the database
 
+
         Args:
-            location_id (int): dropoff location id
-            starts_on (date): when the request starts
-            ends_on (date): when the request ends
+        - location_id (int): dropoff location id
+        - starts_on (date): when the request starts
+        - ends_on (date): when the request ends
+        - product_category_type (int): the type of product category (1, 2, or 3) - major, minor, or sub 
+        - product_categories_sub_id (int): id of the product category that the user wants to search for
+        - oSorting (Sorting): the sorting type to use
 
         Returns:
             list: product search result
         """
         DB.check_connection()
         mycursor = DB.mydb.cursor(named_tuple=True)
+ 
+        sql = DB.getSearchProductSqlStmtPrefix_() + """
+        AND {} = %s
+        ORDER BY {} {}
+        """
+        
+        categoryTableName = DB.getSearchProductCategoryTableName_(product_category_type)
+        sql = sql.format(categoryTableName, oSorting.field, oSorting.type)
 
-        parms = [location_id, starts_on, ends_on]
-        result_args = mycursor.callproc('Search_Products', parms)
-        result = next(mycursor.stored_results())
+        parms = (location_id, starts_on, ends_on, product_category_id)
+        mycursor.execute(sql, parms)
+        searchResults = mycursor.fetchall()
 
-        return result.fetchall()
-
-
+        return searchResults
 
     @staticmethod
-    def searchProductsByCategory(location_id, starts_on, ends_on, product_category_type, product_category_id):
-        """Calls the Search_Products stored procedure in the database
-
-        Args:
-            location_id (int): dropoff location id
-            starts_on (date): when the request starts
-            ends_on (date): when the request ends
-            product_category_type (int): the type of product category (1, 2, or 3) - major, minor, or sub 
-            product_categories_sub_id (int): id of the product category that the user wants to search for
+    def getSearchProductSqlStmtPrefix_():
+        """Generates the Search Products sql statement prefix
 
         Returns:
-            list: product search result
+            str: the generated prefix
+        """        
+
+        sqlPrefix = """
+        SELECT * FROM View_Search_Products p
+        WHERE SEARCH_PRODUCTS_FILTER(p.id, %s, %s, %s) = TRUE 
         """
-        DB.check_connection()
-        mycursor = DB.mydb.cursor(named_tuple=True)
 
-        parms = [location_id, starts_on, ends_on, product_category_type, product_category_id]
-        result_args = mycursor.callproc('Search_Products_Category', parms)
-        result = next(mycursor.stored_results())
+        return sqlPrefix
 
-        return result.fetchall()
+    @staticmethod
+    def getSearchProductCategoryTableName_(a_iProductCategoryType: int) -> str:
+        """Get the product category table name based on the input
+
+            1 = major categories
+            2 = minor categories
+            3 = sub categories
+
+        Args:
+            a_iProductCategoryType (int): id of the product category table
+
+        Returns:
+            str: name of the product category table 
+        """
+
+        
+        categoryTableName = ''
+
+        if a_iProductCategoryType == 1:
+            categoryTableName = 'product_categories_major_id'
+        elif a_iProductCategoryType == 2:
+            categoryTableName = 'product_categories_minor_id'
+        else:
+            categoryTableName = 'product_categories_sub_id'
+        
+        return categoryTableName
+
 
         
 

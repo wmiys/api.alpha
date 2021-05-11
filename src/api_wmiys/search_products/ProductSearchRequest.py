@@ -6,6 +6,7 @@
 import datetime
 import typing
 from api_wmiys.DB.DB import DB
+from api_wmiys.common.Sorting import Sorting
 from enum import Enum
 import collections
 
@@ -48,7 +49,7 @@ class ProductSearchRequest:
         else:
             return True
 
-    def searchAll(self):
+    def searchAll(self, sorting: Sorting):
         """Search for a major product category
 
         Args:
@@ -57,10 +58,9 @@ class ProductSearchRequest:
         Returns:
             list: matching products
         """
-        
-        return DB.searchProductsAll(self.location_id, self.starts_on, self.ends_on)
+        return DB.searchProductsAll(self.location_id, self.starts_on, self.ends_on, sorting)
 
-    def searchCategoriesMajor(self, product_categories_major_id: int):
+    def searchCategoriesMajor(self, product_categories_major_id: int, oSorting: Sorting):
         """Search for a major product category
 
         Args:
@@ -70,10 +70,10 @@ class ProductSearchRequest:
             list: matching products
         """
 
-        return self.searchCategoriesBase(1, product_categories_major_id)
+        return self.searchCategoriesBase(1, product_categories_major_id, oSorting)
 
 
-    def searchCategoriesMinor(self, product_categories_minor_id: int):
+    def searchCategoriesMinor(self, product_categories_minor_id: int, oSorting: Sorting):
         """Search for a minor product category
 
         Args:
@@ -83,10 +83,10 @@ class ProductSearchRequest:
             list: matching products
         """
 
-        return self.searchCategoriesBase(2, product_categories_minor_id)
+        return self.searchCategoriesBase(2, product_categories_minor_id, oSorting)
         
 
-    def searchCategoriesSub(self, product_categories_sub_id: int):
+    def searchCategoriesSub(self, product_categories_sub_id: int, oSorting: Sorting):
         """Search for a sub product category
 
         Args:
@@ -96,11 +96,13 @@ class ProductSearchRequest:
             list: matching products
         """
 
-        return self.searchCategoriesBase(3, product_categories_sub_id)
+        return self.searchCategoriesBase(3, product_categories_sub_id, oSorting)
 
 
-    def searchCategoriesBase(self, product_category_type, product_category_id):
+    def searchCategoriesBase(self, product_category_type, product_category_id, oSorting: Sorting):
         """Base function for searchProducts[Major,Minor,Sub] to call
+
+        ---
 
         product_category_type needs to be either 1, 2, or 3:
 
@@ -108,15 +110,17 @@ class ProductSearchRequest:
             2 = minor categories
             3 = sub categories
 
+        ---
 
         Args:
             product_category_type (int): type of product category to search for
             product_category_id (int): the id of the product category
-
+        ---
         Returns:
             list: the results of the search query
         """
-        results = DB.searchProductsByCategory(self.location_id, self.starts_on, self.ends_on, product_category_type, product_category_id)
+
+        results = DB.searchProductsByCategory(self.location_id, self.starts_on, self.ends_on, product_category_type, product_category_id, oSorting)
 
         return results
 

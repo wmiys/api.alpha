@@ -9,7 +9,6 @@ CREATE VIEW `View_Search_Products` AS
         `minor`.`name` AS `product_categories_minor_name`,
         `minor`.`product_categories_major_id` AS `product_categories_major_id`,
         `major`.`name` AS `product_categories_major_name`,
-        `p`.`dropoff_distance` AS `dropoff_distance`,
         `p`.`price_full` AS `price_full`,
         `p`.`price_half` AS `price_half`,
         `p`.`image` AS `image`,
