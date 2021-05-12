@@ -11,11 +11,13 @@ from api_wmiys.common.Security import requestGlobals
 from api_wmiys.DB.DB import DB
 from api_wmiys.search_products.ProductSearchRequest import ProductSearchRequest
 from api_wmiys.common.Sorting import SortingSearchProducts
+from api_wmiys.common.Pagination import Pagination
 from functools import wraps, update_wrapper
 
 searchProducts = Blueprint('searchProducts', __name__)
 m_requestParms = ProductSearchRequest()
 m_sorting = SortingSearchProducts(SortingSearchProducts.ACCEPTABLE_FIELDS, 'name')
+m_pagination = Pagination()
 
 
 def init_query(f):
@@ -57,15 +59,40 @@ def init_sorting(f):
 
     return wrap
 
+def init_pagination(f):
+    """Setup the sorting module object fields
+    """
+    @wraps(f)
+    def wrap(*args, **kwargs):
+        global m_pagination
+
+        if request.args.get('page'):
+            m_pagination.page = request.args.get('page')            
+        else:
+            m_pagination.page = Pagination.DEFAULT_PAGE
+        
+        if request.args.get('per_page'):
+            m_pagination.per_page = request.args.get('per_page')
+        else:
+            m_pagination.per_page = Pagination.DEFAULT_PER_PAGE
+        
+        global m_requestParms
+        m_requestParms.pagination = m_pagination
+
+        return f(*args, **kwargs)
+
+    return wrap
+
 
 @searchProducts.route('', methods=['GET'])
 @Security.login_required
 @init_query
 @init_sorting
+@init_pagination
 def searchAll():
-    # searchResult = m_requestParms.searchAll()
-    searchResult = m_requestParms.searchAll()
-    return jsonify(searchResult)
+    searchResults, totalRows = m_requestParms.searchAll()
+    
+    return jsonify(totalRows=totalRows, pagination=m_pagination.to_dict(), searchResults=searchResults)
 
 
 @searchProducts.route('categories/major/<int:product_categories_major_id>', methods=['GET'])
