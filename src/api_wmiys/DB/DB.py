@@ -5,7 +5,7 @@
 #************************************************************************************
 
 from api_wmiys.common.Utilities import Utilities
-from api_wmiys.common.Sorting import Sorting
+from api_wmiys.common.Sorting import SortingSearchProducts
 # import api_wmiys.users.User
 import mysql.connector
 from typing import Type
@@ -598,7 +598,7 @@ class DB:
         return mycursor.lastrowid
 
     @staticmethod
-    def searchProductsAll(location_id, starts_on, ends_on, oSorting: Sorting):
+    def searchProductsAll(location_id, starts_on, ends_on, oSorting: SortingSearchProducts):
         """Search all of the products
         
         ---
@@ -628,10 +628,11 @@ class DB:
         return searchResults
 
     @staticmethod
-    def searchProductsByCategory(location_id, starts_on, ends_on, product_category_type, product_category_id, oSorting: Sorting):
-        """Calls the Search_Products stored procedure in the database
-
-
+    def searchProductsByCategory(location_id, starts_on, ends_on, product_category_type, product_category_id, oSorting: SortingSearchProducts):
+        """Calls the Search_Products stored procedure in the database.
+        
+        ---
+        
         Args:
         - location_id (int): dropoff location id
         - starts_on (date): when the request starts
@@ -640,6 +641,7 @@ class DB:
         - product_categories_sub_id (int): id of the product category that the user wants to search for
         - oSorting (Sorting): the sorting type to use
 
+        ---
         Returns:
             list: product search result
         """
@@ -701,10 +703,5 @@ class DB:
             categoryTableName = 'product_categories_sub_id'
         
         return categoryTableName
-
-
-        
-
-
 
 

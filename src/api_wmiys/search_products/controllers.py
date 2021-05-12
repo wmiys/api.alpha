@@ -45,10 +45,13 @@ def init_sorting(f):
     """
     @wraps(f)
     def wrap(*args, **kwargs):
+        global m_sorting
 
         if request.args.get('sort'):
-            global m_sorting
             m_sorting.parse_sort_query(request.args.get('sort'))
+        
+        global m_requestParms
+        m_requestParms.sorting = m_sorting
 
         return f(*args, **kwargs)
 
@@ -61,7 +64,7 @@ def init_sorting(f):
 @init_sorting
 def searchAll():
     # searchResult = m_requestParms.searchAll()
-    searchResult = m_requestParms.searchAll(m_sorting)
+    searchResult = m_requestParms.searchAll()
     return jsonify(searchResult)
 
 
@@ -70,7 +73,7 @@ def searchAll():
 @Security.login_required
 @init_sorting
 def searchProductCategoriesMajor(product_categories_major_id):
-    searchResult = m_requestParms.searchCategoriesMajor(product_categories_major_id, m_sorting)
+    searchResult = m_requestParms.searchCategoriesMajor(product_categories_major_id)
     return jsonify(searchResult)
 
 
@@ -79,7 +82,7 @@ def searchProductCategoriesMajor(product_categories_major_id):
 @init_query
 @init_sorting
 def searchProductCategoriesMinor(product_categories_minor_id):
-    searchResult = m_requestParms.searchCategoriesMinor(product_categories_minor_id, m_sorting)
+    searchResult = m_requestParms.searchCategoriesMinor(product_categories_minor_id)
     return jsonify(searchResult)
 
 @searchProducts.route('categories/sub/<int:product_categories_sub_id>', methods=['GET'])
@@ -87,7 +90,7 @@ def searchProductCategoriesMinor(product_categories_minor_id):
 @init_query
 @init_sorting
 def searchProductCategoriesSub(product_categories_sub_id):
-    searchResult = m_requestParms.searchCategoriesSub(product_categories_sub_id, m_sorting)
+    searchResult = m_requestParms.searchCategoriesSub(product_categories_sub_id)
 
     return jsonify(searchResult)
 
