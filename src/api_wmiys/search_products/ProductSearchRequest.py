@@ -119,7 +119,7 @@ class ProductSearchRequest:
             list: the results of the search query
         """
 
-        results = DB.searchProductsByCategory(self.location_id, self.starts_on, self.ends_on, product_category_type, product_category_id, self.sorting)
+        results = DB.searchProductsByCategory(self.location_id, self.starts_on, self.ends_on, product_category_type, product_category_id, self.sorting, self.pagination)
 
         return results
 

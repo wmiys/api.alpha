@@ -623,11 +623,6 @@ class DB:
         stmt =  DB.getSearchProductSqlStmtPrefix_() + "ORDER BY {} {}".format(oSorting.field, oSorting.type)
         stmtWithLimit = oPagination.getSqlStmtLimitOffset(stmt)
         stmtTotalCount = oPagination.getSqlStmtTotalCount(stmt)
-
-
-        print(stmt)
-        print(stmtWithLimit)
-        print(stmtTotalCount)
         
         parms = (location_id, starts_on, ends_on)
 
@@ -644,7 +639,7 @@ class DB:
 
 
     @staticmethod
-    def searchProductsByCategory(location_id, starts_on, ends_on, product_category_type, product_category_id, oSorting: SortingSearchProducts):
+    def searchProductsByCategory(location_id, starts_on, ends_on, product_category_type, product_category_id, oSorting: SortingSearchProducts, oPagination: Pagination):
         """Calls the Search_Products stored procedure in the database.
         
         ---
@@ -664,19 +659,23 @@ class DB:
         DB.check_connection()
         mycursor = DB.mydb.cursor(named_tuple=True)
  
-        sql = DB.getSearchProductSqlStmtPrefix_() + """
-        AND {} = %s
-        ORDER BY {} {}
-        """
-        
+
         categoryTableName = DB.getSearchProductCategoryTableName_(product_category_type)
-        sql = sql.format(categoryTableName, oSorting.field, oSorting.type)
+        stmt = DB.getSearchProductSqlStmtPrefix_() + "AND {} = %s ORDER BY {} {}"
+        stmt = stmt.format(categoryTableName, oSorting.field, oSorting.type)
+
+        stmtWithLimit = oPagination.getSqlStmtLimitOffset(stmt)
+        stmtTotalCount = oPagination.getSqlStmtTotalCount(stmt)
 
         parms = (location_id, starts_on, ends_on, product_category_id)
-        mycursor.execute(sql, parms)
+        
+        mycursor.execute(stmtWithLimit, parms)
         searchResults = mycursor.fetchall()
 
-        return searchResults
+        mycursor.execute(stmtTotalCount, parms)
+        countResult = mycursor.fetchone()
+
+        return (searchResults, countResult.count)
 
     @staticmethod
     def getSearchProductSqlStmtPrefix_():

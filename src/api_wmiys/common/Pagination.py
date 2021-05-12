@@ -1,5 +1,5 @@
 
-
+import math
 
 
 class Pagination:
@@ -17,9 +17,9 @@ class Pagination:
     MAX_PER_PAGE = 100 
     
 
-    def __init__(self, a_iPage: int=DEFAULT_PAGE, a_iPerPage: int=DEFAULT_PER_PAGE):
-        self._page = a_iPage
-        self._per_page = a_iPerPage
+    def __init__(self, a_iPage: int=None, a_iPerPage: int=None):
+        self._page = a_iPage or self.DEFAULT_PAGE
+        self._per_page = a_iPerPage or self.DEFAULT_PER_PAGE
     
     @property
     def page(self): 
@@ -67,6 +67,11 @@ class Pagination:
         stmt = "{} LIMIT {} OFFSET {}".format(originalSqlStmt, self.per_page, self.offset)
         return stmt
 
-        
+    def getPaginationResponse(self, totalRecords: int):
+        totalPages = self.totalPages(totalRecords)
+        return dict(total_records=totalRecords, total_pages=totalPages)
 
+    def totalPages(self, totalRecords: int):
+        result = math.ceil(totalRecords / self.per_page)
+        return result
 

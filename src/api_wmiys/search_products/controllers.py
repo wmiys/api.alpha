@@ -15,10 +15,9 @@ from api_wmiys.common.Pagination import Pagination
 from functools import wraps, update_wrapper
 
 searchProducts = Blueprint('searchProducts', __name__)
-m_requestParms = ProductSearchRequest()
 m_sorting = SortingSearchProducts(SortingSearchProducts.ACCEPTABLE_FIELDS, 'name')
 m_pagination = Pagination()
-
+m_requestParms = ProductSearchRequest(oSorting=m_sorting, oPagination=m_pagination)
 
 def init_query(f):
     """Checks to make sure all the url query parameters are set.
@@ -64,24 +63,21 @@ def init_pagination(f):
     """
     @wraps(f)
     def wrap(*args, **kwargs):
-        global m_pagination
+        global m_pagination        
+        m_pagination.page = request.args.get('page') or Pagination.DEFAULT_PAGE
+        m_pagination.per_page = request.args.get('per_page') or Pagination.DEFAULT_PER_PAGE
 
-        if request.args.get('page'):
-            m_pagination.page = request.args.get('page')            
-        else:
-            m_pagination.page = Pagination.DEFAULT_PAGE
-        
-        if request.args.get('per_page'):
-            m_pagination.per_page = request.args.get('per_page')
-        else:
-            m_pagination.per_page = Pagination.DEFAULT_PER_PAGE
-        
         global m_requestParms
         m_requestParms.pagination = m_pagination
 
         return f(*args, **kwargs)
 
     return wrap
+
+
+
+def paginationReturnTemplate(searchResults, totalRows):
+    return jsonify(results=searchResults, pagination=m_requestParms.pagination.getPaginationResponse(totalRows))
 
 
 @searchProducts.route('', methods=['GET'])
@@ -91,34 +87,35 @@ def init_pagination(f):
 @init_pagination
 def searchAll():
     searchResults, totalRows = m_requestParms.searchAll()
-    
-    return jsonify(totalRows=totalRows, pagination=m_pagination.to_dict(), searchResults=searchResults)
+    return paginationReturnTemplate(searchResults, totalRows)
 
 
 @searchProducts.route('categories/major/<int:product_categories_major_id>', methods=['GET'])
 @init_query
 @Security.login_required
 @init_sorting
+@init_pagination
 def searchProductCategoriesMajor(product_categories_major_id):
-    searchResult = m_requestParms.searchCategoriesMajor(product_categories_major_id)
-    return jsonify(searchResult)
+    searchResults, totalRows = m_requestParms.searchCategoriesMajor(product_categories_major_id)
+    return paginationReturnTemplate(searchResults, totalRows)
 
 
 @searchProducts.route('categories/minor/<int:product_categories_minor_id>', methods=['GET'])
 @Security.login_required
 @init_query
 @init_sorting
+@init_pagination
 def searchProductCategoriesMinor(product_categories_minor_id):
-    searchResult = m_requestParms.searchCategoriesMinor(product_categories_minor_id)
-    return jsonify(searchResult)
+    searchResults, totalRows = m_requestParms.searchCategoriesMinor(product_categories_minor_id)
+    return paginationReturnTemplate(searchResults, totalRows)
 
 @searchProducts.route('categories/sub/<int:product_categories_sub_id>', methods=['GET'])
 @Security.login_required
 @init_query
 @init_sorting
+@init_pagination
 def searchProductCategoriesSub(product_categories_sub_id):
-    searchResult = m_requestParms.searchCategoriesSub(product_categories_sub_id)
-
-    return jsonify(searchResult)
+    searchResults, totalRows = m_requestParms.searchCategoriesSub(product_categories_sub_id)
+    return paginationReturnTemplate(searchResults, totalRows)
 
 
