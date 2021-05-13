@@ -5,7 +5,8 @@
 #************************************************************************************
 
 from api_wmiys.common.Utilities import Utilities
-from api_wmiys.common.Sorting import Sorting
+from api_wmiys.common.Sorting import SortingSearchProducts
+from api_wmiys.common.Pagination import Pagination
 # import api_wmiys.users.User
 import mysql.connector
 from typing import Type
@@ -598,7 +599,7 @@ class DB:
         return mycursor.lastrowid
 
     @staticmethod
-    def searchProductsAll(location_id, starts_on, ends_on, oSorting: Sorting):
+    def searchProductsAll(location_id, starts_on, ends_on, oSorting: SortingSearchProducts, oPagination: Pagination):
         """Search all of the products
         
         ---
@@ -608,30 +609,41 @@ class DB:
         - starts_on (date): when the request starts
         - ends_on (date): when the request ends
         - oSorting (Sorting): the sorting type to use
+        - oPagination (Pagination): a pagination object
 
         Returns:
             list: product search result
         """        
 
+        # connect to the database
         DB.check_connection()
         mycursor = DB.mydb.cursor(named_tuple=True)
 
-        sql =  DB.getSearchProductSqlStmtPrefix_() + """
-        ORDER BY {} {}
-        """
-        sql = sql.format(oSorting.field, oSorting.type)
-
+        # build the 
+        stmt =  DB.getSearchProductSqlStmtPrefix_() + "ORDER BY {} {}".format(oSorting.field, oSorting.type)
+        stmtWithLimit = oPagination.getSqlStmtLimitOffset(stmt)
+        stmtTotalCount = oPagination.getSqlStmtTotalCount(stmt)
+        
         parms = (location_id, starts_on, ends_on)
-        mycursor.execute(sql, parms)
+
+        mycursor.execute(stmtWithLimit, parms)
         searchResults = mycursor.fetchall()
 
-        return searchResults
+        mycursor.execute(stmtTotalCount, parms)
+        countResult = mycursor.fetchone()
+
+        return (searchResults, countResult.count)
+
+        # return searchResults
+
+
 
     @staticmethod
-    def searchProductsByCategory(location_id, starts_on, ends_on, product_category_type, product_category_id, oSorting: Sorting):
-        """Calls the Search_Products stored procedure in the database
-
-
+    def searchProductsByCategory(location_id, starts_on, ends_on, product_category_type, product_category_id, oSorting: SortingSearchProducts, oPagination: Pagination):
+        """Calls the Search_Products stored procedure in the database.
+        
+        ---
+        
         Args:
         - location_id (int): dropoff location id
         - starts_on (date): when the request starts
@@ -640,25 +652,30 @@ class DB:
         - product_categories_sub_id (int): id of the product category that the user wants to search for
         - oSorting (Sorting): the sorting type to use
 
+        ---
         Returns:
             list: product search result
         """
         DB.check_connection()
         mycursor = DB.mydb.cursor(named_tuple=True)
  
-        sql = DB.getSearchProductSqlStmtPrefix_() + """
-        AND {} = %s
-        ORDER BY {} {}
-        """
-        
+
         categoryTableName = DB.getSearchProductCategoryTableName_(product_category_type)
-        sql = sql.format(categoryTableName, oSorting.field, oSorting.type)
+        stmt = DB.getSearchProductSqlStmtPrefix_() + "AND {} = %s ORDER BY {} {}"
+        stmt = stmt.format(categoryTableName, oSorting.field, oSorting.type)
+
+        stmtWithLimit = oPagination.getSqlStmtLimitOffset(stmt)
+        stmtTotalCount = oPagination.getSqlStmtTotalCount(stmt)
 
         parms = (location_id, starts_on, ends_on, product_category_id)
-        mycursor.execute(sql, parms)
+        
+        mycursor.execute(stmtWithLimit, parms)
         searchResults = mycursor.fetchall()
 
-        return searchResults
+        mycursor.execute(stmtTotalCount, parms)
+        countResult = mycursor.fetchone()
+
+        return (searchResults, countResult.count)
 
     @staticmethod
     def getSearchProductSqlStmtPrefix_():
@@ -701,10 +718,5 @@ class DB:
             categoryTableName = 'product_categories_sub_id'
         
         return categoryTableName
-
-
-        
-
-
 
 

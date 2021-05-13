@@ -6,9 +6,9 @@
 import datetime
 import typing
 from api_wmiys.DB.DB import DB
-from api_wmiys.common.Sorting import Sorting
-from enum import Enum
-import collections
+from api_wmiys.common.Sorting import SortingSearchProducts
+from api_wmiys.common.Pagination import Pagination
+# import collections
 
 
 
@@ -16,7 +16,7 @@ class ProductSearchRequest:
     """The product search request is responsible for handling all of the product search requests.
     """
 
-    def __init__(self, location_id=None, starts_on=None, ends_on=None):
+    def __init__(self, location_id=None, starts_on=None, ends_on=None, oSorting: SortingSearchProducts=None, oPagination: Pagination=None):
         """Constructor for ProductSearchRequest
 
         Args:
@@ -27,6 +27,8 @@ class ProductSearchRequest:
         self.location_id = location_id
         self.starts_on = starts_on
         self.ends_on = ends_on
+        self.sorting = oSorting
+        self.pagination = oPagination
     
     def areRequiredPropertiesSet(self) -> bool:
         """Checks if the required object properties are set 
@@ -40,16 +42,14 @@ class ProductSearchRequest:
         Returns:
             bool: true if location_id, starts_on, and ends_on are set. Otherwise returns false.
         """ 
-        if not self.location_id:
-            return False
-        elif not self.starts_on:
-            return False
-        elif not self.ends_on:
+
+        if None in [self.location_id, self.starts_on, self.ends_on]:
             return False
         else:
             return True
 
-    def searchAll(self, sorting: Sorting):
+
+    def searchAll(self):
         """Search for a major product category
 
         Args:
@@ -58,9 +58,9 @@ class ProductSearchRequest:
         Returns:
             list: matching products
         """
-        return DB.searchProductsAll(self.location_id, self.starts_on, self.ends_on, sorting)
+        return DB.searchProductsAll(self.location_id, self.starts_on, self.ends_on, self.sorting, self.pagination)
 
-    def searchCategoriesMajor(self, product_categories_major_id: int, oSorting: Sorting):
+    def searchCategoriesMajor(self, product_categories_major_id: int):
         """Search for a major product category
 
         Args:
@@ -70,10 +70,9 @@ class ProductSearchRequest:
             list: matching products
         """
 
-        return self.searchCategoriesBase(1, product_categories_major_id, oSorting)
+        return self.searchCategoriesBase(1, product_categories_major_id)
 
-
-    def searchCategoriesMinor(self, product_categories_minor_id: int, oSorting: Sorting):
+    def searchCategoriesMinor(self, product_categories_minor_id: int):
         """Search for a minor product category
 
         Args:
@@ -83,10 +82,10 @@ class ProductSearchRequest:
             list: matching products
         """
 
-        return self.searchCategoriesBase(2, product_categories_minor_id, oSorting)
+        return self.searchCategoriesBase(2, product_categories_minor_id)
         
 
-    def searchCategoriesSub(self, product_categories_sub_id: int, oSorting: Sorting):
+    def searchCategoriesSub(self, product_categories_sub_id: int):
         """Search for a sub product category
 
         Args:
@@ -96,10 +95,10 @@ class ProductSearchRequest:
             list: matching products
         """
 
-        return self.searchCategoriesBase(3, product_categories_sub_id, oSorting)
+        return self.searchCategoriesBase(3, product_categories_sub_id)
 
 
-    def searchCategoriesBase(self, product_category_type, product_category_id, oSorting: Sorting):
+    def searchCategoriesBase(self, product_category_type, product_category_id):
         """Base function for searchProducts[Major,Minor,Sub] to call
 
         ---
@@ -120,7 +119,7 @@ class ProductSearchRequest:
             list: the results of the search query
         """
 
-        results = DB.searchProductsByCategory(self.location_id, self.starts_on, self.ends_on, product_category_type, product_category_id, oSorting)
+        results = DB.searchProductsByCategory(self.location_id, self.starts_on, self.ends_on, product_category_type, product_category_id, self.sorting, self.pagination)
 
         return results
 
