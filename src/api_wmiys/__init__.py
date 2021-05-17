@@ -8,6 +8,7 @@ from api_wmiys.login.controllers import login
 from api_wmiys.search.controllers import search
 from api_wmiys.product_availability.controllers import productAvailabilityRoute
 from api_wmiys.search_products.controllers import searchProducts
+from api_wmiys.product_images.controllers import productImages
 
 
 def initApp(flaskApp):
@@ -35,6 +36,7 @@ def registerBlueprints(flaskApp):
     flaskApp.register_blueprint(login, url_prefix='/login')
     flaskApp.register_blueprint(search, url_prefix='/search')
     flaskApp.register_blueprint(searchProducts, url_prefix='/search/products')
+    flaskApp.register_blueprint(productImages, url_prefix='/users/<int:user_id>/products/<int:product_id>/images')
 
 
 app = Flask(__name__)
