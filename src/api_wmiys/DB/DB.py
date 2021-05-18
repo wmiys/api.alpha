@@ -720,3 +720,67 @@ class DB:
         return categoryTableName
 
 
+    @staticmethod
+    def getProductImages(product_id: int):
+        DB.check_connection()
+        mycursor = DB.mydb.cursor(named_tuple=True)
+
+        sql = """
+        SELECT   *
+        FROM     Product_Images pi
+        WHERE    pi.product_id = %s
+        ORDER BY pi.created_on DESC
+        """
+
+        parms = (product_id,)
+        mycursor.execute(sql, parms)
+        images = mycursor.fetchall()
+
+        return images
+
+    @staticmethod
+    def getProductImage(product_image_id: int):
+        DB.check_connection()
+        mycursor = DB.mydb.cursor(named_tuple=True)
+
+        sql = """
+        SELECT   *
+        FROM     Product_Images pi
+        WHERE    pi.id = %s
+        LIMIT 1
+        """
+
+        parms = (product_image_id,)
+        mycursor.execute(sql, parms)
+        image = mycursor.fetchone()
+
+        return image
+
+        
+
+    @staticmethod 
+    def insertProductImage(product_id, file_name):
+        """Insert a new product image into the database
+
+        Args:
+            product_id (int): parent id of the product the image belongs to
+            file_name (str): file name of the image
+
+        Returns:
+            int: the id of the product image
+        """        
+        DB.check_connection()
+        mycursor = DB.mydb.cursor(prepared=True)
+
+        sql = """
+        INSERT INTO Product_Images 
+        (product_id, file_name) VALUES
+        (%s, %s)
+        """
+
+        parms = (product_id, file_name)
+        mycursor.execute(sql, parms)
+        DB.mydb.commit()
+        
+        return mycursor.lastrowid
+

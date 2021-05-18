@@ -12,7 +12,7 @@ import os
 
 class Product:
 
-    LOCAL_SERVER_COVER_PHOTO_DIRECTORY = 'product-images'
+    LOCAL_SERVER_COVER_PHOTO_DIRECTORY = 'product-images/covers'
     
     #------------------------------------------------------
     # Constructor
