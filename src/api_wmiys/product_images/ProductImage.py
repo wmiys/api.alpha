@@ -17,6 +17,11 @@ class ProductImage:
 
 
     def insert(self):
+        """Insert the product image into the database
+
+        Returns:
+            bool: if it was successful or not
+        """
         if None in [self.product_id, self.file_name]:
             return False
         
@@ -25,6 +30,11 @@ class ProductImage:
 
     
     def load(self):
+        """Loads the object properties values from the database
+
+        Returns:
+            bool: whether or not the load was successful.
+        """
         if not self.id:
             return False
 
@@ -40,13 +50,7 @@ class ProductImage:
 
         return True
 
-    #------------------------------------------------------
-    # takes an raw image file, saves it locally, and sets the image field in the database to the image file name as saved on the server
-    #
-    # parms:
-    #   newImageFile - the raw image file
-    #   relative_image_directory_path - the folder name to save the image to
-    #------------------------------------------------------
+
     def setImagePropertyFromImageFile(self, newImageFile: object, relative_image_directory_path: str):
         """Takes a raw image file, saves it locally, and sets the image field in the database to the image file name as saved on the server.
 
@@ -67,11 +71,21 @@ class ProductImage:
         self.file_name = productImage.saveImageFile(relative_image_directory_path, newImageFileName)
 
     def toDict(self):
+        """Returns the object as a dict
+        """
         return dict(id=self.id, product_id=self.product_id, file_name=self.file_name, created_on=self.created_on)
 
 
     @staticmethod
     def getAll(product_id: int):
+        """Retrieve all of the product images for a product
+
+        Args:
+            product_id (int): product id
+
+        Returns:
+            list: all of the product images that belong to a product
+        """
         images = DB.getProductImages(product_id)
         return images
 
