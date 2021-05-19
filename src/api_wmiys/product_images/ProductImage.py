@@ -9,6 +9,7 @@ class ProductImage:
     # LOCAL_SERVER_IMAGE_DIRECTORY = 'product-images/images'
 
     LOCAL_SERVER_IMAGE_DIRECTORY = "http://10.0.0.82/files/api.wmiys/src/product-images/images"
+    LOCAL_SERVER_IMAGE_DIRECTORY_RELATIVE = 'product-images/images'
 
 
     def __init__(self, newID=None, product_id=None, file_name=None, created_on=None):

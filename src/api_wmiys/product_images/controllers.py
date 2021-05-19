@@ -35,7 +35,7 @@ def searchAll(user_id: int, product_id: int):
 
     
     productImage = ProductImage(product_id=product_id)
-    productImage.setImagePropertyFromImageFile(request.files.get('image'), ProductImage.LOCAL_SERVER_IMAGE_DIRECTORY)
+    productImage.setImagePropertyFromImageFile(request.files.get('image'), ProductImage.LOCAL_SERVER_IMAGE_DIRECTORY_RELATIVE)
     productImage.insert()
 
     productImage.load()
