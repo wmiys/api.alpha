@@ -26,7 +26,8 @@ def userProductsGet(user_id):
     if requestGlobals.client_id != user_id:
         flask.abort(403)
 
-    userProducts = DB.getUserProducts(user_id)
+    # userProducts = DB.getUserProducts(user_id)
+    userProducts = Product.getAll(user_id)
 
     return jsonify(userProducts)
 

@@ -90,6 +90,7 @@ class ProductImage:
             list: all of the product images that belong to a product
         """
         images = DB.getProductImages(product_id)
+        
 
         # prepend the absolute url for each image file_name
         result = []
