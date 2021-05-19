@@ -30,16 +30,24 @@ def searchAll(user_id: int, product_id: int):
     
     # if we get to this point, we are creating a new product image record
 
-    if not request.files.get('image'):
+    if not request.files.get('images'):
         return ('No image file given.', 400)
 
-    
-    productImage = ProductImage(product_id=product_id)
-    productImage.setImagePropertyFromImageFile(request.files.get('image'), ProductImage.LOCAL_SERVER_IMAGE_DIRECTORY_RELATIVE)
-    productImage.insert()
 
-    productImage.load()
-    return jsonify(productImage.toDict())
+    imgs = request.files
+
+    print(imgs)
+
+    
+    return jsonify('assshit')
+
+    
+    # productImage = ProductImage(product_id=product_id)
+    # productImage.setImagePropertyFromImageFile(request.files.get('image'), ProductImage.LOCAL_SERVER_IMAGE_DIRECTORY_RELATIVE)
+    # productImage.insert()
+
+    # productImage.load()
+    # return jsonify(productImage.toDict())
     
 
 
