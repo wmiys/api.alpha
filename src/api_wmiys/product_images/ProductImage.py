@@ -6,7 +6,9 @@ import os
 class ProductImage:
 
     
-    LOCAL_SERVER_IMAGE_DIRECTORY = 'product-images/images'
+    # LOCAL_SERVER_IMAGE_DIRECTORY = 'product-images/images'
+
+    LOCAL_SERVER_IMAGE_DIRECTORY = "http://10.0.0.82/files/api.wmiys/src/product-images/images"
 
 
     def __init__(self, newID=None, product_id=None, file_name=None, created_on=None):
@@ -87,7 +89,15 @@ class ProductImage:
             list: all of the product images that belong to a product
         """
         images = DB.getProductImages(product_id)
-        return images
+
+        # prepend the absolute url for each image file_name
+        result = []
+        for img in images:
+            imgDict = img._asdict()
+            imgDict['file_name'] = ProductImage.LOCAL_SERVER_IMAGE_DIRECTORY + '/' + imgDict['file_name']
+            result.append(imgDict)
+
+        return result
 
         
 

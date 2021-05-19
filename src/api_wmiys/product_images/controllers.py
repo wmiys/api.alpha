@@ -25,7 +25,7 @@ def searchAll(user_id: int, product_id: int):
         flask.abort(403)
 
     if request.method == 'GET':
-        # all we need to do is fetch all the product images
+        # all we need to do is fetch all the product images        
         return jsonify(ProductImage.getAll(product_id))
     
     # if we get to this point, we are creating a new product image record
