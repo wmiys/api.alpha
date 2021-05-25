@@ -17,7 +17,7 @@ bpProductImages = Blueprint('bpProductImages', __name__)
 #-----------------------------------------------------
 # ROUTES
 # ----------------------------------------------------
-@bpProductImages.route('', methods=['GET', 'POST'])
+@bpProductImages.route('', methods=['GET', 'POST', 'DELETE'])
 @Security.login_required
 def searchAll(user_id: int, product_id: int):
     # make sure the user is authorized
@@ -27,24 +27,20 @@ def searchAll(user_id: int, product_id: int):
     if request.method == 'GET':
         # all we need to do is fetch all the product images        
         return jsonify(ProductImage.getAll(product_id))
+    elif request.method == 'DELETE':
+        ProductImage.deleteAll(product_id)
+        return ('', 200)
     
     # if we get to this point, we are creating a new product image record
+    imagesData = dict(request.files.to_dict())
 
-    if not request.files.get('images'):
-        return ('No image file given.', 400)
-
-
-    imgs = request.files
-
-    print(imgs)
+    for img in imagesData.values():
+        productImage = ProductImage(product_id=product_id)
+        productImage.setImagePropertyFromImageFile(img, ProductImage.LOCAL_SERVER_IMAGE_DIRECTORY_RELATIVE)
+        productImage.insert()
 
     
-    return jsonify('assshit')
-
-    
-    # productImage = ProductImage(product_id=product_id)
-    # productImage.setImagePropertyFromImageFile(request.files.get('image'), ProductImage.LOCAL_SERVER_IMAGE_DIRECTORY_RELATIVE)
-    # productImage.insert()
+    return jsonify(ProductImage.getAll(product_id))
 
     # productImage.load()
     # return jsonify(productImage.toDict())

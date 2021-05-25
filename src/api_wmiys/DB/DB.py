@@ -729,7 +729,6 @@ class DB:
         SELECT   *
         FROM     Product_Images pi
         WHERE    pi.product_id = %s
-        ORDER BY pi.created_on DESC
         """
 
         parms = (product_id,)
@@ -737,6 +736,23 @@ class DB:
         images = mycursor.fetchall()
 
         return images
+
+    @staticmethod
+    def deleteProductImages(product_id: int):
+        DB.check_connection()
+        mycursor = DB.mydb.cursor(prepared=True)
+
+        sql = """
+        DELETE FROM Product_Images
+        WHERE product_id = %s
+        """
+
+        parms = (product_id,)
+        mycursor.execute(sql, parms)
+        DB.mydb.commit()
+
+        return mycursor.rowcount
+
 
     @staticmethod
     def getProductImage(product_image_id: int):

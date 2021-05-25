@@ -101,5 +101,22 @@ class ProductImage:
 
         return result
 
+    @staticmethod
+    def deleteAll(product_id: int):
+        images = DB.getProductImages(product_id)
+
+        for img in images:
+            os.remove(ProductImage.LOCAL_SERVER_IMAGE_DIRECTORY_RELATIVE + '/' + img.file_name)
+
+        return DB.deleteProductImages(product_id)
+
+        
+
+        
+
+
+
+
+
         
 
