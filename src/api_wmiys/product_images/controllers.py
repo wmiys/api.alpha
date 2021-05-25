@@ -25,8 +25,7 @@ def searchAll(user_id: int, product_id: int):
         flask.abort(403)
 
     if request.method == 'GET':
-        # all we need to do is fetch all the product images        
-        return jsonify(ProductImage.getAll(product_id))
+        return jsonify(ProductImage.getAll(product_id))     # all we need to do is fetch all the product images      
     elif request.method == 'DELETE':
         ProductImage.deleteAll(product_id)
         return ('', 200)
@@ -41,10 +40,6 @@ def searchAll(user_id: int, product_id: int):
 
     
     return jsonify(ProductImage.getAll(product_id))
-
-    # productImage.load()
-    # return jsonify(productImage.toDict())
-    
 
 
 @bpProductImages.route('<int:product_image_id>', methods=['GET'])

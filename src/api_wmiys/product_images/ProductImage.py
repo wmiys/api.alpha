@@ -103,6 +103,8 @@ class ProductImage:
 
     @staticmethod
     def deleteAll(product_id: int):
+        """Delete all the product images for a product
+        """
         images = DB.getProductImages(product_id)
 
         for img in images:
