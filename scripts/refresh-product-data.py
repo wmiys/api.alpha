@@ -12,7 +12,11 @@ import mysql.connector
 PATH_PHOTO_DUMP = 'C:\\Users\\1\\Documents\\photo-dump'
 PATH_RAW_DATA = 'raw-product-data.json'
 PATH_GOOD_IMAGES = 'good-images'
-PATH_API_IMAGES = 'C:\\xampp\\htdocs\\files\\api.wmiys\\src\\product-images'
+PATH_API_IMAGES_ROOT = 'C:\\xampp\\htdocs\\files\\api.wmiys\\src\\product-images'
+PATH_API_IMAGES_COVERS = PATH_API_IMAGES_ROOT + "\\covers"
+PATH_API_IMAGES_ADDITIONAL = PATH_API_IMAGES_ROOT + "\\images"
+# PATTH_API_IMAGES_COVERS = PATH_API_IMAGES + "\\covers"
+
 PATH_MYSQL_INFO = '.mysql-info.json'
 PATH_PRODUCT_AVAILABILITY_SQL = 'Product_Availability.sql'
 
@@ -47,16 +51,21 @@ def refreshImages():
 
     productData = Utilities.getJsonData(PATH_RAW_DATA)
 
-    # delete all the images in the api image directory
-    for img in os.listdir(PATH_API_IMAGES):
-        os.remove(os.path.join(PATH_API_IMAGES, img))
+    # delete all the images in the api cover photos directory
+    for img in os.listdir(PATH_API_IMAGES_COVERS):
+        os.remove(os.path.join(PATH_API_IMAGES_COVERS, img))
+    
 
     # copy the images from the dump into the api image directory
     for x in range(len(productData)):
         oldFileName = largeImageNames[x]
-        newFileName = os.path.join(PATH_API_IMAGES, productData[x]['image'])
+        newFileName = os.path.join(PATH_API_IMAGES_COVERS, productData[x]['image'])
         shutil.copyfile(oldFileName, newFileName)
 
+    
+    # delete all the images in the api image directory
+    for img in os.listdir(PATH_API_IMAGES_ADDITIONAL):
+        os.remove(os.path.join(PATH_API_IMAGES_ADDITIONAL, img))
 
 
 refreshImages()
@@ -73,6 +82,7 @@ mycursor = mydb.cursor()
 sqlStmts = []
 sql = 'DELETE FROM {}'
 sqlStmts.append(sql.format('Product_Availability'))
+sqlStmts.append(sql.format('Product_Images'))
 sqlStmts.append(sql.format('Products'))
 
 for stmt in sqlStmts:

@@ -26,7 +26,8 @@ def userProductsGet(user_id):
     if requestGlobals.client_id != user_id:
         flask.abort(403)
 
-    userProducts = DB.getUserProducts(user_id)
+    # userProducts = DB.getUserProducts(user_id)
+    userProducts = Product.getAll(user_id)
 
     return jsonify(userProducts)
 
@@ -60,6 +61,9 @@ def userProductsPost(user_id):
     if request.files.get('image'):
         newProduct.setImagePropertyFromImageFile(request.files.get('image'), Product.LOCAL_SERVER_COVER_PHOTO_DIRECTORY)
     
+
+    print(request.files)
+
     newProduct.insert()
 
     return jsonify(newProduct.get())
@@ -86,6 +90,9 @@ def productRequest(user_id, product_id):
         # set the image if one was uploaded
         if request.files.get('image'):
             product.setImagePropertyFromImageFile(request.files.get('image'), Product.LOCAL_SERVER_COVER_PHOTO_DIRECTORY)
+
+        
+        print(request.files)
 
         updateResult = product.update()
 

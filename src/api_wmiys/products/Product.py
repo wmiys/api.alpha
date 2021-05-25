@@ -12,7 +12,8 @@ import os
 
 class Product:
 
-    LOCAL_SERVER_COVER_PHOTO_DIRECTORY = 'product-images'
+    LOCAL_SERVER_COVER_PHOTO_DIRECTORY = 'product-images/covers'
+    LOCAL_SERVER_COVER_PHOTO_DIRECTORY_ABS = "http://10.0.0.82/files/api.wmiys/src/product-images/covers"
     
     #------------------------------------------------------
     # Constructor
@@ -81,8 +82,14 @@ class Product:
         if self.id == None:
             return None
 
-        productDbRow = DB.getProduct(self.id)
-        return productDbRow
+        productDbRow2 = DB.getProduct(self.id)
+        productDict = productDbRow2._asdict()
+
+        # prepend the absolute url to the image value
+        if productDict['image']:
+            productDict['image'] = Product.LOCAL_SERVER_COVER_PHOTO_DIRECTORY_ABS + '/' + productDict['image']
+
+        return productDict
     
     #------------------------------------------------------
     # Set's the object's properties given a dict
@@ -120,6 +127,22 @@ class Product:
         productImage = UserImage(newImageFile)
         newImageFileName = Utilities.getUUID(True) + productImage.getFileExtension()
         self.image = productImage.saveImageFile(relative_image_directory_path, newImageFileName)
+
+    @staticmethod
+    def getAll(userID: int):
+        allProducts = DB.getUserProducts(userID)
+
+        productsDict = []
+
+        for product in allProducts:
+            productDict = product._asdict()
+
+            if productDict['image']:
+                productDict['image'] = Product.LOCAL_SERVER_COVER_PHOTO_DIRECTORY_ABS + '/' + productDict['image']
+
+            productsDict.append(productDict)
+
+        return productsDict
 
 
 
