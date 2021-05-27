@@ -1,5 +1,5 @@
 """
-Package:        products
+Package:        product_listings
 Url Prefix:     /listings/<int:product_id>
 Description:    Handles all the product listings routing.
 """
