@@ -1,5 +1,5 @@
 from api_wmiys.DB.DB import DB
-
+from api_wmiys.products.Product import Product
 
 class ProductListing:
 
@@ -74,7 +74,9 @@ class ProductListing:
         Returns:
             dict: meta object
         """
-        metaDict = dict(id=self.dbResult.id, name=self.dbResult.name, description=self.dbResult.description, minimum_age=self.dbResult.minimum_age, image=self.dbResult.image)
+
+        img = Product.LOCAL_SERVER_COVER_PHOTO_DIRECTORY_ABS + '/' + self.dbResult.image
+        metaDict = dict(id=self.dbResult.id, name=self.dbResult.name, description=self.dbResult.description, minimum_age=self.dbResult.minimum_age, image=img)
         return metaDict
     
     def getPriceDict(self) -> dict:
