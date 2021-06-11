@@ -38,6 +38,9 @@ class ProductListing:
         lenderDict = self.getLenderDict()
 
         outputDict = dict(meta=metaDict, price=priceDict, categories=categoriesDict, lender=lenderDict)
+
+        
+
         return outputDict
         
 
@@ -56,6 +59,8 @@ class ProductListing:
         parms = (self.product_id,)
         mycursor.execute(sql, parms)
         self._dbResult = mycursor.fetchone()
+
+        DB.mydb.close()
 
 
     def getMetaDict(self) -> dict:

@@ -33,6 +33,7 @@ def getProductListingAvailability(product_id: int):
         return ('Missing a required property', 400)
     
     responseDict = dict(available=listingAvailability.isProductAvailable())
+    
     return jsonify(responseDict)
 
 

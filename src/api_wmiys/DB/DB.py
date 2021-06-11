@@ -63,7 +63,7 @@ class DB:
 
         mycursor.execute(sql)
         users = mycursor.fetchall()
-
+        DB.mydb.close()
         return users 
 
     #------------------------------------------------------
@@ -93,6 +93,7 @@ class DB:
         mycursor.execute(sql, parm_values)
 
         DB.mydb.commit()
+        DB.mydb.close()
 
         return mycursor.lastrowid
 
@@ -122,6 +123,7 @@ class DB:
         
         mycursor.execute(sql, parms)
         result = mycursor.fetchone()
+        DB.mydb.close()
         
         return result
     
@@ -148,6 +150,7 @@ class DB:
         parm_values = (email, password, name_first, name_last, birth_date, id)
         mycursor.execute(sql, parm_values)
         DB.mydb.commit()
+        DB.mydb.close()
 
         return mycursor
 
@@ -166,6 +169,7 @@ class DB:
 
         mycursor.execute(sql, parms)
         result = mycursor.fetchone()
+        DB.mydb.close()
         
         return result
     
@@ -180,6 +184,7 @@ class DB:
         parms = [query, num_results]
         result_args = mycursor.callproc('Search_Locations', parms)
         result = next(mycursor.stored_results())
+        DB.mydb.close()
 
         return result.fetchall()
 
@@ -195,6 +200,7 @@ class DB:
 
         mycursor.execute(sql)
         product_categories = mycursor.fetchall()
+        DB.mydb.close()
         return product_categories
 
 
@@ -215,6 +221,7 @@ class DB:
 
         mycursor.execute(sql)
         major_categories = mycursor.fetchall()
+        DB.mydb.close()
         return major_categories
 
 
@@ -237,6 +244,7 @@ class DB:
         parms = (id,)
         mycursor.execute(sql, parms)
         major_category = mycursor.fetchone()
+        DB.mydb.close()
 
         return major_category
 
@@ -262,6 +270,7 @@ class DB:
         parms = (product_categories_major_id,)
         mycursor.execute(sql, parms)
         minor_categories = mycursor.fetchall()
+        DB.mydb.close()
 
         return minor_categories
 
@@ -286,6 +295,7 @@ class DB:
         parms = (id,)
         mycursor.execute(sql, parms)
         minor_category = mycursor.fetchone()
+        DB.mydb.close()
 
         return minor_category
     
@@ -311,6 +321,7 @@ class DB:
         parms = (product_categories_minor_id,)
         mycursor.execute(sql, parms)
         sub_categories = mycursor.fetchall()
+        DB.mydb.close()
 
         return sub_categories
     
@@ -335,6 +346,7 @@ class DB:
         parms = (id,)
         mycursor.execute(sql, parms)
         sub_category = mycursor.fetchone()
+        DB.mydb.close()
 
         return sub_category
     
@@ -355,6 +367,7 @@ class DB:
         parms = (user_id, name, description, product_categories_sub_id, location_id, dropoff_distance, price_full, price_half, image, minimum_age)
         mycursor.execute(sql, parms)
         DB.mydb.commit()
+        DB.mydb.close()
 
         return mycursor.lastrowid
     
@@ -385,6 +398,7 @@ class DB:
         parms = (name, description, product_categories_sub_id, location_id, dropoff_distance, price_full, price_half, image, minimum_age, product_id)
         mycursor.execute(sql, parms)
         DB.mydb.commit()
+        DB.mydb.close()
 
         return mycursor
 
@@ -432,6 +446,7 @@ class DB:
         parms = (id,)
         mycursor.execute(sql, parms)
         product = mycursor.fetchone()
+        DB.mydb.close()
 
         return product
     
@@ -478,6 +493,7 @@ class DB:
         parms = (user_id,)
         mycursor.execute(sql, parms)
         products = mycursor.fetchall()
+        DB.mydb.close()
 
         return products
 
@@ -500,6 +516,7 @@ class DB:
         parms = (product_id,)
         mycursor.execute(sql, parms)
         availabilities = mycursor.fetchall()
+        DB.mydb.close()
 
         return availabilities
     
@@ -528,6 +545,7 @@ class DB:
         parms = (id,)
         mycursor.execute(sql, parms)
         availability = mycursor.fetchone()
+        DB.mydb.close()
 
         return availability
 
@@ -553,6 +571,7 @@ class DB:
         parms = (product_id, starts_on, ends_on, note, id)
         mycursor.execute(sql, parms)
         DB.mydb.commit()
+        DB.mydb.close()
         
         return mycursor
     
@@ -571,6 +590,7 @@ class DB:
         parms = (id,)
         mycursor.execute(sql, parms)
         DB.mydb.commit()
+        DB.mydb.close()
         
         return mycursor
 
@@ -595,6 +615,7 @@ class DB:
         parms = (product_id, starts_on, ends_on, note)
         mycursor.execute(sql, parms)
         DB.mydb.commit()
+        DB.mydb.close()
         
         return mycursor.lastrowid
 
@@ -631,6 +652,8 @@ class DB:
 
         mycursor.execute(stmtTotalCount, parms)
         countResult = mycursor.fetchone()
+        
+        DB.mydb.close()
 
         return (searchResults, countResult.count)
 
@@ -674,6 +697,8 @@ class DB:
 
         mycursor.execute(stmtTotalCount, parms)
         countResult = mycursor.fetchone()
+
+        DB.mydb.close()
 
         return (searchResults, countResult.count)
 
@@ -735,6 +760,8 @@ class DB:
         mycursor.execute(sql, parms)
         images = mycursor.fetchall()
 
+        DB.mydb.close()
+
         return images
 
     @staticmethod
@@ -750,6 +777,8 @@ class DB:
         parms = (product_id,)
         mycursor.execute(sql, parms)
         DB.mydb.commit()
+
+        DB.mydb.close()
 
         return mycursor.rowcount
 
@@ -769,6 +798,8 @@ class DB:
         parms = (product_image_id,)
         mycursor.execute(sql, parms)
         image = mycursor.fetchone()
+
+        DB.mydb.close()
 
         return image
 
@@ -797,6 +828,8 @@ class DB:
         parms = (product_id, file_name)
         mycursor.execute(sql, parms)
         DB.mydb.commit()
+
+        DB.mydb.close()
         
         return mycursor.lastrowid
 
