@@ -28,7 +28,7 @@ class DB:
     @staticmethod
     def check_connection():
         try:
-            DB.mydb.ping(reconnect=True, attempts=3, delay=1)
+            DB.mydb.ping(reconnect=True, attempts=10, delay=2)
         except mysql.connector.Error as err:
             mydb = DB.init_db()
 

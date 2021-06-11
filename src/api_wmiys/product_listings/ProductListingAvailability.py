@@ -39,6 +39,8 @@ class ProductListingAvailability:
         mycursor.execute(sql, parms)
         dbResult = mycursor.fetchone()
 
+        DB.mydb.close()
+
         if dbResult.result == 0:
             return False
         else:
