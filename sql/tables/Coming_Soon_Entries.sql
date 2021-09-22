@@ -1,0 +1,8 @@
+CREATE TABLE Coming_Soon_Entries (
+    id INT UNSIGNED NOT NULL UNIQUE AUTO_INCREMENT,
+    email VARCHAR(100) NOT NULL,
+    ip_address CHAR(15),
+    recorded_on TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (id)
+);
+    
