@@ -6,10 +6,8 @@ Description:    Handles all the product images routing
 
 import flask
 from flask import Blueprint, jsonify, request
-import api_wmiys.common.Security as Security
-from api_wmiys.common.Security import requestGlobals
+from ..common import security
 from ..models import ProductImage
-
 
 bpProductImages = Blueprint('bpProductImages', __name__)
 
@@ -18,10 +16,10 @@ bpProductImages = Blueprint('bpProductImages', __name__)
 # ROUTES
 # ----------------------------------------------------
 @bpProductImages.route('', methods=['GET', 'POST', 'DELETE'])
-@Security.login_required
+@security.login_required
 def searchAll(user_id: int, product_id: int):
     # make sure the user is authorized
-    if requestGlobals.client_id != user_id:
+    if security.requestGlobals.client_id != user_id:
         flask.abort(403)
 
     if request.method == 'GET':
@@ -43,10 +41,10 @@ def searchAll(user_id: int, product_id: int):
 
 
 @bpProductImages.route('<int:product_image_id>', methods=['GET'])
-@Security.login_required
+@security.login_required
 def singleImage(user_id: int, product_id: int, product_image_id: int):
     # make sure the user is authorized
-    if requestGlobals.client_id != user_id:
+    if security.requestGlobals.client_id != user_id:
         flask.abort(403)
 
     productImage = ProductImage(newID=product_image_id)    

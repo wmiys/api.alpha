@@ -3,14 +3,12 @@
 # This class handles all the database interactions
 #
 #************************************************************************************
-
-from api_wmiys.common.Utilities import Utilities
-from api_wmiys.common.Sorting import SortingSearchProducts
-from api_wmiys.common.Pagination import Pagination
-# import api_wmiys.users.User
 import mysql.connector
 from typing import Type
 import os
+import datetime
+# from ..common import utilities, SortingSearchProducts, Pagination
+from ..common import utilities
 
 class DB:
     
@@ -18,7 +16,7 @@ class DB:
     # static properties
     #------------------------------------------------------
     SQL_CONNECTION_DATA_FILE = os.getcwd() + '/api_wmiys/DB/' + '.mysql-info.json'
-    configData = Utilities.readJsonFile(SQL_CONNECTION_DATA_FILE)
+    configData = utilities.readJsonFile(SQL_CONNECTION_DATA_FILE)
     mydb = mysql.connector.connect(user=configData['user'], password=configData['passwd'], host=configData['host'], database=configData['database'])
 
     #------------------------------------------------------
@@ -620,7 +618,7 @@ class DB:
         return mycursor.lastrowid
 
     @staticmethod
-    def searchProductsAll(location_id, starts_on, ends_on, oSorting: SortingSearchProducts, oPagination: Pagination):
+    def searchProductsAll(location_id: int, starts_on: datetime.date, ends_on: datetime.date, sorting_field: str, sorting_type: str, pagination_stmt_limit, pagination_stmt_offset):
         """Search all of the products
         
         ---
@@ -630,6 +628,8 @@ class DB:
         - starts_on (date): when the request starts
         - ends_on (date): when the request ends
         - oSorting (Sorting): the sorting type to use
+        - sorting_field (str): field to sort
+        - sorting_type (str): type of sorting (asc or desc)
         - oPagination (Pagination): a pagination object
 
         Returns:
@@ -641,28 +641,23 @@ class DB:
         mycursor = DB.mydb.cursor(named_tuple=True)
 
         # build the 
-        stmt =  DB.getSearchProductSqlStmtPrefix_() + "ORDER BY {} {}".format(oSorting.field, oSorting.type)
-        stmtWithLimit = oPagination.getSqlStmtLimitOffset(stmt)
-        stmtTotalCount = oPagination.getSqlStmtTotalCount(stmt)
-        
+        stmt =  DB.getSearchProductSqlStmtPrefix_() + "ORDER BY {} {}".format(sorting_field, sorting_type)        
         parms = (location_id, starts_on, ends_on)
 
-        mycursor.execute(stmtWithLimit, parms)
+        mycursor.execute(pagination_stmt_limit, parms)
         searchResults = mycursor.fetchall()
 
-        mycursor.execute(stmtTotalCount, parms)
+        mycursor.execute(pagination_stmt_offset, parms)
         countResult = mycursor.fetchone()
         
         DB.mydb.close()
 
         return (searchResults, countResult.count)
 
-        # return searchResults
-
 
 
     @staticmethod
-    def searchProductsByCategory(location_id, starts_on, ends_on, product_category_type, product_category_id, oSorting: SortingSearchProducts, oPagination: Pagination):
+    def searchProductsByCategory(location_id: int, starts_on: datetime.date, ends_on: datetime.date, product_category_type, product_category_id, sorting_field, sorting_type, pagination_stmt_limit, pagination_stmt_offset):
         """Calls the Search_Products stored procedure in the database.
         
         ---
@@ -673,7 +668,9 @@ class DB:
         - ends_on (date): when the request ends
         - product_category_type (int): the type of product category (1, 2, or 3) - major, minor, or sub 
         - product_categories_sub_id (int): id of the product category that the user wants to search for
-        - oSorting (Sorting): the sorting type to use
+        - sorting_field (str): field to sort
+        - sorting_type (str): type of sorting (asc or desc)
+        - oPagination (Pagination): a pagination object
 
         ---
         Returns:
@@ -685,17 +682,14 @@ class DB:
 
         categoryTableName = DB.getSearchProductCategoryTableName_(product_category_type)
         stmt = DB.getSearchProductSqlStmtPrefix_() + "AND {} = %s ORDER BY {} {}"
-        stmt = stmt.format(categoryTableName, oSorting.field, oSorting.type)
-
-        stmtWithLimit = oPagination.getSqlStmtLimitOffset(stmt)
-        stmtTotalCount = oPagination.getSqlStmtTotalCount(stmt)
+        stmt = stmt.format(categoryTableName, sorting_field, sorting_type)
 
         parms = (location_id, starts_on, ends_on, product_category_id)
         
-        mycursor.execute(stmtWithLimit, parms)
+        mycursor.execute(pagination_stmt_limit, parms)
         searchResults = mycursor.fetchall()
 
-        mycursor.execute(stmtTotalCount, parms)
+        mycursor.execute(pagination_stmt_offset, parms)
         countResult = mycursor.fetchone()
 
         DB.mydb.close()

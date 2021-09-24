@@ -6,16 +6,15 @@ Description:    Handles all the products routing.
 
 import flask
 from flask import Blueprint, jsonify, request
-import api_wmiys.common.Security as Security
-from api_wmiys.common.Security import requestGlobals
-from api_wmiys.DB.DB import DB
+from ..db import DB
+from ..common import security
 from ..models import Product
 
 products = Blueprint('products', __name__)
 
 
 @products.route('', methods=['GET'])
-@Security.login_required
+@security.login_required
 def userProductsGet(user_id):
     """Fetch all of a user's products
 
@@ -23,7 +22,7 @@ def userProductsGet(user_id):
         user_id (int): user id
     """
     # make sure the user is authorized
-    if requestGlobals.client_id != user_id:
+    if security.requestGlobals.client_id != user_id:
         flask.abort(403)
 
     # userProducts = DB.getUserProducts(user_id)
@@ -33,7 +32,7 @@ def userProductsGet(user_id):
 
 
 @products.route('', methods=['POST'])
-@Security.login_required
+@security.login_required
 def userProductsPost(user_id):
     """Create a new product
 
@@ -45,7 +44,7 @@ def userProductsPost(user_id):
     """
 
     # make sure the user is authorized
-    if requestGlobals.client_id != user_id:
+    if security.requestGlobals.client_id != user_id:
         flask.abort(403)
 
     newProduct = Product()
@@ -70,7 +69,7 @@ def userProductsPost(user_id):
 
 
 @products.route('<int:product_id>', methods=['GET', 'PUT'])
-@Security.login_required
+@security.login_required
 def productRequest(user_id, product_id):
     """Retrieve/update a single user product
 

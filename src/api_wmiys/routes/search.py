@@ -6,12 +6,9 @@ Description:    Handles all the search routing.
 
 import flask
 from flask import Blueprint, jsonify, request
-import api_wmiys.common.Security as Security
-from api_wmiys.common.Security import requestGlobals
-from api_wmiys.DB.DB import DB
+from ..db import DB
 
 search = Blueprint('search', __name__)
-
 
 @search.route('locations', methods=['GET'])
 def searchLocations():

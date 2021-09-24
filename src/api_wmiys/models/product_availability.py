@@ -3,8 +3,8 @@
 #                           Product Availability Model
 #
 #************************************************************************************
-from api_wmiys.DB.DB import DB
-from api_wmiys.common.Utilities import Utilities
+from ..db import DB
+from ..common import utilities
 
 class ProductAvailability:
     """Product Availability Model
@@ -75,7 +75,7 @@ class ProductAvailability:
                 true: properties were successfully changed
         """
         # validate the field before changing the object property
-        if not Utilities.areAllKeysValidProperties(newPropertyValues, self):
+        if not utilities.areAllKeysValidProperties(newPropertyValues, self):
             return False
 
         # set the object properties

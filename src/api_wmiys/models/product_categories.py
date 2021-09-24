@@ -4,7 +4,7 @@
 #
 #************************************************************************************
 
-from api_wmiys.DB.DB import DB
+from ..db import DB
 from collections import namedtuple
 
 class ProductCategories:

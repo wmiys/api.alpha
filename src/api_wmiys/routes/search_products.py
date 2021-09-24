@@ -3,16 +3,13 @@ Package:        search_products
 Url Prefix:     /search/products/
 Description:    Handles all the product search routing.
 """
-
+from functools import wraps, update_wrapper
 import flask
 from flask import Blueprint, jsonify, request
-import api_wmiys.common.Security as Security
-from api_wmiys.common.Security import requestGlobals
-from api_wmiys.DB.DB import DB
+from ..db import DB
+from ..common import security, SortingSearchProducts, Pagination
 from ..models import ProductSearchRequest
-from api_wmiys.common.Sorting import SortingSearchProducts
-from api_wmiys.common.Pagination import Pagination
-from functools import wraps, update_wrapper
+
 
 searchProducts = Blueprint('searchProducts', __name__)
 
@@ -49,7 +46,7 @@ def init_module_members(f):
 # ROUTES
 # ----------------------------------------------------
 @searchProducts.route('', methods=['GET'])
-@Security.login_required
+@security.login_required
 @init_module_members
 def searchAll():
     searchResults, totalRows = m_requestParms.searchAll()
@@ -57,7 +54,7 @@ def searchAll():
 
 
 @searchProducts.route('categories/major/<int:product_categories_major_id>', methods=['GET'])
-@Security.login_required
+@security.login_required
 @init_module_members
 def searchProductCategoriesMajor(product_categories_major_id):
     searchResults, totalRows = m_requestParms.searchCategoriesMajor(product_categories_major_id)
@@ -65,14 +62,14 @@ def searchProductCategoriesMajor(product_categories_major_id):
 
 
 @searchProducts.route('categories/minor/<int:product_categories_minor_id>', methods=['GET'])
-@Security.login_required
+@security.login_required
 @init_module_members
 def searchProductCategoriesMinor(product_categories_minor_id):
     searchResults, totalRows = m_requestParms.searchCategoriesMinor(product_categories_minor_id)
     return paginationReturnTemplate(searchResults, totalRows)
 
 @searchProducts.route('categories/sub/<int:product_categories_sub_id>', methods=['GET'])
-@Security.login_required
+@security.login_required
 @init_module_members
 def searchProductCategoriesSub(product_categories_sub_id):
     searchResults, totalRows = m_requestParms.searchCategoriesSub(product_categories_sub_id)

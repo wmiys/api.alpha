@@ -1,4 +1,4 @@
-from api_wmiys.DB.DB import DB
+from ..db import DB
 
 class ProductListingAvailability:
 

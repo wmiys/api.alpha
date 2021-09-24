@@ -5,18 +5,15 @@
 #************************************************************************************
 import datetime
 import typing
-from api_wmiys.DB.DB import DB
-from api_wmiys.common.Sorting import SortingSearchProducts
-from api_wmiys.common.Pagination import Pagination
-# import collections
-
+from ..db import DB
+from ..common import sorting, Pagination
 
 
 class ProductSearchRequest:
     """The product search request is responsible for handling all of the product search requests.
     """
 
-    def __init__(self, location_id=None, starts_on=None, ends_on=None, oSorting: SortingSearchProducts=None, oPagination: Pagination=None):
+    def __init__(self, location_id=None, starts_on=None, ends_on=None, oSorting: sorting.SortingSearchProducts=None, oPagination: Pagination=None):
         """Constructor for ProductSearchRequest
 
         Args:
@@ -58,7 +55,7 @@ class ProductSearchRequest:
         Returns:
             list: matching products
         """
-        return DB.searchProductsAll(self.location_id, self.starts_on, self.ends_on, self.sorting, self.pagination)
+        return DB.searchProductsAll(self.location_id, self.starts_on, self.ends_on, self.sorting.field, self.sorting.type, self.pagination)
 
     def searchCategoriesMajor(self, product_categories_major_id: int):
         """Search for a major product category
@@ -119,7 +116,7 @@ class ProductSearchRequest:
             list: the results of the search query
         """
 
-        results = DB.searchProductsByCategory(self.location_id, self.starts_on, self.ends_on, product_category_type, product_category_id, self.sorting, self.pagination)
+        results = DB.searchProductsByCategory(self.location_id, self.starts_on, self.ends_on, product_category_type, product_category_id, self.sorting.field, self.sorting.type, self.pagination)
 
         return results
 

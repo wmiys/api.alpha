@@ -4,12 +4,11 @@ Url Prefix:     /product-categories
 Description:    Handles all the product category routing.
 """
 
+import os
 from flask import Blueprint, jsonify, request
 from ..models import ProductCategories
-import os
 
 product_categories = Blueprint('product_categories', __name__)
-
 
 @product_categories.route('', methods=['GET'])
 def productCatgories():

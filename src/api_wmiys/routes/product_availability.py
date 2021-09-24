@@ -6,15 +6,14 @@ Description:    Handles all the product_availability routing.
 
 import flask
 from flask import Blueprint, jsonify, request
-import api_wmiys.common.Security as Security
-from api_wmiys.common.Security import requestGlobals
+from ..common import security
 from ..models import ProductAvailability
 
 productAvailabilityRoute = Blueprint('productAvailabilityRoute', __name__)
 
 
 @productAvailabilityRoute.route('', methods=['GET'])
-@Security.login_required
+@security.login_required
 def productAvailabilities(user_id: int, product_id: int):
     """Retrieve all the product availabilities of a single product
 
@@ -27,7 +26,7 @@ def productAvailabilities(user_id: int, product_id: int):
     """
 
     # make sure the user is authorized
-    if requestGlobals.client_id != user_id:
+    if security.requestGlobals.client_id != user_id:
         flask.abort(403)
 
     # get the availabilities
@@ -36,7 +35,7 @@ def productAvailabilities(user_id: int, product_id: int):
 
 
 @productAvailabilityRoute.route('', methods=['POST'])
-@Security.login_required
+@security.login_required
 def productAvailabilityPost(user_id: int, product_id: int):
     """Create a new product availability
 
@@ -45,7 +44,7 @@ def productAvailabilityPost(user_id: int, product_id: int):
         product_id (int): product id
     """
     # make sure the user is authorized
-    if requestGlobals.client_id != user_id:
+    if security.requestGlobals.client_id != user_id:
         flask.abort(403)
 
     # get the availabilities
@@ -64,7 +63,7 @@ def productAvailabilityPost(user_id: int, product_id: int):
 # Retrieve all the product availabilities of a single product
 #------------------------------------------------------
 @productAvailabilityRoute.route('<int:product_availability_id>', methods=['GET', 'PUT', 'DELETE'])
-@Security.login_required
+@security.login_required
 def productAvailability(user_id: int, product_id: int, product_availability_id: int):
     """Retrieve all the product availabilities of a single product
 
@@ -74,7 +73,7 @@ def productAvailability(user_id: int, product_id: int, product_availability_id: 
         product_availability_id (int): the product_availability id
     """
     # make sure the user is authorized
-    if requestGlobals.client_id != user_id:
+    if security.requestGlobals.client_id != user_id:
         flask.abort(403)
 
     availability = ProductAvailability(id=product_availability_id)

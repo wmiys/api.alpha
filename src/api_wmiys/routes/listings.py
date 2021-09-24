@@ -5,27 +5,26 @@ Description:    Handles all the product listings routing.
 """
 
 import flask
-from flask import Blueprint, jsonify, request
-import api_wmiys.common.Security as Security
-from api_wmiys.common.Security import requestGlobals
+from ..common import security
 from ..models import ProductListing, ProductListingAvailability
 
-productListings = Blueprint('productListings', __name__)
+
+productListings = flask.Blueprint('productListings', __name__)
 
 @productListings.route('', methods=['GET'])
-@Security.login_required
+@security.login_required
 def getProductListings(product_id: int):
     listing = ProductListing(product_id)
-    return jsonify(listing.get())
+    return flask.jsonify(listing.get())
 
 
 @productListings.route('availability', methods=['GET'])
-@Security.login_required
+@security.login_required
 def getProductListingAvailability(product_id: int):
     listingAvailability = ProductListingAvailability(product_id=product_id)
-    listingAvailability.location_id = request.args.get('location_id')
-    listingAvailability.starts_on = request.args.get('starts_on')
-    listingAvailability.ends_on = request.args.get('ends_on')
+    listingAvailability.location_id = flask.request.args.get('location_id')
+    listingAvailability.starts_on = flask.request.args.get('starts_on')
+    listingAvailability.ends_on = flask.request.args.get('ends_on')
 
     # be sure all 3 required query parms have a non-None value
     if not listingAvailability.areAllPropertiesSet():
@@ -33,7 +32,7 @@ def getProductListingAvailability(product_id: int):
     
     responseDict = dict(available=listingAvailability.isProductAvailable())
     
-    return jsonify(responseDict)
+    return flask.jsonify(responseDict)
 
 
 

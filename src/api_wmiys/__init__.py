@@ -1,6 +1,6 @@
 from flask import Flask
 from flask_cors import CORS
-from api_wmiys.common.CustomJSONEncoder import CustomJSONEncoder
+from .common import CustomJSONEncoder
 from . import routes
 
 def initApp(flaskApp):

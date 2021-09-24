@@ -1,7 +1,6 @@
 import flask
 from flask import Blueprint, jsonify, request
-import api_wmiys.common.Security as Security
-from api_wmiys.common.Security import requestGlobals
+from ..common import security
 from ..models import User
 
 routeUser = Blueprint('routeUser', __name__)
@@ -30,10 +29,10 @@ def usersPost():
 # Get a single user
 #------------------------------------------------------
 @routeUser.route('<int:user_id>', methods=['GET', 'PUT'])
-@Security.login_required
+@security.login_required
 def userGetPost(user_id):
     # make sure the user is authorized
-    if requestGlobals.client_id != user_id:
+    if security.requestGlobals.client_id != user_id:
         flask.abort(403)
 
     user = User(id=user_id)

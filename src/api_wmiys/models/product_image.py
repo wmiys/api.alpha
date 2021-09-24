@@ -1,6 +1,7 @@
-from api_wmiys.DB.DB import DB
-from api_wmiys.common.UserImage import UserImage
-from api_wmiys.common.Utilities import Utilities
+from ..db import DB
+from ..common import utilities
+
+
 import os
 
 class ProductImage:
@@ -55,6 +56,7 @@ class ProductImage:
 
 
     def setImagePropertyFromImageFile(self, newImageFile: object, relative_image_directory_path: str):
+        from ..common import user_image
         """Takes a raw image file, saves it locally, and sets the image field in the database to the image file name as saved on the server.
 
         ---
@@ -69,8 +71,8 @@ class ProductImage:
         if self.file_name:
             os.remove(os.path.join(relative_image_directory_path, self.file_name))
 
-        productImage = UserImage(newImageFile)
-        newImageFileName = Utilities.getUUID(True) + productImage.getFileExtension()
+        productImage = user_image.UserImage(newImageFile)
+        newImageFileName = utilities.getUUID(True) + productImage.getFileExtension()
         self.file_name = productImage.saveImageFile(relative_image_directory_path, newImageFileName)
 
     def toDict(self):

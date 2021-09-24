@@ -1,5 +1,6 @@
-from api_wmiys.DB.DB import DB
-from .product import Product
+from ..db import DB
+# from .product import Product
+# from . import product
 
 class ProductListing:
 
@@ -64,6 +65,7 @@ class ProductListing:
 
 
     def getMetaDict(self) -> dict:
+        from . import product
         """Get the meta json object.
 
         ---
@@ -80,7 +82,7 @@ class ProductListing:
             dict: meta object
         """
 
-        img = Product.LOCAL_SERVER_COVER_PHOTO_DIRECTORY_ABS + '/' + self.dbResult.image
+        img = product.Product.LOCAL_SERVER_COVER_PHOTO_DIRECTORY_ABS + '/' + self.dbResult.image
         metaDict = dict(id=self.dbResult.id, name=self.dbResult.name, description=self.dbResult.description, minimum_age=self.dbResult.minimum_age, image=img)
         return metaDict
     
