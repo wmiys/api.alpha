@@ -38,13 +38,3 @@ class Location:
     def toDict(self) -> dict:
         resultDict = dict(id=self.id, city = self.city, state_id = self.state_id, state_name = self.state_name)
         return resultDict
-
-
-
-
-
-
-
-   
-
-    
