@@ -8,8 +8,7 @@ import flask
 from flask import Blueprint, jsonify, request
 import api_wmiys.common.Security as Security
 from api_wmiys.common.Security import requestGlobals
-from api_wmiys.product_listings.ProductListing import ProductListing
-from api_wmiys.product_listings.ProductListingAvailability import ProductListingAvailability
+from ..models import ProductListing, ProductListingAvailability
 
 productListings = Blueprint('productListings', __name__)
 

@@ -9,7 +9,7 @@ from flask import Blueprint, jsonify, request
 import api_wmiys.common.Security as Security
 from api_wmiys.common.Security import requestGlobals
 from api_wmiys.DB.DB import DB
-from api_wmiys.search_products.ProductSearchRequest import ProductSearchRequest
+from ..models import ProductSearchRequest
 from api_wmiys.common.Sorting import SortingSearchProducts
 from api_wmiys.common.Pagination import Pagination
 from functools import wraps, update_wrapper

@@ -1,17 +1,7 @@
 from flask import Flask
 from flask_cors import CORS
 from api_wmiys.common.CustomJSONEncoder import CustomJSONEncoder
-from api_wmiys.product_categories.controllers import product_categories
-from api_wmiys.products.controllers import products
-from api_wmiys.users.controllers import routeUser
-from api_wmiys.login.controllers import login
-from api_wmiys.search.controllers import search
-from api_wmiys.product_availability.controllers import productAvailabilityRoute
-from api_wmiys.search_products.controllers import searchProducts
-from api_wmiys.product_images.controllers import bpProductImages
-from api_wmiys.product_listings.controllers import productListings
-from api_wmiys.locations.controllers import locationsBP
-
+from . import routes
 
 def initApp(flaskApp):
     """Sets up and initializes the flask application
@@ -31,16 +21,16 @@ def registerBlueprints(flaskApp):
     Args:
         flaskApp (obj): the flask application
     """
-    flaskApp.register_blueprint(product_categories, url_prefix='/product-categories')
-    flaskApp.register_blueprint(routeUser, url_prefix='/users')
-    flaskApp.register_blueprint(products, url_prefix='/users/<int:user_id>/products')
-    flaskApp.register_blueprint(productAvailabilityRoute, url_prefix='/users/<int:user_id>/products/<int:product_id>/availability')
-    flaskApp.register_blueprint(login, url_prefix='/login')
-    flaskApp.register_blueprint(search, url_prefix='/search')
-    flaskApp.register_blueprint(searchProducts, url_prefix='/search/products')
-    flaskApp.register_blueprint(bpProductImages, url_prefix='/users/<int:user_id>/products/<int:product_id>/images')
-    flaskApp.register_blueprint(productListings, url_prefix='/listings/<int:product_id>')
-    flaskApp.register_blueprint(locationsBP, url_prefix='/locations')
+    flaskApp.register_blueprint(routes.product_categories.product_categories, url_prefix='/product-categories')
+    flaskApp.register_blueprint(routes.users.routeUser, url_prefix='/users')
+    flaskApp.register_blueprint(routes.products.products, url_prefix='/users/<int:user_id>/products')
+    flaskApp.register_blueprint(routes.product_availability.productAvailabilityRoute, url_prefix='/users/<int:user_id>/products/<int:product_id>/availability')
+    flaskApp.register_blueprint(routes.login.login, url_prefix='/login')
+    flaskApp.register_blueprint(routes.search.search, url_prefix='/search')
+    flaskApp.register_blueprint(routes.search_products.searchProducts, url_prefix='/search/products')
+    flaskApp.register_blueprint(routes.product_images.bpProductImages, url_prefix='/users/<int:user_id>/products/<int:product_id>/images')
+    flaskApp.register_blueprint(routes.listings.productListings, url_prefix='/listings/<int:product_id>')
+    flaskApp.register_blueprint(routes.locations.locationsBP, url_prefix='/locations')
 
 
 app = Flask(__name__)

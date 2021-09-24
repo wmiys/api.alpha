@@ -8,7 +8,7 @@ import flask
 from flask import Blueprint, jsonify, request
 import api_wmiys.common.Security as Security
 from api_wmiys.common.Security import requestGlobals
-from api_wmiys.product_images.ProductImage import ProductImage
+from ..models import ProductImage
 
 
 bpProductImages = Blueprint('bpProductImages', __name__)

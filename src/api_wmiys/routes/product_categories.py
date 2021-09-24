@@ -5,7 +5,7 @@ Description:    Handles all the product category routing.
 """
 
 from flask import Blueprint, jsonify, request
-from api_wmiys.product_categories.Product_Categories import ProductCategories
+from ..models import ProductCategories
 import os
 
 product_categories = Blueprint('product_categories', __name__)

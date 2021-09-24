@@ -9,7 +9,7 @@ from flask import Blueprint, jsonify, request
 import api_wmiys.common.Security as Security
 from api_wmiys.common.Security import requestGlobals
 from api_wmiys.DB.DB import DB
-from api_wmiys.products.Product import Product
+from ..models import Product
 
 products = Blueprint('products', __name__)
 

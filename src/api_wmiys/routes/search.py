@@ -10,7 +10,6 @@ import api_wmiys.common.Security as Security
 from api_wmiys.common.Security import requestGlobals
 from api_wmiys.DB.DB import DB
 
-
 search = Blueprint('search', __name__)
 
 

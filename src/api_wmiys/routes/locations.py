@@ -9,8 +9,7 @@ from flask import Blueprint, jsonify, request
 import api_wmiys.common.Security as Security
 from api_wmiys.common.Security import requestGlobals
 # from api_wmiys.product_listings.ProductListing import ProductListing
-from api_wmiys.locations.Location import Location
-
+from ..models import Location
 
 locationsBP = Blueprint('locationsBP', __name__)
 

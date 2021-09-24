@@ -1,5 +1,5 @@
 from api_wmiys.DB.DB import DB
-from api_wmiys.products.Product import Product
+from .product import Product
 
 class ProductListing:
 
