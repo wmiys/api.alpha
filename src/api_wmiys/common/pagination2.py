@@ -15,6 +15,7 @@ class Pagination:
     MAX_PER_PAGE = 100 
     
 
+
     def __init__(self, a_iPage: int=None, a_iPerPage: int=None):
         self._page = a_iPage or self.DEFAULT_PAGE
         self._per_page = a_iPerPage or self.DEFAULT_PER_PAGE
