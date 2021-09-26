@@ -3,3 +3,4 @@ __pycache__/
 .tables-view/
 .vscode/
 product-images/
+credentials.py
