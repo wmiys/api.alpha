@@ -1,6 +1,6 @@
 from .location import Location as Location
 from .product_availability import ProductAvailability as ProductAvailability
-from .product_categories import ProductCategories as ProductCategories
+from . import product_categories as product_categories
 from .product_image import ProductImage as ProductImage
 from .product_listing_availability import ProductListingAvailability as ProductListingAvailability
 from .product_listing import ProductListing as ProductListing

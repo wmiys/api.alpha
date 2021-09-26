@@ -247,20 +247,24 @@ class DB:
 
         # return result.fetchall()
 
+
+
+
     #------------------------------------------------------
     # Get all the product categories
     #------------------------------------------------------
     @staticmethod
     def getProductCategories():
-        DB.check_connection()
-        mycursor = DB.mydb.cursor(named_tuple=True)
+        raise NotImplementedError
+        # DB.check_connection()
+        # mycursor = DB.mydb.cursor(named_tuple=True)
 
-        sql = 'SELECT * FROM All_Categories'
+        # sql = 'SELECT * FROM All_Categories'
 
-        mycursor.execute(sql)
-        product_categories = mycursor.fetchall()
-        DB.mydb.close()
-        return product_categories
+        # mycursor.execute(sql)
+        # product_categories = mycursor.fetchall()
+        # DB.mydb.close()
+        # return product_categories
 
 
     #------------------------------------------------------
@@ -268,20 +272,21 @@ class DB:
     #------------------------------------------------------
     @staticmethod
     def getProductCategoryMajors():
-        DB.check_connection()
-        mycursor = DB.mydb.cursor(named_tuple=True)
+        raise NotImplementedError
+        # DB.check_connection()
+        # mycursor = DB.mydb.cursor(named_tuple=True)
 
-        sql = """
-        SELECT  major.id                            AS id, 
-                major.name                          AS name
-        FROM    Product_Categories_Major major
-        ORDER   BY major.name ASC
-        """
+        # sql = """
+        # SELECT  major.id                            AS id, 
+        #         major.name                          AS name
+        # FROM    Product_Categories_Major major
+        # ORDER   BY major.name ASC
+        # """
 
-        mycursor.execute(sql)
-        major_categories = mycursor.fetchall()
-        DB.mydb.close()
-        return major_categories
+        # mycursor.execute(sql)
+        # major_categories = mycursor.fetchall()
+        # DB.mydb.close()
+        # return major_categories
 
 
     #------------------------------------------------------
@@ -289,23 +294,24 @@ class DB:
     #------------------------------------------------------
     @staticmethod
     def getProductCategoryMajor(id: int):
-        DB.check_connection()
-        mycursor = DB.mydb.cursor(named_tuple=True)
+        raise NotImplementedError
+        # DB.check_connection()
+        # mycursor = DB.mydb.cursor(named_tuple=True)
 
-        sql = """
-        SELECT  major.id                            AS id, 
-                major.name                          AS name
-        FROM    Product_Categories_Major major
-        WHERE   major.id = %s
-        LIMIT 1
-        """
+        # sql = """
+        # SELECT  major.id                            AS id, 
+        #         major.name                          AS name
+        # FROM    Product_Categories_Major major
+        # WHERE   major.id = %s
+        # LIMIT 1
+        # """
 
-        parms = (id,)
-        mycursor.execute(sql, parms)
-        major_category = mycursor.fetchone()
-        DB.mydb.close()
+        # parms = (id,)
+        # mycursor.execute(sql, parms)
+        # major_category = mycursor.fetchone()
+        # DB.mydb.close()
 
-        return major_category
+        # return major_category
 
 
     #------------------------------------------------------
@@ -313,25 +319,26 @@ class DB:
     #------------------------------------------------------
     @staticmethod
     def getProductMajorCategoryChildren(product_categories_major_id: int):
-        DB.check_connection()
-        mycursor = DB.mydb.cursor(named_tuple=True)
+        raise NotImplementedError
+        # DB.check_connection()
+        # mycursor = DB.mydb.cursor(named_tuple=True)
 
-        sql = """
-        SELECT  minor.id                            AS id, 
-                minor.product_categories_major_id   AS product_categories_major_id, 
-                minor.name                          AS name
-        FROM    Product_Categories_Minor minor
-        WHERE   minor.product_categories_major_id = %s
-        GROUP   BY minor.id
-        ORDER   BY minor.name ASC
-        """
+        # sql = """
+        # SELECT  minor.id                            AS id, 
+        #         minor.product_categories_major_id   AS product_categories_major_id, 
+        #         minor.name                          AS name
+        # FROM    Product_Categories_Minor minor
+        # WHERE   minor.product_categories_major_id = %s
+        # GROUP   BY minor.id
+        # ORDER   BY minor.name ASC
+        # """
 
-        parms = (product_categories_major_id,)
-        mycursor.execute(sql, parms)
-        minor_categories = mycursor.fetchall()
-        DB.mydb.close()
+        # parms = (product_categories_major_id,)
+        # mycursor.execute(sql, parms)
+        # minor_categories = mycursor.fetchall()
+        # DB.mydb.close()
 
-        return minor_categories
+        # return minor_categories
 
 
     #------------------------------------------------------
@@ -339,24 +346,25 @@ class DB:
     #------------------------------------------------------
     @staticmethod
     def getProductCategoryMinor(id: int):
-        DB.check_connection()
-        mycursor = DB.mydb.cursor(named_tuple=True)
+        raise NotImplementedError
+        # DB.check_connection()
+        # mycursor = DB.mydb.cursor(named_tuple=True)
 
-        sql = """
-        SELECT  minor.id                            AS id, 
-                minor.product_categories_major_id   AS product_categories_major_id, 
-                minor.name                          AS name
-        FROM    Product_Categories_Minor minor
-        WHERE   minor.id = %s
-        LIMIT 1
-        """
+        # sql = """
+        # SELECT  minor.id                            AS id, 
+        #         minor.product_categories_major_id   AS product_categories_major_id, 
+        #         minor.name                          AS name
+        # FROM    Product_Categories_Minor minor
+        # WHERE   minor.id = %s
+        # LIMIT 1
+        # """
 
-        parms = (id,)
-        mycursor.execute(sql, parms)
-        minor_category = mycursor.fetchone()
-        DB.mydb.close()
+        # parms = (id,)
+        # mycursor.execute(sql, parms)
+        # minor_category = mycursor.fetchone()
+        # DB.mydb.close()
 
-        return minor_category
+        # return minor_category
     
 
     #------------------------------------------------------
@@ -364,25 +372,26 @@ class DB:
     #------------------------------------------------------
     @staticmethod 
     def getProductMinorCategoryChildren(product_categories_minor_id: int):
-        DB.check_connection()
-        mycursor = DB.mydb.cursor(named_tuple=True)
+        raise NotImplementedError
+        # DB.check_connection()
+        # mycursor = DB.mydb.cursor(named_tuple=True)
         
-        sql = """
-        SELECT  s.id                            AS id, 
-                s.product_categories_minor_id   AS product_categories_minor_id, 
-                s.name                          AS name
-        FROM    Product_Categories_Sub s 
-        WHERE   s.product_categories_minor_id = %s
-        GROUP   BY s.id
-        ORDER   BY s.name ASC
-        """
+        # sql = """
+        # SELECT  s.id                            AS id, 
+        #         s.product_categories_minor_id   AS product_categories_minor_id, 
+        #         s.name                          AS name
+        # FROM    Product_Categories_Sub s 
+        # WHERE   s.product_categories_minor_id = %s
+        # GROUP   BY s.id
+        # ORDER   BY s.name ASC
+        # """
 
-        parms = (product_categories_minor_id,)
-        mycursor.execute(sql, parms)
-        sub_categories = mycursor.fetchall()
-        DB.mydb.close()
+        # parms = (product_categories_minor_id,)
+        # mycursor.execute(sql, parms)
+        # sub_categories = mycursor.fetchall()
+        # DB.mydb.close()
 
-        return sub_categories
+        # return sub_categories
     
     
     #------------------------------------------------------
@@ -390,24 +399,29 @@ class DB:
     #------------------------------------------------------
     @staticmethod
     def getProductCategorySub(id: int):
-        DB.check_connection()
-        mycursor = DB.mydb.cursor(named_tuple=True)
+        raise NotImplementedError
+        # DB.check_connection()
+        # mycursor = DB.mydb.cursor(named_tuple=True)
         
-        sql = """
-        SELECT  s.id                            AS id, 
-                s.product_categories_minor_id   AS product_categories_minor_id, 
-                s.name                          AS name
-        FROM    Product_Categories_Sub s 
-        WHERE   s.id = %s
-        LIMIT 1
-        """
+        # sql = """
+        # SELECT  s.id                            AS id, 
+        #         s.product_categories_minor_id   AS product_categories_minor_id, 
+        #         s.name                          AS name
+        # FROM    Product_Categories_Sub s 
+        # WHERE   s.id = %s
+        # LIMIT 1
+        # """
 
-        parms = (id,)
-        mycursor.execute(sql, parms)
-        sub_category = mycursor.fetchone()
-        DB.mydb.close()
+        # parms = (id,)
+        # mycursor.execute(sql, parms)
+        # sub_category = mycursor.fetchone()
+        # DB.mydb.close()
 
-        return sub_category
+        # return sub_category
+
+
+
+
     
     #------------------------------------------------------
     # create a new product

@@ -21,7 +21,7 @@ def registerBlueprints(flaskApp):
     Args:
         flaskApp (obj): the flask application
     """
-    flaskApp.register_blueprint(routes.product_categories.product_categories, url_prefix='/product-categories')
+    flaskApp.register_blueprint(routes.product_categories.bp_product_categories, url_prefix='/product-categories')
     flaskApp.register_blueprint(routes.users.routeUser, url_prefix='/users')
     flaskApp.register_blueprint(routes.products.products, url_prefix='/users/<int:user_id>/products')
     flaskApp.register_blueprint(routes.product_availability.productAvailabilityRoute, url_prefix='/users/<int:user_id>/products/<int:product_id>/availability')
