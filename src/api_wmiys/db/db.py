@@ -678,70 +678,73 @@ class DB:
     
     @staticmethod
     def insertProductAvailability(product_id, starts_on, ends_on, note=None):
-        """Insert a new product availability record
+        raise NotImplementedError
+        # """Insert a new product availability record
 
-        Returns:
-            mycursor.lastrowid (int): the id of the newly created product availability
-        """
+        # Returns:
+        #     mycursor.lastrowid (int): the id of the newly created product availability
+        # """
 
-        DB.check_connection()
-        mycursor = DB.mydb.cursor(prepared=True)
+        # DB.check_connection()
+        # mycursor = DB.mydb.cursor(prepared=True)
 
-        sql = """
-        INSERT INTO Product_Availability 
-        (product_id, starts_on, ends_on, note) VALUES
-        (%s, %s, %s, %s)
-        """
+        # sql = """
+        # INSERT INTO Product_Availability 
+        # (product_id, starts_on, ends_on, note) VALUES
+        # (%s, %s, %s, %s)
+        # """
 
-        parms = (product_id, starts_on, ends_on, note)
-        mycursor.execute(sql, parms)
-        DB.mydb.commit()
-        DB.mydb.close()
+        # parms = (product_id, starts_on, ends_on, note)
+        # mycursor.execute(sql, parms)
+        # DB.mydb.commit()
+        # DB.mydb.close()
         
-        return mycursor.lastrowid
+        # return mycursor.lastrowid
 
     @staticmethod
     def searchProductsAll(location_id: int, starts_on: datetime.date, ends_on: datetime.date, sorting_field: str, sorting_type: str, pagination_stmt_limit_offset: str, pagination_stmt_total_count: str):
-        """Search all of the products
+        raise NotImplementedError
+        # """Search all of the products
         
-        ---
-        Args:
+        # ---
+        # Args:
 
-        - location_id (int): dropoff location id
-        - starts_on (date): when the request starts
-        - ends_on (date): when the request ends
-        - oSorting (Sorting): the sorting type to use
-        - sorting_field (str): field to sort
-        - sorting_type (str): type of sorting (asc or desc)
-        - pagination_stmt_limit_offset (str) - sql limit offset statement
-        - pagination_stmt_total_count (str) - sql statement for the count
+        # - location_id (int): dropoff location id
+        # - starts_on (date): when the request starts
+        # - ends_on (date): when the request ends
+        # - oSorting (Sorting): the sorting type to use
+        # - sorting_field (str): field to sort
+        # - sorting_type (str): type of sorting (asc or desc)
+        # - pagination_stmt_limit_offset (str) - sql limit offset statement
+        # - pagination_stmt_total_count (str) - sql statement for the count
 
-        Returns:
-            list: product search result
-        """        
+        # Returns:
+        #     list: product search result
+        # """        
 
-        # connect to the database
-        DB.check_connection()
-        mycursor = DB.mydb.cursor(named_tuple=True)
+        # # connect to the database
+        # DB.check_connection()
+        # mycursor = DB.mydb.cursor(named_tuple=True)
 
-        # build the 
-        stmt =  DB.getSearchProductSqlStmtPrefix_() + "ORDER BY {} {}".format(sorting_field, sorting_type)        
-        parms = (location_id, starts_on, ends_on)
+        # # build the 
+        # stmt =  DB.getSearchProductSqlStmtPrefix_() + "ORDER BY {} {}".format(sorting_field, sorting_type)        
+        # parms = (location_id, starts_on, ends_on)
 
-        mycursor.execute(pagination_stmt_limit_offset, parms)
-        searchResults = mycursor.fetchall()
+        # mycursor.execute(pagination_stmt_limit_offset, parms)
+        # searchResults = mycursor.fetchall()
 
-        mycursor.execute(pagination_stmt_total_count, parms)
-        countResult = mycursor.fetchone()
+        # mycursor.execute(pagination_stmt_total_count, parms)
+        # countResult = mycursor.fetchone()
         
-        DB.mydb.close()
+        # DB.mydb.close()
 
-        return (searchResults, countResult.count)
+        # return (searchResults, countResult.count)
 
 
 
     @staticmethod
     def searchProductsByCategory(location_id: int, starts_on: datetime.date, ends_on: datetime.date, product_category_type, product_category_id, sorting_field, sorting_type, pagination_stmt_limit, pagination_stmt_offset):
+        # raise NotImplementedError
         """Calls the Search_Products stored procedure in the database.
         
         ---
