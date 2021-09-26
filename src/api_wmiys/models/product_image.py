@@ -40,7 +40,7 @@ class ProductImage:
 
         parms = (self.product_id, self.file_name)
 
-        cursor.execute()
+        cursor.execute(sql, parms)
         db.commit()
         self.id = cursor.lastrowid
 
@@ -71,7 +71,7 @@ class ProductImage:
         """
 
         parms = (self.id,)
-        cursor.execute()
+        cursor.execute(sql, parms)
         imageData = cursor.fetchone()
 
         if not imageData:
@@ -160,7 +160,7 @@ class ProductImage:
         sql = 'DELETE FROM Product_Images WHERE product_id = %s'
 
         parms = (product_id,)
-        cursor.execute()
+        cursor.execute(sql, parms)
         db.commit()
         record_count = cursor.rowcount
         db.close()
@@ -184,7 +184,7 @@ class ProductImage:
         """
 
         parms = (product_id,)
-        cursor.execute()
+        cursor.execute(sql, parms)
         images = cursor.fetchall()
         db.close()
 
