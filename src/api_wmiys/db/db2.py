@@ -4,20 +4,73 @@
 #
 #************************************************************************************
 import mysql.connector
+from mysql.connector.cursor import MySQLCursor
 from typing import Type
 import os
 import datetime
 # from ..common import utilities, SortingSearchProducts, Pagination
 from ..common import utilities
 
+from . import credentials as db_credentials
+
+
 class DB:
-    
+
+        
     #------------------------------------------------------
     # static properties
     #------------------------------------------------------
     SQL_CONNECTION_DATA_FILE = os.getcwd() + '/api_wmiys/DB/' + '.mysql-info.json'
     configData = utilities.readJsonFile(SQL_CONNECTION_DATA_FILE)
     mydb = mysql.connector.connect(user=configData['user'], password=configData['passwd'], host=configData['host'], database=configData['database'])
+
+
+    def __init__(self):
+        self.connection = mysql.connector.MySQLConnection()
+    
+    #----------------------------------------------------------
+    # Connect to the database
+    #----------------------------------------------------------
+    def connect(self):
+        self.connection = mysql.connector.connect(user=db_credentials.user, host=db_credentials.host, database=db_credentials.database, password=db_credentials.password)
+    
+    #----------------------------------------------------------
+    # Close the database connection
+    #----------------------------------------------------------
+    def close(self):
+        self.connection.close()
+
+    #----------------------------------------------------------
+    # Commit the current transaction
+    #----------------------------------------------------------
+    def commit(self):
+        self.connection.commit()
+        
+    #----------------------------------------------------------
+    # Get a cursor from the database connection.
+    #
+    # Args:
+    #     a_dbCursorType (DbCursorTypes): Cursor type
+    #
+    # Returns:
+    #     MySQLCursor: The connected mysql cursor.
+    #----------------------------------------------------------
+    def getCursor(self, asDict: bool=True) -> MySQLCursor:
+        cursor = None
+
+        if asDict:
+            cursor = self.connection.cursor(dictionary=True)
+        else:
+            cursor = self.connection.cursor(prepared=True)
+        
+        return cursor
+
+
+
+
+
+
+
 
     #------------------------------------------------------
     # Check the DB connection.
@@ -42,115 +95,121 @@ class DB:
     #------------------------------------------------------
     @staticmethod
     def get_users():
-        """Returns a list of users
-        """
-        DB.check_connection()
-        mycursor = DB.mydb.cursor(named_tuple=True)
+        raise NotImplementedError
+        # """Returns a list of users
+        # """
+        # DB.check_connection()
+        # mycursor = DB.mydb.cursor(named_tuple=True)
         
-        sql = """
-        SELECT 
-            u.id as id,
-            u.email as email,
-            u.password as password,
-            u.name_first as name_first,
-            u.name_last as name_last,
-            u.created_on as created_on,
-            DATE_FORMAT(u.birth_date, '%Y-%m-%d') as birth_date
-        FROM Users u 
-        """
+        # sql = """
+        # SELECT 
+        #     u.id as id,
+        #     u.email as email,
+        #     u.password as password,
+        #     u.name_first as name_first,
+        #     u.name_last as name_last,
+        #     u.created_on as created_on,
+        #     DATE_FORMAT(u.birth_date, '%Y-%m-%d') as birth_date
+        # FROM Users u 
+        # """
 
-        mycursor.execute(sql)
-        users = mycursor.fetchall()
-        DB.mydb.close()
-        return users 
+        # mycursor.execute(sql)
+        # users = mycursor.fetchall()
+        # DB.mydb.close()
+        # return users 
 
     #------------------------------------------------------
     # Insert a new user into the database
     #------------------------------------------------------
-    @staticmethod
-    def insert_user(email: str, password: str, name_first: str, name_last: str, birth_date: str):
-        """Insert a user into the Database
+    # @staticmethod
+    # def insert_user(email: str, password: str, name_first: str, name_last: str, birth_date: str):
+    #     """Insert a user into the Database
 
-        Args:
-            email (str): email
-            password (str): password
-            name_first (str): first name
-            name_last (str): last name
-            birth_date (str): birth day
-        """        
-        DB.check_connection()
-        mycursor = DB.mydb.cursor(prepared=True)
+    #     Args:
+    #         email (str): email
+    #         password (str): password
+    #         name_first (str): first name
+    #         name_last (str): last name
+    #         birth_date (str): birth day
+    #     """        
+    #     DB.check_connection()
+    #     mycursor = DB.mydb.cursor(prepared=True)
         
-        sql = """
-        INSERT INTO Users 
-        (email, password, name_first, name_last, birth_date) VALUES
-        (%s, %s, %s, %s, %s)
-        """
+    #     sql = """
+    #     INSERT INTO Users 
+    #     (email, password, name_first, name_last, birth_date) VALUES
+    #     (%s, %s, %s, %s, %s)
+    #     """
 
-        parm_values = (email, password, name_first, name_last, birth_date)
-        mycursor.execute(sql, parm_values)
+    #     parm_values = (email, password, name_first, name_last, birth_date)
+    #     mycursor.execute(sql, parm_values)
 
-        DB.mydb.commit()
-        DB.mydb.close()
+    #     DB.mydb.commit()
+    #     DB.mydb.close()
 
-        return mycursor.lastrowid
+    #     return mycursor.lastrowid
+
+
 
     #------------------------------------------------------
     # Retrieve a single user record
     #------------------------------------------------------
     @staticmethod
     def get_user(user_id: int):
-        DB.check_connection()
-        mycursor = DB.mydb.cursor(named_tuple=True)
+        raise NotImplementedError
 
-        sql = """
-        SELECT 
-            u.id as id,
-            u.email as email,
-            u.password as password,
-            u.name_first as name_first,
-            u.name_last as name_last,
-            u.created_on as created_on,
-            DATE_FORMAT(u.birth_date, '%Y-%m-%d') as birth_date
-        FROM Users u
-        WHERE 
-            u.id = %s
-        LIMIT 1
-        """
-        parms = (user_id,)
+        # DB.check_connection()
+        # mycursor = DB.mydb.cursor(named_tuple=True)
+
+        # sql = """
+        # SELECT 
+        #     u.id as id,
+        #     u.email as email,
+        #     u.password as password,
+        #     u.name_first as name_first,
+        #     u.name_last as name_last,
+        #     u.created_on as created_on,
+        #     DATE_FORMAT(u.birth_date, '%Y-%m-%d') as birth_date
+        # FROM Users u
+        # WHERE 
+        #     u.id = %s
+        # LIMIT 1
+        # """
+        # parms = (user_id,)
         
-        mycursor.execute(sql, parms)
-        result = mycursor.fetchone()
-        DB.mydb.close()
+        # mycursor.execute(sql, parms)
+        # result = mycursor.fetchone()
+        # DB.mydb.close()
         
-        return result
+        # return result
     
     #------------------------------------------------------
     # Update a user record
     #------------------------------------------------------
     @staticmethod
     def update_user(id, email, password, name_first, name_last, birth_date):
-        DB.check_connection()
-        mycursor = DB.mydb.cursor(prepared=True)
+        raise NotImplementedError
+        # DB.check_connection()
+        # mycursor = DB.mydb.cursor(prepared=True)
         
-        sql = """
-        UPDATE Users 
-        SET
-            email = %s,
-            password   = %s,
-            name_first = %s,
-            name_last  = %s,
-            birth_date = %s
-        WHERE
-            id = %s
-        """
+        # sql = """
+        # UPDATE Users 
+        # SET
+        #     email = %s,
+        #     password   = %s,
+        #     name_first = %s,
+        #     name_last  = %s,
+        #     birth_date = %s
+        # WHERE
+        #     id = %s
+        # """
 
-        parm_values = (email, password, name_first, name_last, birth_date, id)
-        mycursor.execute(sql, parm_values)
-        DB.mydb.commit()
-        DB.mydb.close()
+        # parm_values = (email, password, name_first, name_last, birth_date, id)
+        # mycursor.execute(sql, parm_values)
+        # DB.mydb.commit()
+        # DB.mydb.close()
 
-        return mycursor
+        # return mycursor
 
         
 
@@ -159,17 +218,18 @@ class DB:
     #------------------------------------------------------
     @staticmethod
     def getUserIDFromEmailPassword(email: str, password: str):
-        DB.check_connection()
-        mycursor = DB.mydb.cursor(named_tuple=True)
+        raise NotImplementedError
+        # DB.check_connection()
+        # mycursor = DB.mydb.cursor(named_tuple=True)
 
-        sql = 'SELECT u.id FROM Users u WHERE u.email = %s AND u.password = %s'
-        parms = (email, password)
+        # sql = 'SELECT u.id FROM Users u WHERE u.email = %s AND u.password = %s'
+        # parms = (email, password)
 
-        mycursor.execute(sql, parms)
-        result = mycursor.fetchone()
-        DB.mydb.close()
+        # mycursor.execute(sql, parms)
+        # result = mycursor.fetchone()
+        # DB.mydb.close()
         
-        return result
+        # return result
     
     #------------------------------------------------------
     # Call the location search stored procedure
@@ -618,7 +678,7 @@ class DB:
         return mycursor.lastrowid
 
     @staticmethod
-    def searchProductsAll(location_id: int, starts_on: datetime.date, ends_on: datetime.date, sorting_field: str, sorting_type: str, pagination_stmt_limit, pagination_stmt_offset):
+    def searchProductsAll(location_id: int, starts_on: datetime.date, ends_on: datetime.date, sorting_field: str, sorting_type: str, pagination_stmt_limit_offset: str, pagination_stmt_total_count: str):
         """Search all of the products
         
         ---
@@ -630,7 +690,8 @@ class DB:
         - oSorting (Sorting): the sorting type to use
         - sorting_field (str): field to sort
         - sorting_type (str): type of sorting (asc or desc)
-        - oPagination (Pagination): a pagination object
+        - pagination_stmt_limit_offset (str) - sql limit offset statement
+        - pagination_stmt_total_count (str) - sql statement for the count
 
         Returns:
             list: product search result
@@ -644,10 +705,10 @@ class DB:
         stmt =  DB.getSearchProductSqlStmtPrefix_() + "ORDER BY {} {}".format(sorting_field, sorting_type)        
         parms = (location_id, starts_on, ends_on)
 
-        mycursor.execute(pagination_stmt_limit, parms)
+        mycursor.execute(pagination_stmt_limit_offset, parms)
         searchResults = mycursor.fetchall()
 
-        mycursor.execute(pagination_stmt_offset, parms)
+        mycursor.execute(pagination_stmt_total_count, parms)
         countResult = mycursor.fetchone()
         
         DB.mydb.close()
