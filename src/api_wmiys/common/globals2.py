@@ -11,3 +11,4 @@ class Globals:
     #------------------------------------------------------
     def __init__(self, client_id=None):
         self.client_id = client_id
+        
