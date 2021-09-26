@@ -12,6 +12,10 @@ from ..common import utilities
 from . import credentials as db_credentials
 
 class DB:
+
+    #----------------------------------------------------------
+    # Constructor
+    #----------------------------------------------------------
     def __init__(self):
         self.connection = mysql.connector.MySQLConnection()
     
