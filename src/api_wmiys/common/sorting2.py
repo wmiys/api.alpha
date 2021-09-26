@@ -70,6 +70,7 @@ class Sorting:
         
 
 class SortingSearchProducts(Sorting):
+    
 
     DEFAULT_FIELD = 'name'
     ACCEPTABLE_FIELDS = ['id', 'name', 'description', 'product_categories_sub_id', 'product_categories_sub_name', 
