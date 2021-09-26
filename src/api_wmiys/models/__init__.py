@@ -1,5 +1,4 @@
 from .location import Location as Location
-from .login import Login as Login
 from .product_availability import ProductAvailability as ProductAvailability
 from .product_categories import ProductCategories as ProductCategories
 from .product_image import ProductImage as ProductImage

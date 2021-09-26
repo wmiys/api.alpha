@@ -6,14 +6,14 @@ Description:    Handles all the routing for loggin in.
 
 import flask
 from ..common import security
-from ..models import Login, User
+from ..models import User
 
 
 login = flask.Blueprint('login', __name__)
 
 @login.route('', methods=['GET'])
 def loginRoute():
-    userID = Login.getUserID(flask.request.args['email'], flask.request.args['password'])
+    userID = security.getUserID(flask.request.args['email'], flask.request.args['password'])
 
     # make sure the user is authorized
     if userID == None:

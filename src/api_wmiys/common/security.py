@@ -1,14 +1,17 @@
-
-from ..models import login
-from .globals import Globals
 import flask
 from flask import request
 from functools import wraps, update_wrapper
 from ..db import DB
+from .globals import Globals
 
 # setup the global variables container
 requestGlobals = Globals(client_id=None)
 
+#------------------------------------------------------
+# Verifies that:
+#   - client request has basic authentication header fields
+#   - the credentials are correct
+#------------------------------------------------------
 def login_required(f):
     @wraps(f)
     def wrap(*args, **kwargs):
@@ -17,7 +20,7 @@ def login_required(f):
             flask.abort(401)
         
         # make sure the user is authorized
-        clientID = login.getUserID(request.authorization.username, request.authorization.password)
+        clientID = getUserID(request.authorization.username, request.authorization.password)
         if clientID == None:
             flask.abort(401)
         
