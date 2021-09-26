@@ -35,9 +35,28 @@ class User:
     #------------------------------------------------------
     # Insert the user object into the database
     #------------------------------------------------------
-    def insert(self):
-        user_id = DB.insert_user(email=self.email, password=self.password, name_first=self.name_first, name_last=self.name_last, birth_date=self.birth_date)
-        self.id = user_id
+    def insert(self):        
+        db = DB()
+        db.connect()
+
+        cursor = db.getCursor(False)
+
+        sql = """
+        INSERT INTO Users 
+        (email, password, name_first, name_last, birth_date) VALUES
+        (%s, %s, %s, %s, %s)
+        """
+
+        parm_values = (self.email, self.password, self.name_first, self.name_last, self.birth_date)
+        cursor.execute(sql, parm_values)
+
+        db.commit()
+        self.id = cursor.lastrowid
+        
+        db.close()
+
+
+    
 
     #------------------------------------------------------
     # Retrieve the user info from the database
@@ -46,16 +65,76 @@ class User:
         # don't do anything if the user id isn't set
         if self.id is None:
             return
-                
-        db_data = DB.get_user(self.id)
 
-        self.email      = db_data.email
-        self.password   = db_data.password
-        self.name_first = db_data.name_first
-        self.name_last  = db_data.name_last
-        self.birth_date = db_data.birth_date
-        self.created_on = db_data.created_on
+        db = DB()
+        db.connect()
+        cursor = db.getCursor(asDict=True)
+
+        sql = """
+        SELECT 
+            u.id as id,
+            u.email as email,
+            u.password as password,
+            u.name_first as name_first,
+            u.name_last as name_last,
+            u.created_on as created_on,
+            DATE_FORMAT(u.birth_date, '%Y-%m-%d') as birth_date
+        FROM Users u
+        WHERE 
+            u.id = %s
+        LIMIT 1
+        """
+        parms = (self.id,)
+        
+        cursor.execute(sql, parms)
+        record_set: dict = cursor.fetchone()
+
+        self.email      = record_set.get('email', None)
+        self.password   = record_set.get('password', None)
+        self.name_first = record_set.get('name_first', None)
+        self.name_last  = record_set.get('name_last', None)
+        self.birth_date = record_set.get('birth_date', None)
+        self.created_on = record_set.get('created_on', None)
+
+        db.close()
+
     
+
+    #------------------------------------------------------
+    # update the database to the field values currently in the object
+    #------------------------------------------------------
+    def update(self):
+        if not self.id:
+            return 0
+
+        db = DB()
+        db.connect()
+        cursor = db.getCursor(asDict=False)
+
+        parms = (self.email, self.password, self.name_first, self.name_last, self.birth_date, self.id)
+
+        sql = """
+        UPDATE Users 
+        SET
+            email = %s,
+            password   = %s,
+            name_first = %s,
+            name_last  = %s,
+            birth_date = %s
+        WHERE
+            id = %s
+        """
+
+        cursor.execute(sql, parms)
+        db.commit()
+
+        row_count = cursor.rowcount
+
+        db.close()
+
+        return row_count
+    
+
     #------------------------------------------------------
     # return the object as a dict without the password
     #------------------------------------------------------
@@ -85,16 +164,7 @@ class User:
             
         return True
     
-    #------------------------------------------------------
-    # update the database to the field values currently in the object
-    #------------------------------------------------------
-    def update(self):
-        if not self.id:
-            return 0
 
-        updateResult = DB.update_user(id=self.id, email=self.email, password=self.password, name_first=self.name_first, name_last=self.name_last, birth_date=self.birth_date)
-
-        return updateResult.rowcount
 
 
 

@@ -236,15 +236,16 @@ class DB:
     #------------------------------------------------------
     @staticmethod
     def searchLocations(query: str, num_results: int=20):
-        DB.check_connection()
-        mycursor = DB.mydb.cursor(named_tuple=True)
+        raise NotImplementedError
+        # DB.check_connection()
+        # mycursor = DB.mydb.cursor(named_tuple=True)
 
-        parms = [query, num_results]
-        result_args = mycursor.callproc('Search_Locations', parms)
-        result = next(mycursor.stored_results())
-        DB.mydb.close()
+        # parms = [query, num_results]
+        # result_args = mycursor.callproc('Search_Locations', parms)
+        # result = next(mycursor.stored_results())
+        # DB.mydb.close()
 
-        return result.fetchall()
+        # return result.fetchall()
 
     #------------------------------------------------------
     # Get all the product categories

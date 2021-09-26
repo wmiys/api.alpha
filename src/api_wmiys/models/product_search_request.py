@@ -55,7 +55,7 @@ class ProductSearchRequest:
         Returns:
             list: matching products
         """
-        return DB.searchProductsAll(self.location_id, self.starts_on, self.ends_on, self.sorting.field, self.sorting.type, self.pagination)
+        return DB.searchProductsAll(self.location_id, self.starts_on, self.ends_on, self.sorting.field, self.sorting.type, self.pagination.getSqlStmtLimitOffset(self.pagination.get), self.pagination.getSqlStmtTotalCount())
 
     def searchCategoriesMajor(self, product_categories_major_id: int):
         """Search for a major product category
