@@ -92,9 +92,9 @@ def productAvailability(user_id: int, product_id: int, product_availability_id: 
         return jsonify(availability.get())
     
     elif request.method == 'DELETE':
-        result = availability.delete()
+        row_count = availability.delete()
 
-        if result.rowcount != 1:
+        if row_count != 1:
             pass    # error something went wrong
         
         return ('', 204)

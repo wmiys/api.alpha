@@ -5,7 +5,7 @@ Description:    Handles all the search routing.
 """
 from __future__ import annotations
 import flask
-from flask import Blueprint, jsonify, request
+from flask import Blueprint
 from ..db import DB
 
 
@@ -22,10 +22,9 @@ search = Blueprint('search', __name__)
 def searchLocations():
     query = getQuery()
     per_page = getPerPage()
-    
-    search_results = DB.searchLocations(query=query, num_results=per_page)
+    search_results = searchLocations(query=query, num_results=per_page)
 
-    return jsonify(search_results)
+    return flask.jsonify(search_results)
 
 
 #------------------------------------------------------
@@ -33,10 +32,12 @@ def searchLocations():
 # The query parm is required, so if it's missing respond with a 400
 #------------------------------------------------------
 def getQuery():
-    query = request.args.get('q')
+    query = flask.request.args.get('q')
 
     if query == None:
         flask.abort(400)
+
+    return query
 
 #------------------------------------------------------
 # Get the per_page ('per_page') url parm
@@ -47,7 +48,7 @@ def getQuery():
 #   - the value is less than 1
 #------------------------------------------------------
 def getPerPage() -> int:
-    per_page = request.args.get('per_page')
+    per_page = flask.request.args.get('per_page') or None
     
     if not per_page:
         return DEFAULT_PER_PAGE_VALUE

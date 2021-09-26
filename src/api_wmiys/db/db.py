@@ -428,52 +428,54 @@ class DB:
     #------------------------------------------------------
     @staticmethod
     def insertProduct(user_id, name, description=None, product_categories_sub_id=None, location_id=None, dropoff_distance=None, price_full=None, price_half=None, image=None, minimum_age=None):
-        DB.check_connection()
-        mycursor = DB.mydb.cursor(prepared=True)
+        raise NotImplementedError
+        # DB.check_connection()
+        # mycursor = DB.mydb.cursor(prepared=True)
         
-        sql = """
-        INSERT INTO Products
-        (user_id, name, description, product_categories_sub_id, location_id, dropoff_distance, price_full, price_half, image, minimum_age) VALUES
-        (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-        """
+        # sql = """
+        # INSERT INTO Products
+        # (user_id, name, description, product_categories_sub_id, location_id, dropoff_distance, price_full, price_half, image, minimum_age) VALUES
+        # (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+        # """
 
-        parms = (user_id, name, description, product_categories_sub_id, location_id, dropoff_distance, price_full, price_half, image, minimum_age)
-        mycursor.execute(sql, parms)
-        DB.mydb.commit()
-        DB.mydb.close()
+        # parms = (user_id, name, description, product_categories_sub_id, location_id, dropoff_distance, price_full, price_half, image, minimum_age)
+        # mycursor.execute(sql, parms)
+        # DB.mydb.commit()
+        # DB.mydb.close()
 
-        return mycursor.lastrowid
+        # return mycursor.lastrowid
     
     #------------------------------------------------------
     # Update a product
     #------------------------------------------------------
     @staticmethod
     def updateProduct(product_id, name=None, description=None, product_categories_sub_id=None, location_id=None, dropoff_distance=None, price_full=None, price_half=None, image=None, minimum_age=None):
-        DB.check_connection()
-        mycursor = DB.mydb.cursor(prepared=True)
+        raise NotImplementedError
+        # DB.check_connection()
+        # mycursor = DB.mydb.cursor(prepared=True)
 
-        sql = """
-        UPDATE Products
-        SET
-            name                      = %s,
-            description               = %s,
-            product_categories_sub_id = %s,
-            location_id               = %s,
-            dropoff_distance          = %s,
-            price_full                = %s,
-            price_half                = %s,
-            image                     = %s,
-            minimum_age               = %s
-        WHERE 
-            id = %s
-        """
+        # sql = """
+        # UPDATE Products
+        # SET
+        #     name                      = %s,
+        #     description               = %s,
+        #     product_categories_sub_id = %s,
+        #     location_id               = %s,
+        #     dropoff_distance          = %s,
+        #     price_full                = %s,
+        #     price_half                = %s,
+        #     image                     = %s,
+        #     minimum_age               = %s
+        # WHERE 
+        #     id = %s
+        # """
 
-        parms = (name, description, product_categories_sub_id, location_id, dropoff_distance, price_full, price_half, image, minimum_age, product_id)
-        mycursor.execute(sql, parms)
-        DB.mydb.commit()
-        DB.mydb.close()
+        # parms = (name, description, product_categories_sub_id, location_id, dropoff_distance, price_full, price_half, image, minimum_age, product_id)
+        # mycursor.execute(sql, parms)
+        # DB.mydb.commit()
+        # DB.mydb.close()
 
-        return mycursor
+        # return mycursor
 
 
     #------------------------------------------------------
@@ -505,23 +507,24 @@ class DB:
     #------------------------------------------------------
     @staticmethod
     def getProduct(id: int):
-        DB.check_connection()
-        mycursor = DB.mydb.cursor(named_tuple=True)
+        raise NotImplementedError
+        # DB.check_connection()
+        # mycursor = DB.mydb.cursor(named_tuple=True)
 
-        sql = """
-        SELECT *
-        FROM View_Products p
-        WHERE  p.id = %s
-        GROUP  BY p.id
-        LIMIT  1 
-        """
+        # sql = """
+        # SELECT *
+        # FROM View_Products p
+        # WHERE  p.id = %s
+        # GROUP  BY p.id
+        # LIMIT  1 
+        # """
 
-        parms = (id,)
-        mycursor.execute(sql, parms)
-        product = mycursor.fetchone()
-        DB.mydb.close()
+        # parms = (id,)
+        # mycursor.execute(sql, parms)
+        # product = mycursor.fetchone()
+        # DB.mydb.close()
 
-        return product
+        # return product
     
     #------------------------------------------------------
     # Returns all of a user's products
@@ -552,120 +555,125 @@ class DB:
     #------------------------------------------------------
     @staticmethod
     def getUserProducts(user_id: int):
-        DB.check_connection()
-        mycursor = DB.mydb.cursor(named_tuple=True)
+        raise NotImplementedError
+        # DB.check_connection()
+        # mycursor = DB.mydb.cursor(named_tuple=True)
 
-        sql = """
-        SELECT *
-        FROM View_Products p
-        WHERE  p.user_id = %s
-        GROUP  BY p.id
-        ORDER BY p.name ASC
-        """
+        # sql = """
+        # SELECT *
+        # FROM View_Products p
+        # WHERE  p.user_id = %s
+        # GROUP  BY p.id
+        # ORDER BY p.name ASC
+        # """
 
-        parms = (user_id,)
-        mycursor.execute(sql, parms)
-        products = mycursor.fetchall()
-        DB.mydb.close()
+        # parms = (user_id,)
+        # mycursor.execute(sql, parms)
+        # products = mycursor.fetchall()
+        # DB.mydb.close()
 
-        return products
+        # return products
 
 
     @staticmethod
     def getProductAvailabilities(product_id: int):
-        """Get all the product availability records for a single product
-        """
+        raise NotImplementedError
+        # """Get all the product availability records for a single product
+        # """
 
-        DB.check_connection()
-        mycursor = DB.mydb.cursor(named_tuple=True)
+        # DB.check_connection()
+        # mycursor = DB.mydb.cursor(named_tuple=True)
 
-        sql = """
-        SELECT   *
-        FROM     View_Product_Availability pa
-        WHERE    pa.product_id = %s
-        ORDER BY pa.created_on DESC
-        """
+        # sql = """
+        # SELECT   *
+        # FROM     View_Product_Availability pa
+        # WHERE    pa.product_id = %s
+        # ORDER BY pa.created_on DESC
+        # """
 
-        parms = (product_id,)
-        mycursor.execute(sql, parms)
-        availabilities = mycursor.fetchall()
-        DB.mydb.close()
+        # parms = (product_id,)
+        # mycursor.execute(sql, parms)
+        # availabilities = mycursor.fetchall()
+        # DB.mydb.close()
 
-        return availabilities
+        # return availabilities
     
     @staticmethod
     def getProductAvailability(id: int):
-        """Get the database record for a single product availability
+        raise NotImplementedError
+        # """Get the database record for a single product availability
 
-        Args:
-            id (int): the id of the product 
+        # Args:
+        #     id (int): the id of the product 
 
-        Returns:
-            db record
-        """        
+        # Returns:
+        #     db record
+        # """        
 
-        DB.check_connection()
-        mycursor = DB.mydb.cursor(named_tuple=True)
+        # DB.check_connection()
+        # mycursor = DB.mydb.cursor(named_tuple=True)
 
-        sql = """
-        SELECT   *
-        FROM     View_Product_Availability pa
-        WHERE    pa.id = %s
-        ORDER BY pa.created_on DESC
-        LIMIT 1
-        """
+        # sql = """
+        # SELECT   *
+        # FROM     View_Product_Availability pa
+        # WHERE    pa.id = %s
+        # ORDER BY pa.created_on DESC
+        # LIMIT 1
+        # """
 
-        parms = (id,)
-        mycursor.execute(sql, parms)
-        availability = mycursor.fetchone()
-        DB.mydb.close()
+        # parms = (id,)
+        # mycursor.execute(sql, parms)
+        # availability = mycursor.fetchone()
+        # DB.mydb.close()
 
-        return availability
+        # return availability
 
     
     @staticmethod
     def updateProductAvailability(id, product_id, starts_on=None, ends_on=None, note=None):
-        """Update a single product availability record
-        """
-        DB.check_connection()
-        mycursor = DB.mydb.cursor(prepared=True)
+        raise NotImplementedError
+        # """Update a single product availability record
+        # """
+        # DB.check_connection()
+        # mycursor = DB.mydb.cursor(prepared=True)
 
-        sql = """
-        UPDATE Product_Availability
-        SET
-            product_id = %s,
-            starts_on  = %s,
-            ends_on    = %s,
-            note       = %s
-        WHERE 
-            id = %s
-        """
+        # sql = """
+        # UPDATE Product_Availability
+        # SET
+        #     product_id = %s,
+        #     starts_on  = %s,
+        #     ends_on    = %s,
+        #     note       = %s
+        # WHERE 
+        #     id = %s
+        # """
 
-        parms = (product_id, starts_on, ends_on, note, id)
-        mycursor.execute(sql, parms)
-        DB.mydb.commit()
-        DB.mydb.close()
+        # parms = (product_id, starts_on, ends_on, note, id)
+        # mycursor.execute(sql, parms)
+        # DB.mydb.commit()
+        # DB.mydb.close()
         
-        return mycursor
+        # return mycursor
     
     @staticmethod
     def deleteProductAvailability(id):
-        """Delete a single product availability record
-        """
-        DB.check_connection()
-        mycursor = DB.mydb.cursor(prepared=True)
+        raise NotImplementedError
+        # """Delete a single product availability record
+        # """
+        # DB.check_connection()
+        # mycursor = DB.mydb.cursor(prepared=True)
 
-        sql = """
-        DELETE FROM Product_Availability
-        WHERE id = %s
-        """
+        # sql = """
+        # DELETE FROM Product_Availability
+        # WHERE id = %s
+        # """
 
-        parms = (id,)
-        mycursor.execute(sql, parms)
-        DB.mydb.commit()
-        DB.mydb.close()
+        # parms = (id,)
+        # mycursor.execute(sql, parms)
+        # DB.mydb.commit()
+        # DB.mydb.close()
         
-        return mycursor
+        # return mycursor
 
     
     @staticmethod
