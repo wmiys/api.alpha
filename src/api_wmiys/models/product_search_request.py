@@ -15,6 +15,11 @@ _SQL_STMT_PREFIX = '''
     WHERE SEARCH_PRODUCTS_FILTER(p.id, %s, %s, %s) = TRUE 
 '''
 
+# Product category sql table names
+PRODUCT_CATEGORY_TABLE_NAME_MAJOR = 'product_categories_major_id'
+PRODUCT_CATEGORY_TABLE_NAME_MINOR = 'product_categories_minor_id'
+PRODUCT_CATEGORY_TABLE_NAME_SUB   = 'product_categories_sub_id'
+
     
 #----------------------------------------------------------
 # Possible filter product categories
@@ -143,11 +148,11 @@ class ProductSearchRequest:
         categoryTableName = ''
 
         if category_type == FilterCategories.MAJOR:
-            categoryTableName = 'product_categories_major_id'
+            categoryTableName = PRODUCT_CATEGORY_TABLE_NAME_MAJOR
         elif category_type == FilterCategories.MAJOR:
-            categoryTableName = 'product_categories_minor_id'
+            categoryTableName = PRODUCT_CATEGORY_TABLE_NAME_MINOR
         elif category_type == FilterCategories.SUB:
-            categoryTableName = 'product_categories_sub_id'
+            categoryTableName = PRODUCT_CATEGORY_TABLE_NAME_SUB
         
         return categoryTableName
 

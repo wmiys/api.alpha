@@ -10,11 +10,11 @@ from ..db import DB
 from ..common import utilities
 from .. import common
 
+LOCAL_SERVER_COVER_PHOTO_DIRECTORY = 'product-images/covers'
+LOCAL_SERVER_COVER_PHOTO_DIRECTORY_ABS = "http://10.0.0.82/files/api.wmiys/src/product-images/covers"
+
 class Product:
 
-    LOCAL_SERVER_COVER_PHOTO_DIRECTORY = 'product-images/covers'
-    LOCAL_SERVER_COVER_PHOTO_DIRECTORY_ABS = "http://10.0.0.82/files/api.wmiys/src/product-images/covers"
-    
     #------------------------------------------------------
     # Constructor
     #------------------------------------------------------
@@ -47,9 +47,9 @@ class Product:
         """
 
         parms = (
-            self.user_id, self.name, self.description, 
-            self.product_categories_sub_id, self.location_id, self.dropoff_distance, 
-            self.price_full, self.price_half, self.image, 
+            self.user_id,                   self.name,          self.description, 
+            self.product_categories_sub_id, self.location_id,   self.dropoff_distance, 
+            self.price_full,                self.price_half,    self.image, 
             self.minimum_age
         )
     
@@ -136,7 +136,7 @@ class Product:
 
         # prepend the absolute url to the image value
         if product_rs['image']:
-            product_rs['image'] = Product.LOCAL_SERVER_COVER_PHOTO_DIRECTORY_ABS + '/' + product_rs['image']
+            product_rs['image'] = LOCAL_SERVER_COVER_PHOTO_DIRECTORY_ABS + '/' + product_rs['image']
 
         return product_rs
 
@@ -217,7 +217,7 @@ class Product:
         # prepend the absolute image file path to each image field, if one exists
         for product in products:
             if product['image']:
-                product['image'] = Product.LOCAL_SERVER_COVER_PHOTO_DIRECTORY_ABS + '/' + product['image']
+                product['image'] = LOCAL_SERVER_COVER_PHOTO_DIRECTORY_ABS + '/' + product['image']
 
         return products
 
