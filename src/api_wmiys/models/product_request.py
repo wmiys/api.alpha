@@ -47,6 +47,7 @@ class ProductRequest:
             successful = True
         except Exception as e:
             successful = False
+            print(e)
         finally:
             db.close()
         
