@@ -14,11 +14,9 @@ Login                | /login
 Locations            | /locations/:location_id
 Search Locations     | /search/locations
 Search Products      | /search/products
+Requests             | /requests
 
 """
-
-
-
 
 from flask import Flask
 from flask_cors import CORS
@@ -53,6 +51,7 @@ def registerBlueprints(flaskApp):
     flaskApp.register_blueprint(routes.product_images.bpProductImages, url_prefix='/users/<int:user_id>/products/<int:product_id>/images')
     flaskApp.register_blueprint(routes.listings.productListings, url_prefix='/listings/<int:product_id>')
     flaskApp.register_blueprint(routes.locations.locationsBP, url_prefix='/locations')
+    flaskApp.register_blueprint(routes.requests.bp_requests, url_prefix='/requests')
 
 
 app = Flask(__name__)

@@ -8,3 +8,5 @@ from .product_search_request import ProductSearchRequest as ProductSearchRequest
 from .product_search_request import FilterCategories as FilterCategories
 from .product import Product as Product
 from .user import User as User
+from .product_request import ProductRequest as ProductRequest
+from . import product_request as product_request

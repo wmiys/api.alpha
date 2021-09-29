@@ -50,3 +50,15 @@ def areAllKeysValidProperties(testDict: dict, theObject: object):
     return True
 
 
+#------------------------------------------------------
+# Set's the object's properties given a dict
+#------------------------------------------------------
+def setPropertyValuesFromDict(newPropertyValues: dict, theObject):
+    # set the object properties
+    for key in newPropertyValues:
+        if newPropertyValues[key]:
+            setattr(theObject, key, newPropertyValues.get(key, None))
+        else:
+            setattr(theObject, key, None)
+        
+    
