@@ -88,8 +88,10 @@ class Product:
         parms = (
             self.name,          self.description,         self.product_categories_sub_id,
             self.location_id,   self.dropoff_distance,    self.price_full,
-            self.price_half,    self.image,               self.minimum_age
+            self.price_half,    self.image,               self.minimum_age,
+            self.id
         )
+
 
         try:
             cursor.execute(sql, parms)

@@ -9,18 +9,16 @@ from flask import Blueprint, jsonify, request
 from ..db import DB
 from ..common import security
 from ..models import Product
+from ..models.product import LOCAL_SERVER_COVER_PHOTO_DIRECTORY
 
 products = Blueprint('products', __name__)
 
-
+#------------------------------------------------------
+# Fetch all of a user's products
+#------------------------------------------------------
 @products.route('', methods=['GET'])
 @security.login_required
 def userProductsGet(user_id):
-    """Fetch all of a user's products
-
-    Args:
-        user_id (int): user id
-    """
     # make sure the user is authorized
     if security.requestGlobals.client_id != user_id:
         flask.abort(403)
@@ -31,18 +29,12 @@ def userProductsGet(user_id):
     return jsonify(userProducts)
 
 
+#------------------------------------------------------
+# Create a new product
+#------------------------------------------------------
 @products.route('', methods=['POST'])
 @security.login_required
 def userProductsPost(user_id):
-    """Create a new product
-
-    Args:
-        user_id (int): user id
-
-    Returns:
-        obj: the new product object
-    """
-
     # make sure the user is authorized
     if security.requestGlobals.client_id != user_id:
         flask.abort(403)
@@ -58,43 +50,40 @@ def userProductsPost(user_id):
 
     # set the image if one was uploaded
     if request.files.get('image'):
-        newProduct.setImagePropertyFromImageFile(request.files.get('image'), Product.LOCAL_SERVER_COVER_PHOTO_DIRECTORY)
-    
-
-    print(request.files)
+        newProduct.setImagePropertyFromImageFile(request.files.get('image'), LOCAL_SERVER_COVER_PHOTO_DIRECTORY)
 
     newProduct.insert()
 
     return jsonify(newProduct.get())
 
 
+#------------------------------------------------------
+# Retrieve or update an existing product
+#------------------------------------------------------
 @products.route('<int:product_id>', methods=['GET', 'PUT'])
 @security.login_required
 def productRequest(user_id, product_id):
-    """Retrieve/update a single user product
-
-    Args:
-        user_id (int): user's id
-        product_id (int): product's id
-    """
     # load the product data
     product = Product(id=product_id)
     product.loadData()  # load the product data from the database
 
     if request.method == 'PUT':
-        # the request body contained a field that does not belong in the product class
+        # update the product's properties from the request dictionary
         if not product.setPropertyValuesFromDict(request.form.to_dict()):
+            # the request body contained a field that does not belong in the product class
             flask.abort(400)
 
         # set the image if one was uploaded
         if request.files.get('image'):
-            product.setImagePropertyFromImageFile(request.files.get('image'), Product.LOCAL_SERVER_COVER_PHOTO_DIRECTORY)
+            product.setImagePropertyFromImageFile(request.files.get('image'), LOCAL_SERVER_COVER_PHOTO_DIRECTORY)
 
-        
-        print(request.files)
 
-        updateResult = product.update()
+        records_updated = product.update()
 
-        return ('', 200)
+        if records_updated == -1:
+            return ('Did not update product', 400)
+        else:
+            return ('', 200)
+            
     else:
         return jsonify(product.get())
