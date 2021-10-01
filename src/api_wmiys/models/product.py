@@ -18,7 +18,7 @@ class Product:
     #------------------------------------------------------
     # Constructor
     #------------------------------------------------------
-    def __init__(self, id=None, user_id=None, name=None, description=None, product_categories_sub_id=None, location_id=None, dropoff_distance=None, price_full=None, price_half=None, image=None, minimum_age=None, created_on=None):
+    def __init__(self, id=None, user_id=None, name=None, description=None, product_categories_sub_id=None, location_id=None, dropoff_distance=None, price_full=None, image=None, minimum_age=None, created_on=None):
         self.id                        = id
         self.user_id                   = user_id
         self.name                      = name
@@ -27,7 +27,6 @@ class Product:
         self.location_id               = location_id
         self.dropoff_distance          = dropoff_distance
         self.price_full                = price_full
-        self.price_half                = price_half
         self.image                     = image
         self.minimum_age               = minimum_age
         self.created_on                = created_on
@@ -42,15 +41,14 @@ class Product:
 
         sql = """
         INSERT INTO Products
-        (user_id, name, description, product_categories_sub_id, location_id, dropoff_distance, price_full, price_half, image, minimum_age) VALUES
-        (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+        (user_id, name, description, product_categories_sub_id, location_id, dropoff_distance, price_full, image, minimum_age) VALUES
+        (%s, %s, %s, %s, %s, %s, %s, %s, %s)
         """
 
         parms = (
             self.user_id,                   self.name,          self.description, 
             self.product_categories_sub_id, self.location_id,   self.dropoff_distance, 
-            self.price_full,                self.price_half,    self.image, 
-            self.minimum_age
+            self.price_full,                self.image,         self.minimum_age
         )
     
         cursor.execute(sql, parms)
@@ -78,7 +76,6 @@ class Product:
             location_id               = %s,
             dropoff_distance          = %s,
             price_full                = %s,
-            price_half                = %s,
             image                     = %s,
             minimum_age               = %s
         WHERE 
@@ -88,8 +85,7 @@ class Product:
         parms = (
             self.name,          self.description,         self.product_categories_sub_id,
             self.location_id,   self.dropoff_distance,    self.price_full,
-            self.price_half,    self.image,               self.minimum_age,
-            self.id
+            self.image,         self.minimum_age,         self.id
         )
 
 
@@ -121,7 +117,6 @@ class Product:
         self.location_id               = db_row.get('location_id', None)
         self.dropoff_distance          = db_row.get('dropoff_distance', None)
         self.price_full                = db_row.get('price_full', None)
-        self.price_half                = db_row.get('price_half', None)
         self.image                     = db_row.get('image', None)
         self.minimum_age               = db_row.get('minimum_age', None)
         self.created_on                = db_row.get('created_on', None)
