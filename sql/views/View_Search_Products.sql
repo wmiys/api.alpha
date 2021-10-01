@@ -10,7 +10,6 @@ CREATE VIEW `View_Search_Products` AS
         `minor`.`product_categories_major_id` AS `product_categories_major_id`,
         `major`.`name` AS `product_categories_major_name`,
         `p`.`price_full` AS `price_full`,
-        `p`.`price_half` AS `price_half`,
         `p`.`image` AS `image`,
         `p`.`minimum_age` AS `minimum_age`,
         `p`.`user_id` AS `user_id`,
