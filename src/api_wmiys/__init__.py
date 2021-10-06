@@ -15,6 +15,7 @@ Locations            | /locations/:location_id
 Search Locations     | /search/locations
 Search Products      | /search/products
 Requests             | /requests
+Payments             | /payments
 
 """
 
@@ -52,7 +53,7 @@ def registerBlueprints(flaskApp):
     flaskApp.register_blueprint(routes.listings.productListings, url_prefix='/listings/<int:product_id>')
     flaskApp.register_blueprint(routes.locations.locationsBP, url_prefix='/locations')
     flaskApp.register_blueprint(routes.requests.bp_requests, url_prefix='/requests')
-
+    flaskApp.register_blueprint(routes.payments.bp_payments, url_prefix='/payments')
 
 app = Flask(__name__)
 
