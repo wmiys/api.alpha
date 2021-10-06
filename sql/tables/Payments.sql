@@ -7,6 +7,8 @@ CREATE TABLE Payments
     starts_on DATE NOT NULL,
     ends_on DATE NOT NULL,
     price_full DECIMAL(10,2) UNSIGNED NOT NULL,
+    fee_renter DECIMAL(3,2) NOT NULL DEFAULT '0.00',
+    fee_lender DECIMAL(3,2) unsigned NOT NULL DEFAULT '0.00',
     payment_session_id VARCHAR(255),
     created_on TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (id),
