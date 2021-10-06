@@ -46,4 +46,5 @@ def getLocations():
         return ('Server error.', HTTPStatus.INTERNAL_SERVER_ERROR.value)
     
     # return the url to the newly created resource
-    return str(payment.id)
+    # return str(payment.id)
+    return flask.jsonify(payment.get())

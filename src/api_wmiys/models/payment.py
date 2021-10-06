@@ -109,7 +109,13 @@ class Payment:
         db.connect()
         cursor = db.getCursor(True)
 
-        # sql = 'SELECT * FROM '
+        sql = 'SELECT * FROM View_Payments_Internal WHERE id = %s LIMIT 1'
+        cursor.execute(sql, (self.id,))
+        db_record = cursor.fetchone()
+
+        db.close()
+
+        return db_record
 
 
 

@@ -1,3 +1,4 @@
+DELIMITER $$
 CREATE DEFINER=`rrickgau_main`@`98.223.211.105` FUNCTION `Calculate_Renter_Price`(
     in_total_price DOUBLE(10,2),
     in_renter_fee DOUBLE (3,2)
@@ -8,10 +9,8 @@ BEGIN
     -- Given the total price and the renter's fee.
     
     DECLARE fee_amount DOUBLE(10,2);
-    DECLARE result DOUBLE(10,2);
-    
     SET fee_amount = ROUND((in_total_price * (in_renter_fee / 100)), 2);
-    SET result = fee_amount + in_total_price;
     
-    RETURN (result);    
-END
+    RETURN (fee_amount);    
+END$$
+DELIMITER ;
