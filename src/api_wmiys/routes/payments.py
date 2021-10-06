@@ -26,10 +26,11 @@ bp_payments = flask.Blueprint('bp_payments', __name__)
 @bp_payments.route('', methods=['POST'])
 @security.login_required
 def getLocations():
-
-    payment = Payment()
-    payment.id = utilities.getUUID(True)
-    payment.renter_id = security.requestGlobals.client_id
+    
+    payment = Payment(
+        id        = utilities.getUUID(True),
+        renter_id = security.requestGlobals.client_id,
+    )
 
     # set the object's property values from the request form data
     request_data = flask.request.form.to_dict()
@@ -45,6 +46,4 @@ def getLocations():
         return ('Server error.', HTTPStatus.INTERNAL_SERVER_ERROR.value)
     
     # return the url to the newly created resource
-    # paymentApiUrl = f'''/payments/{payment.id}'''
-    # return paymentApiUrl
     return str(payment.id)
