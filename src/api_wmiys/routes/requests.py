@@ -6,13 +6,15 @@ Description:    Handles all the pproduct requests.
 import flask
 from http import HTTPStatus
 from ..common import security, utilities
-from ..models import ProductRequest
+from ..models import ProductRequest, product_request
 
 # route blueprint
 bp_requests = flask.Blueprint('bp_requests', __name__)
 
 #-----------------------------------------------------
 # Create a new product request for the lender.
+# 
+# This get's called from the front-end ONLY!!
 # Normal users ARE NOT allowed to do this themselves.
 # ----------------------------------------------------
 @bp_requests.route('/received', methods=['POST'])
@@ -39,4 +41,16 @@ def newRequest():
 
     return ('', HTTPStatus.CREATED.value)
 
+
+#-----------------------------------------------------
+# Create a new product request for the lender.
+# This get's called from the front-end ONLY!!
+# Normal users ARE NOT allowed to do this themselves.
+# ----------------------------------------------------
+@bp_requests.route('/received', methods=['GET'])
+@security.login_required
+def getLenderRequests():
     
+    return flask.jsonify(product_request.getReceived(security.requestGlobals.client_id))
+    return 'received product requests'
+

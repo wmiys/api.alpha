@@ -1,4 +1,35 @@
+from __future__ import annotations
 from ..db import DB
+
+
+#-----------------------------------------------------
+# Retrieve all the requests that a lender has received.
+# 
+# Parms:
+#   lender_id - the lender's user_id
+# ----------------------------------------------------
+def getReceived(lender_id) -> list[dict]:
+    db = DB()
+    db.connect()
+    cursor = db.getCursor(True)
+
+    sql = '''
+        SELECT * 
+        FROM View_Requests_Lender v 
+        WHERE v.product_id IN (
+            SELECT id FROM Products p WHERE p.user_id = %s
+        )
+    '''
+
+    parms = (lender_id,)
+    cursor.execute(sql, parms)
+    requests = cursor.fetchall()
+    db.close()
+
+    return requests
+
+
+
 
 
 class ProductRequest:
@@ -53,21 +84,7 @@ class ProductRequest:
 
         return successful
 
-    
-    def _getNormal(self) -> dict:
-        db = DB()
-        db.connect()
-        cursor = db.getCursor(True)
 
-        sql = 'SELECT * FROM Product_Requests WHERE id = %s LIMIT 1'
-        parms = (self.id,)
-        cursor.execute(sql, parms)
-
-        dbRecord = cursor.fetchone()
-
-        db.close()
-
-        return dbRecord
 
 
 
