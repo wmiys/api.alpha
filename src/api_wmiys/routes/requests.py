@@ -5,39 +5,38 @@ Description:    Handles all the pproduct requests.
 """
 import flask
 from http import HTTPStatus
-from flask import Blueprint
 from ..common import security, utilities
-from ..models import ProductRequest, product_request
+from ..models import ProductRequest
 
 # route blueprint
-bp_requests = Blueprint('bp_requests', __name__)
+bp_requests = flask.Blueprint('bp_requests', __name__)
 
 #-----------------------------------------------------
-# Create a new product request
+# Create a new product request for the lender.
+# Normal users ARE NOT allowed to do this themselves.
 # ----------------------------------------------------
-@bp_requests.route('/submitted', methods=['POST'])
+@bp_requests.route('/received', methods=['POST'])
 @security.login_required
-def post():
-    # transform the request form into a dict
-    requestForm = flask.request.form.to_dict()
+def newRequest():
+    productRequest = ProductRequest()
 
-    # create the initial product request object
-    productRequest = ProductRequest(renter_id=security.requestGlobals.client_id)
+    requestData: dict = flask.request.form.to_dict()
 
-    # set the product request object's property values to the ones given in the request
-    if utilities.areAllKeysValidProperties(requestForm, productRequest):  
-        utilities.setPropertyValuesFromDict(requestForm, productRequest)
+    # set the object's attribute values from the incoming request form body
+    if utilities.areAllKeysValidProperties(requestData, productRequest):
+        utilities.setPropertyValuesFromDict(requestData, productRequest)
     else:
-        return ('Request body contained an invalid field.', 400)
+        return ('Invalid request body field.', HTTPStatus.UNPROCESSABLE_ENTITY.value)
+    
+    # make sure all the required object attributes are set in order to save the object 
+    if not productRequest.areInsertAttributesSet():
+        return ('Request body is missing a required field.', HTTPStatus.UNPROCESSABLE_ENTITY.value)
 
-    # ensure the request had all the required fields
-    if not productRequest.allPropertiesForInsertSet():
-        return ('Missing a required request field.', 400)
+    # insert the object into the database
+    if not productRequest.insert():
+        return ('Error inserting the product request. Check log', HTTPStatus.INTERNAL_SERVER_ERROR.value)
+    
 
-    # insert the request into the database
-    if productRequest.insert():
-        return ('', HTTPStatus.CREATED)
-    else:
-        return ('Insert error', 400)
+    return ('', HTTPStatus.CREATED.value)
 
     
