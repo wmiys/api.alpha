@@ -25,7 +25,7 @@ bp_payments = flask.Blueprint('bp_payments', __name__)
 #------------------------------------------------------
 @bp_payments.route('', methods=['POST'])
 @security.login_required
-def getLocations():
+def insertPayment():
     
     payment = Payment(
         id        = utilities.getUUID(True),
@@ -34,6 +34,8 @@ def getLocations():
 
     # set the object's property values from the request form data
     request_data = flask.request.form.to_dict()
+
+    print(flask.json.dumps(request_data, indent=4))
 
     if utilities.areAllKeysValidProperties(request_data, payment):
         utilities.setPropertyValuesFromDict(request_data, payment)
