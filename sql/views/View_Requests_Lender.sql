@@ -8,7 +8,7 @@ SELECT
     p.name AS product_name,
     pay.starts_on AS starts_on,
     pay.ends_on AS ends_on,
-    CALCULATE_LENDER_PAYOUT(pay.price_full, pay.fee_lender) AS payout,
+    CALCULATE_LENDER_PAYOUT(pay.price_full, pay.fee_lender, pay.starts_on, pay.ends_on) AS payout,
     pay.dropoff_location_id AS location_id,
     l.city AS location_city,
     l.state_id AS location_state_id,
