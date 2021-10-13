@@ -14,7 +14,6 @@ CREATE VIEW `View_Products` AS
         `l`.`state_name`                      AS `location_state_name`,
         `p`.`dropoff_distance`                AS `dropoff_distance`,
         `p`.`price_full`                      AS `price_full`,
-        `p`.`price_half`                      AS `price_half`,
         `p`.`image`                           AS `image`,
         `p`.`minimum_age`                     AS `minimum_age`,
         `p`.`created_on`                      AS `created_on`,

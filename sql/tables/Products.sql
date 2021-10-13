@@ -16,3 +16,7 @@ CREATE TABLE `Products` (
   KEY `user_id` (`user_id`),
   CONSTRAINT `Products_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `Users` (`id`) ON UPDATE CASCADE
 ) ENGINE=INNODB DEFAULT CHARSET=UTF8 COLLATE=UTF8_UNICODE_CI;
+
+
+-- #147
+ALTER TABLE Products DROP COLUMN price_half;

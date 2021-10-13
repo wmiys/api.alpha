@@ -17,6 +17,8 @@ Login                | /login
 Locations            | /locations/:location_id
 Search Locations     | /search/locations
 Search Products      | /search/products
+Requests             | /requests
+Payments             | /payments
 
 
 
