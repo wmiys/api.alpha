@@ -11,6 +11,10 @@ from ..models import ProductListing, ProductListingAvailability
 
 productListings = flask.Blueprint('productListings', __name__)
 
+
+#----------------------------------------------------------
+# Get a product's listing information for a single product
+#----------------------------------------------------------
 @productListings.route('', methods=['GET'])
 @security.login_required
 def getProductListings(product_id: int):
@@ -18,6 +22,9 @@ def getProductListings(product_id: int):
     return flask.jsonify(listing.get())
 
 
+#----------------------------------------------------------
+# Check if a product is available for rent
+#----------------------------------------------------------
 @productListings.route('availability', methods=['GET'])
 @security.login_required
 def getProductListingAvailability(product_id: int):

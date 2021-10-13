@@ -11,6 +11,10 @@ from ..models import User
 
 login = flask.Blueprint('login', __name__)
 
+
+#----------------------------------------------------------
+# Login a client
+#----------------------------------------------------------
 @login.route('', methods=['GET'])
 def loginRoute():
     userID = security.getUserID(flask.request.args['email'], flask.request.args['password'])

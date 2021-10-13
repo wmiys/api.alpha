@@ -11,6 +11,10 @@ from ..models import Location
 
 locationsBP = Blueprint('locationsBP', __name__)
 
+
+#----------------------------------------------------------
+# Get a single location
+#----------------------------------------------------------
 @locationsBP.route('<int:location_id>', methods=['GET'])
 @security.login_required
 def getLocations(location_id: int):
