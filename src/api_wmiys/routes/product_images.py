@@ -13,7 +13,7 @@ bpProductImages = Blueprint('bpProductImages', __name__)
 
 
 #-----------------------------------------------------
-# ROUTES
+# Access/modify the images for a single product
 # ----------------------------------------------------
 @bpProductImages.route('', methods=['GET', 'POST', 'DELETE'])
 @security.login_required
@@ -40,6 +40,9 @@ def searchAll(user_id: int, product_id: int):
     return jsonify(ProductImage.getAll(product_id))
 
 
+#----------------------------------------------------------
+# Get a single product image
+#----------------------------------------------------------
 @bpProductImages.route('<int:product_image_id>', methods=['GET'])
 @security.login_required
 def singleImage(user_id: int, product_id: int, product_image_id: int):
