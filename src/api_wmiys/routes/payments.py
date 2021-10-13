@@ -35,8 +35,6 @@ def insertPayment():
     # set the object's property values from the request form data
     request_data = flask.request.form.to_dict()
 
-    print(flask.json.dumps(request_data, indent=4))
-
     if utilities.areAllKeysValidProperties(request_data, payment):
         utilities.setPropertyValuesFromDict(request_data, payment)
     else:

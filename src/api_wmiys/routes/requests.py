@@ -8,6 +8,7 @@ import flask
 from http import HTTPStatus
 from ..common import security, utilities
 from ..models import ProductRequest, RequestStatus, product_request
+from .. import payments
 
 # route blueprint
 bp_requests = flask.Blueprint('bp_requests', __name__)
@@ -15,6 +16,10 @@ bp_requests = flask.Blueprint('bp_requests', __name__)
 
 LENDER_RESPONSE_ACCEPT = 'accept'
 LENDER_RESPONSE_DECLINE = 'decline'
+
+# global variable to hold the information of a lender product request response
+m_product_request: ProductRequest = None
+
 
 
 #-----------------------------------------------------
@@ -102,6 +107,9 @@ def respondToRequest(request_id: int, status: str):
     else:
         request.status = RequestStatus.denied
 
+    global m_product_request
+    m_product_request = request
+
     # update the database record
     # only 1 record should be updated
     if request.updateStatus() == 1:
@@ -109,6 +117,28 @@ def respondToRequest(request_id: int, status: str):
     else:
         return ('Error updating the product request.', HTTPStatus.INTERNAL_SERVER_ERROR.value)
 
-    # now I need to capture the stripe funds from the renter
+
+#-----------------------------------------------------
+# Code to run after the request.
+#
+# This code is responsible for capturing the payment funds
+# from the lender once the lender accepts a pending product request.
+# ----------------------------------------------------
+@bp_requests.after_request
+def afterLenderResponse(response: flask.Response):
+    global m_product_request
+
+    # ignore this code if the request wasn't a lender responding to a request
+    if not m_product_request:
+        return response
     
+    if m_product_request.status == RequestStatus.accepted:
+        payments.capturePayment(m_product_request.session_id)
+    else:
+        payments.cancelPayment(m_product_request.session_id)
+
+    # reset the global variable to none so we don't double charge them
+    m_product_request = None
+
+    return response
 
