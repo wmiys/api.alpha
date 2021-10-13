@@ -7,7 +7,7 @@ import re
 import flask
 from http import HTTPStatus
 from ..common import security, utilities
-from ..models import ProductRequest, product_request
+from ..models import ProductRequest, RequestStatus, product_request
 
 # route blueprint
 bp_requests = flask.Blueprint('bp_requests', __name__)
@@ -56,8 +56,14 @@ def newRequest():
 @bp_requests.route('/received', methods=['GET'])
 @security.login_required
 def getLenderRequests():
-    requests = product_request.getReceived(security.requestGlobals.client_id)
 
+    requestStatus = RequestStatus.getStatus(flask.request.args.get('status', 'all'))
+
+    if not requestStatus:
+        requests = product_request.getReceivedAll(security.requestGlobals.client_id)
+    else:
+        requests = product_request.getReceivedFilterByStatus(security.requestGlobals.client_id, requestStatus)
+    
     return flask.jsonify(requests)
 
 
@@ -92,9 +98,9 @@ def respondToRequest(request_id: int, status: str):
 
     # set the new status in the object
     if status == LENDER_RESPONSE_ACCEPT:
-        request.status = product_request.RequestStatus.accepted
+        request.status = RequestStatus.accepted
     else:
-        request.status = product_request.RequestStatus.denied
+        request.status = RequestStatus.denied
 
     # update the database record
     # only 1 record should be updated
@@ -102,4 +108,7 @@ def respondToRequest(request_id: int, status: str):
         return ('', HTTPStatus.NO_CONTENT.value)
     else:
         return ('Error updating the product request.', HTTPStatus.INTERNAL_SERVER_ERROR.value)
+
+    # now I need to capture the stripe funds from the renter
+    
 

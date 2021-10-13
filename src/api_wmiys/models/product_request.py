@@ -9,22 +9,49 @@ from ..db import DB
 # Parms:
 #   lender_id - the lender's user_id
 # ----------------------------------------------------
-def getReceived(lender_id) -> list[dict]:
+def getReceivedAll(lender_id) -> list[dict]:
+    sql = '''
+        SELECT * 
+        FROM View_Requests_Lender v 
+        WHERE v.product_id IN (SELECT id FROM Products p WHERE p.user_id = %s)
+    '''
+
+    parms = (lender_id,)
+
+    return _getReceivedLenderBase(sql, parms)
+
+
+#-----------------------------------------------------
+# Retrieve all the requests that a lender has received.
+# 
+# Parms:
+#   lender_id - the lender's user_id
+# ----------------------------------------------------
+def getReceivedFilterByStatus(lender_id, status: RequestStatus) -> list[dict]:
+    sql = '''
+        SELECT * 
+        FROM View_Requests_Lender v 
+        WHERE 
+            v.product_id IN (SELECT id FROM Products p WHERE p.user_id = %s) 
+            AND v.status = %s 
+    '''
+
+    parms = (lender_id, status.value)
+
+    return _getReceivedLenderBase(sql, parms)
+
+
+
+
+
+def _getReceivedLenderBase(sql: str, parms: tuple):
     db = DB()
     db.connect()
     cursor = db.getCursor(True)
 
-    sql = '''
-        SELECT * 
-        FROM View_Requests_Lender v 
-        WHERE v.product_id IN (
-            SELECT id FROM Products p WHERE p.user_id = %s
-        )
-    '''
-
-    parms = (lender_id,)
     cursor.execute(sql, parms)
     requests = cursor.fetchall()
+    
     db.close()
 
     return requests
@@ -48,8 +75,10 @@ class RequestStatus(str, Enum):
             return RequestStatus.accepted
         elif status == RequestStatus.denied.value:
             return RequestStatus.denied
-        else:
+        elif status == RequestStatus.pending.value:
             return RequestStatus.pending
+        else:
+            return None
 
 
 class ProductRequest:

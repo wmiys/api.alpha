@@ -9,6 +9,7 @@ from .product_search_request import FilterCategories as FilterCategories
 from .product import Product as Product
 from .user import User as User
 from .product_request import ProductRequest as ProductRequest
+from .product_request import RequestStatus as RequestStatus
 from . import product_request as product_request
 from . import payment as payment
 from .payment import Payment as Payment
