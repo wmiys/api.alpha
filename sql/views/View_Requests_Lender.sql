@@ -12,7 +12,8 @@ SELECT
     pay.dropoff_location_id AS location_id,
     l.city AS location_city,
     l.state_id AS location_state_id,
-    l.state_name AS location_state_name
+    l.state_name AS location_state_name,
+    r.responded_on AS responded_on
 FROM Product_Requests r
 LEFT JOIN Payments pay ON r.payment_id = pay.id
 LEFT JOIN Products p ON pay.product_id = p.id

@@ -1,4 +1,5 @@
 from __future__ import annotations
+from enum import Enum
 from ..db import DB
 
 
@@ -29,7 +30,26 @@ def getReceived(lender_id) -> list[dict]:
     return requests
 
 
+#-----------------------------------------------------
+# This is the different type of status' a request can have.
+# ----------------------------------------------------
+class RequestStatus(str, Enum):
+    pending  = 'pending'
+    accepted = 'accepted'
+    denied   = 'denied'
+    expired  = 'expired'
 
+
+    @staticmethod
+    def getStatus(status: str) -> RequestStatus:
+        if status == RequestStatus.expired.value:
+            return RequestStatus.expired
+        elif status == RequestStatus.accepted.value:
+            return RequestStatus.accepted
+        elif status == RequestStatus.denied.value:
+            return RequestStatus.denied
+        else:
+            return RequestStatus.pending
 
 
 class ProductRequest:
@@ -37,13 +57,44 @@ class ProductRequest:
     #-----------------------------------------------------
     # Constructor
     # ----------------------------------------------------
-    def __init__(self, id=None, payment_id=None, session_id=None, status=None, responded_on=None, created_on=None):
+    def __init__(self, id=None, payment_id=None, session_id=None, status=RequestStatus.pending, responded_on=None, created_on=None):
         self.id           = id
         self.payment_id   = payment_id
         self.session_id   = session_id
         self.status       = status
         self.responded_on = responded_on
         self.created_on   = created_on
+
+    #-----------------------------------------------------
+    # Retrieve a lender's request from the database
+    # ----------------------------------------------------
+    def getLender(self) -> dict:
+        if not self.id:
+            return None
+        
+        db = DB()
+        db.connect()
+        cursor = db.getCursor(True)
+
+        sql = '''
+            SELECT * 
+            FROM View_Requests_Lender v 
+            WHERE v.id = %s
+        '''
+
+        parms = (self.id,)
+
+        try:
+            cursor.execute(sql, parms)
+            request = cursor.fetchone()
+        except Exception as e:
+            request = None
+            print(e)
+        finally:
+            db.close()
+
+        return request
+
 
     #-----------------------------------------------------
     # Verifies that all the required object attributes are 
@@ -61,8 +112,10 @@ class ProductRequest:
 
     #-----------------------------------------------------
     # Insert the object into the database
+    #
+    # Returns a bool: whether or not it was successful
     # ----------------------------------------------------
-    def insert(self):
+    def insert(self) -> bool:
         db = DB()
         db.connect()
         cursor = db.getCursor(False)
@@ -83,6 +136,85 @@ class ProductRequest:
             db.close()
 
         return successful
+
+    #-----------------------------------------------------
+    # Set the object's attributes from the database record 
+    # data.
+    #
+    # Returns a bool: whether or not it was successful
+    # ----------------------------------------------------
+    def load(self) -> bool:
+        if not self.id:
+            return False
+        
+        db = DB()
+        db.connect()
+        cursor = db.getCursor(True)
+
+        sql = '''
+        SELECT  payment_id, 
+                session_id, 
+                status, 
+                responded_on, 
+                created_on 
+        FROM    Product_Requests 
+        WHERE   id = %s
+        LIMIT   1
+        '''
+        cursor.execute(sql, (self.id,))
+
+        dbRecord: dict = cursor.fetchone()
+        
+        db.close()
+
+        if not dbRecord:    # record not found
+            return False
+
+        self.payment_id   = dbRecord.get('payment_id', None)
+        self.session_id   = dbRecord.get('session_id', None)
+        self.responded_on = dbRecord.get('responded_on', None)
+        self.created_on   = dbRecord.get('created_on', None)
+        self.status       = RequestStatus.getStatus(dbRecord.get('status', RequestStatus.pending))
+
+        return True
+
+    #-----------------------------------------------------
+    # Update the status of a request
+    #
+    # Returns an int: 
+    #   the number of rows affected by the update 
+    #   or -1 if there was an error
+    # ----------------------------------------------------
+    def updateStatus(self) -> int:
+        if not self.id:
+            return -1
+        
+        db = DB()
+        db.connect()
+        cursor = db.getCursor(False)
+
+        sql = '''
+        UPDATE  Product_Requests 
+        SET     status = %s,
+                responded_on = NOW()
+        WHERE   id = %s
+        '''
+
+        parms = (self.status.value, self.id)
+        
+        row_count = -1
+
+        try:
+            cursor.execute(sql, parms)
+            db.commit()
+            row_count = cursor.rowcount
+        except Exception as e:
+            print(e)
+        finally:
+            db.close()
+
+        return row_count
+
 
 
 
