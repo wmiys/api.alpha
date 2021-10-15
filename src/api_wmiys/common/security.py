@@ -50,7 +50,7 @@ def getUserID(email: str, password: str):
 
     cursor = db.getCursor(True)
 
-    sql = 'SELECT u.id as id FROM Users u WHERE u.email = %s AND u.password = %s'
+    sql = 'SELECT u.id as id FROM Users u WHERE u.email = %s AND u.password = %s LIMIT 1'
     parms = (email, password)
 
     try:

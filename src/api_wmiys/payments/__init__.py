@@ -1,11 +1,9 @@
 
 
 import stripe
-from . import keys
-from ..models import ProductRequest
+from .. import keys
 
-
-stripe.api_key = keys.test
+stripe.api_key = keys.payments.test
 
 #-----------------------------------------------------
 # Capture a stripe payment intent
