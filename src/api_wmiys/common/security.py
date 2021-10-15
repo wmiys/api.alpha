@@ -3,9 +3,14 @@ from flask import request
 from functools import wraps, update_wrapper
 from ..db import DB
 from .globals import Globals
+from .. import keys
 
 # setup the global variables container
 requestGlobals = Globals(client_id=None)
+
+
+CLIENT_CUSTOM_HEADER_KEY = 'x-client-key'
+
 
 #------------------------------------------------------
 # Verifies that:
@@ -50,7 +55,7 @@ def getUserID(email: str, password: str):
 
     cursor = db.getCursor(True)
 
-    sql = 'SELECT u.id as id FROM Users u WHERE u.email = %s AND u.password = %s'
+    sql = 'SELECT u.id as id FROM Users u WHERE u.email = %s AND u.password = %s LIMIT 1'
     parms = (email, password)
 
     try:
@@ -63,3 +68,23 @@ def getUserID(email: str, password: str):
         db.close()
 
     return result   
+
+
+#------------------------------------------------------
+# Verify that the incoming request was made from the website
+# and not some 3rd party rest service.
+#
+# Checks that the request has the custom header value.
+#------------------------------------------------------
+def no_external_requests(f):
+    @wraps(f)
+    def wrap(*args, **kwargs):        
+        header_value = flask.request.headers.get(CLIENT_CUSTOM_HEADER_KEY, '', str)
+
+        if header_value != keys.client_verification.header:
+            flask.abort(403)
+
+        # finally call f. f() now haves access to g.user
+        return f(*args, **kwargs)
+
+    return wrap

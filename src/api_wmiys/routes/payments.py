@@ -24,6 +24,7 @@ bp_payments = flask.Blueprint('bp_payments', __name__)
 # Create a new payment route
 #------------------------------------------------------
 @bp_payments.route('', methods=['POST'])
+@security.no_external_requests
 @security.login_required
 def insertPayment():
     
@@ -46,5 +47,4 @@ def insertPayment():
         return ('Server error.', HTTPStatus.INTERNAL_SERVER_ERROR.value)
     
     # return the url to the newly created resource
-    # return str(payment.id)
     return flask.jsonify(payment.get())
