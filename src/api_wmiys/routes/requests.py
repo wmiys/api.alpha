@@ -29,6 +29,7 @@ m_product_request: ProductRequest = None
 # Normal users ARE NOT allowed to do this themselves.
 # ----------------------------------------------------
 @bp_requests.route('/received', methods=['POST'])
+@security.no_external_requests
 @security.login_required
 def newRequest():
     productRequest = ProductRequest()
@@ -54,9 +55,7 @@ def newRequest():
 
 
 #-----------------------------------------------------
-# Create a new product request for the lender.
-# This get's called from the front-end ONLY!!
-# Normal users ARE NOT allowed to do this themselves.
+# Get all received product requests
 # ----------------------------------------------------
 @bp_requests.route('/received', methods=['GET'])
 @security.login_required
