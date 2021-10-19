@@ -1,9 +1,10 @@
+import http
 import flask
-from flask import Blueprint, jsonify, request
+from http import HTTPStatus
 from ..common import security
 from ..models import User
 
-routeUser = Blueprint('routeUser', __name__)
+routeUser = flask.Blueprint('routeUser', __name__)
 
 #------------------------------------------------------
 # Create new user
@@ -13,16 +14,16 @@ def usersPost():
     new_user = User()
 
     # set the user properties
-    new_user.email      = request.form.get('email') or None
-    new_user.password   = request.form.get('password') or None
-    new_user.name_first = request.form.get('name_first') or None
-    new_user.name_last  = request.form.get('name_last') or None
-    new_user.birth_date = request.form.get('birth_date') or None
+    new_user.email      = flask.request.form.get('email') or None
+    new_user.password   = flask.request.form.get('password') or None
+    new_user.name_first = flask.request.form.get('name_first') or None
+    new_user.name_last  = flask.request.form.get('name_last') or None
+    new_user.birth_date = flask.request.form.get('birth_date') or None
     
     new_user.insert()
     new_user.fetch()
 
-    return jsonify(new_user.__dict__)
+    return flask.jsonify(new_user.__dict__)
 
 
 #------------------------------------------------------
@@ -33,19 +34,19 @@ def usersPost():
 def userGetPost(user_id):
     # make sure the user is authorized
     if security.requestGlobals.client_id != user_id:
-        flask.abort(403)
+        return ('', HTTPStatus.FORBIDDEN.value)
 
     user = User(id=user_id)
     user.fetch()
 
-    if request.method == 'PUT':
+    if flask.request.method == 'PUT':
         # be sure the request body has all the correct fields
-        if not user.setPropertyValuesFromDict(request.form.to_dict()):  
-            return ('Request body contained an invalid field', 400) 
+        if not user.setPropertyValuesFromDict(flask.request.form.to_dict()):  
+            return ('Request body contained an invalid field', HTTPStatus.BAD_REQUEST.value) 
         
         updateResultRowCount = user.update()
 
         if updateResultRowCount not in [0, 1]:
-            flask.abort(500)
+            return ('', HTTPStatus.INTERNAL_SERVER_ERROR.value)
 
-    return jsonify(user.as_dict(return_password=False))
+    return flask.jsonify(user.as_dict(return_password=False))

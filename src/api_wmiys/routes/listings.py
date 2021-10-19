@@ -5,9 +5,9 @@ Description:    Handles all the product listings routing.
 """
 
 import flask
+from http import HTTPStatus
 from ..common import security
 from ..models import ProductListing, ProductListingAvailability
-
 
 productListings = flask.Blueprint('productListings', __name__)
 
@@ -35,7 +35,7 @@ def getProductListingAvailability(product_id: int):
 
     # be sure all 3 required query parms have a non-None value
     if not listingAvailability.areAllPropertiesSet():
-        return ('Missing a required property', 400)
+        return ('Missing a required property', HTTPStatus.BAD_REQUEST.value)
     
     responseDict = dict(available=listingAvailability.isProductAvailable())
     

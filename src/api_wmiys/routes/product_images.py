@@ -5,11 +5,11 @@ Description:    Handles all the product images routing
 """
 
 import flask
-from flask import Blueprint, jsonify, request
+from http import HTTPStatus
 from ..common import security
 from ..models import ProductImage, product
 
-bpProductImages = Blueprint('bpProductImages', __name__)
+bpProductImages = flask.Blueprint('bpProductImages', __name__)
 
 
 #-----------------------------------------------------
@@ -20,24 +20,26 @@ bpProductImages = Blueprint('bpProductImages', __name__)
 def searchAll(product_id: int):
     # make sure the user is authorized
     if not product.doesUserOwnProduct(product_id, security.requestGlobals.client_id):
-        return ('', 403)
+        return ('', HTTPStatus.FORBIDDEN.value)
 
-    if request.method == 'GET':
-        return jsonify(ProductImage.getAll(product_id))     # all we need to do is fetch all the product images      
-    elif request.method == 'DELETE':
+    if flask.request.method == 'GET':
+        # all we need to do is fetch all the product images
+        return flask.jsonify(ProductImage.getAll(product_id))
+    
+    elif flask.request.method == 'DELETE':
         ProductImage.deleteAll(product_id)
-        return ('', 200)
+        return ('', HTTPStatus.NO_CONTENT.value)
+
     
     # if we get to this point, we are creating a new product image record
-    imagesData = dict(request.files.to_dict())
+    imagesData: dict = flask.request.files.to_dict()
 
     for img in imagesData.values():
         productImage = ProductImage(product_id=product_id)
         productImage.setImagePropertyFromImageFile(img, ProductImage.LOCAL_SERVER_IMAGE_DIRECTORY_RELATIVE)
         productImage.insert()
 
-    
-    return jsonify(ProductImage.getAll(product_id))
+    return flask.jsonify(ProductImage.getAll(product_id))
 
 
 #----------------------------------------------------------
@@ -48,13 +50,13 @@ def searchAll(product_id: int):
 def singleImage(product_id: int, product_image_id: int):
     # make sure the user is authorized
     if not product.doesUserOwnProduct(product_id, security.requestGlobals.client_id):
-        return ('', 403)
+        return ('', HTTPStatus.FORBIDDEN.value)
 
     productImage = ProductImage(newID=product_image_id)    
     
     if not productImage.load():
-        return ('', 400)
+        return ('', HTTPStatus.BAD_REQUEST.value)
 
-    return jsonify(productImage.toDict())
+    return flask.jsonify(productImage.toDict())
 
 

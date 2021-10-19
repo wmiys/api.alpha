@@ -3,7 +3,7 @@ Package:        requests
 Url Prefix:     /requests
 Description:    Handles all the pproduct requests.
 """
-import re
+# import re
 import flask
 from http import HTTPStatus
 from ..common import security, utilities

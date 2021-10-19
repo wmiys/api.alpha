@@ -5,24 +5,23 @@ Description:    Handles all the search routing.
 """
 from __future__ import annotations
 import flask
-from flask import Blueprint
+from http import HTTPStatus
 from ..db import DB
-
 
 DEFAULT_PER_PAGE_VALUE = 20
 MAX_PER_PAGE_VALUE = 100
 
-search = Blueprint('search', __name__)
+search = flask.Blueprint('search', __name__)
 
 
 #------------------------------------------------------
 # Location search url routing logic
 #------------------------------------------------------
 @search.route('locations', methods=['GET'])
-def searchLocations():
-    query = getQuery()
+def _searchLocations():
+    query = _getQuery()
     per_page = getPerPage()
-    search_results = searchLocations(query=query, num_results=per_page)
+    search_results = _searchLocations(query=query, num_results=per_page)
 
     return flask.jsonify(search_results)
 
@@ -31,11 +30,11 @@ def searchLocations():
 # Retrieve the query ('q') url parm.
 # The query parm is required, so if it's missing respond with a 400
 #------------------------------------------------------
-def getQuery():
+def _getQuery():
     query = flask.request.args.get('q')
 
-    if query == None:
-        flask.abort(400)
+    if not query:
+        flask.abort(HTTPStatus.BAD_REQUEST.value)
 
     return query
 
@@ -68,7 +67,7 @@ def getPerPage() -> int:
 #
 # Returns: a list of dictionaries
 #------------------------------------------------------
-def searchLocations(query: str, num_results: int) -> list[dict]:
+def _searchLocations(query: str, num_results: int) -> list[dict]:
         db = DB()
         db.connect()
         mycursor = db.getCursor(True)
