@@ -250,7 +250,33 @@ class Product:
 
 
 
-            
+#------------------------------------------------------
+# Verifies that the given product is owned by the given user.
+#
+# Parms:
+#   product_id: the product's id
+#   user_id: the user's id
+#
+# Returns a bool:
+#   true - user owns the product
+#   false - user DOES NOT own the product
+#------------------------------------------------------
+def doesUserOwnProduct(product_id: int, user_id: int) -> bool:
+    db = DB()
+    db.connect()
+    cursor = db.getCursor(True) 
+
+    sql = 'SELECT COUNT(p.id) AS count FROM Products p WHERE p.id=%s AND p.user_id=%s'
+    cursor.execute(sql, (product_id, user_id))
+    db_result = cursor.fetchone()
+
+    db.close()
+
+    if db_result.get('count') == 1:
+        return True
+    else:
+        return False
+
 
         
         
