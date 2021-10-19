@@ -8,9 +8,9 @@ Api for the the backend
 Resource             | URI
 ---------------------|---------------------------------------------------------------------------
 User                 | /users/:user_id
-Products             | /users/:user_id/products/:product_id
-Product Availability | /users/:user_id/products/:product_id/availability/:product_availability_id
-Product Images       | /users/:user_id/products/:product_id/images/:product_image_id
+Products             | /products/:product_id
+Product Availability | /products/:product_id/availability/:product_availability_id
+Product Images       | /products/:product_id/images/:product_image_id
 Listings             | /listings/:product_id
 Product Categories   | /product-categories
 Login                | /login

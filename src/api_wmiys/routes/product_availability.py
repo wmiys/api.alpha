@@ -1,13 +1,13 @@
 """
 Package:        product_availability
-Url Prefix:     /users/:user_id/products/:product_id/availability
+Url Prefix:     /products/:product_id/availability
 Description:    Handles all the product_availability routing.
 """
 
 import flask
 from flask import Blueprint, jsonify, request
 from ..common import security
-from ..models import ProductAvailability
+from ..models import ProductAvailability, product
 
 productAvailabilityRoute = Blueprint('productAvailabilityRoute', __name__)
 
@@ -17,10 +17,10 @@ productAvailabilityRoute = Blueprint('productAvailabilityRoute', __name__)
 #----------------------------------------------------------
 @productAvailabilityRoute.route('', methods=['GET'])
 @security.login_required
-def productAvailabilities(user_id: int, product_id: int):
-    # make sure the user is authorized
-    if security.requestGlobals.client_id != user_id:
-        flask.abort(403)
+def productAvailabilities(product_id: int):
+    # verify that the user owns the product 
+    if not product.doesUserOwnProduct(product_id, security.requestGlobals.client_id):
+        return ('', 403)
 
     # get the availabilities
     availabilities = ProductAvailability.getProductAvailabilities(product_id)
@@ -32,10 +32,10 @@ def productAvailabilities(user_id: int, product_id: int):
 #----------------------------------------------------------
 @productAvailabilityRoute.route('', methods=['POST'])
 @security.login_required
-def productAvailabilityPost(user_id: int, product_id: int):
-    # make sure the user is authorized
-    if security.requestGlobals.client_id != user_id:
-        flask.abort(403)
+def productAvailabilityPost(product_id: int):
+    # verify that the user owns the product 
+    if not product.doesUserOwnProduct(product_id, security.requestGlobals.client_id):
+        return ('', 403)
 
     # get the availabilities
     availability = ProductAvailability(product_id=product_id)
@@ -54,10 +54,10 @@ def productAvailabilityPost(user_id: int, product_id: int):
 #------------------------------------------------------
 @productAvailabilityRoute.route('<int:product_availability_id>', methods=['GET', 'PUT', 'DELETE'])
 @security.login_required
-def productAvailability(user_id: int, product_id: int, product_availability_id: int):
-    # make sure the user is authorized
-    if security.requestGlobals.client_id != user_id:
-        flask.abort(403)
+def productAvailability(product_id: int, product_availability_id: int):
+    # verify that the user owns the product 
+    if not product.doesUserOwnProduct(product_id, security.requestGlobals.client_id):
+        return ('', 403)
 
     availability = ProductAvailability(id=product_availability_id)
     

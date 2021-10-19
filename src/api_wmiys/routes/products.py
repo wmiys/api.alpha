@@ -1,32 +1,25 @@
 """
 Package:        products
-Url Prefix:     /users/<int:user_id>/products
+Url Prefix:     /products
 Description:    Handles all the products routing.
 """
 
 import flask
-from flask import Blueprint, jsonify, request
-from ..db import DB
+from http import HTTPStatus
 from ..common import security
 from ..models import Product
 from ..models.product import LOCAL_SERVER_COVER_PHOTO_DIRECTORY
 
-products = Blueprint('products', __name__)
+products = flask.Blueprint('products', __name__)
 
 #------------------------------------------------------
 # Fetch all of a user's products
 #------------------------------------------------------
 @products.route('', methods=['GET'])
 @security.login_required
-def userProductsGet(user_id):
-    # make sure the user is authorized
-    if security.requestGlobals.client_id != user_id:
-        flask.abort(403)
-
-    # userProducts = DB.getUserProducts(user_id)
-    userProducts = Product.getAll(user_id)
-
-    return jsonify(userProducts)
+def userProductsGet():
+    userProducts = Product.getAll(security.requestGlobals.client_id)
+    return flask.jsonify(userProducts)
 
 
 #------------------------------------------------------
@@ -34,27 +27,21 @@ def userProductsGet(user_id):
 #------------------------------------------------------
 @products.route('', methods=['POST'])
 @security.login_required
-def userProductsPost(user_id):
-    # make sure the user is authorized
-    if security.requestGlobals.client_id != user_id:
-        flask.abort(403)
-
-    newProduct = Product()
+def userProductsPost():
+    newProduct = Product(user_id=security.requestGlobals.client_id)
 
     # set the object properties from the fields in the request body
     # if the request body contains an invalid field, abort
-    if not newProduct.setPropertyValuesFromDict(request.form.to_dict()):
+    if not newProduct.setPropertyValuesFromDict(flask.request.form.to_dict()):
         flask.abort(400)
 
-    newProduct.user_id = user_id    # user_id is in the URI
-
     # set the image if one was uploaded
-    if request.files.get('image'):
-        newProduct.setImagePropertyFromImageFile(request.files.get('image'), LOCAL_SERVER_COVER_PHOTO_DIRECTORY)
+    if flask.request.files.get('image'):
+        newProduct.setImagePropertyFromImageFile(flask.request.files.get('image'), LOCAL_SERVER_COVER_PHOTO_DIRECTORY)
 
     newProduct.insert()
 
-    return jsonify(newProduct.get())
+    return flask.jsonify(newProduct.get())
 
 
 #------------------------------------------------------
@@ -62,28 +49,30 @@ def userProductsPost(user_id):
 #------------------------------------------------------
 @products.route('<int:product_id>', methods=['GET', 'PUT'])
 @security.login_required
-def productRequest(user_id, product_id):
+def productRequest(product_id):
     # load the product data
     product = Product(id=product_id)
     product.loadData()  # load the product data from the database
 
-    if request.method == 'PUT':
+    if product.user_id != security.requestGlobals.client_id:
+        return ('', HTTPStatus.UNAUTHORIZED.value)
+
+    if flask.request.method != 'PUT':
+        return flask.jsonify(product.get())
+    else:
         # update the product's properties from the request dictionary
-        if not product.setPropertyValuesFromDict(request.form.to_dict()):
-            # the request body contained a field that does not belong in the product class
-            flask.abort(400)
+        if not product.setPropertyValuesFromDict(flask.request.form.to_dict()):
+            return ('Invalid request body field.', HTTPStatus.BAD_REQUEST.value)
 
         # set the image if one was uploaded
-        if request.files.get('image'):
-            product.setImagePropertyFromImageFile(request.files.get('image'), LOCAL_SERVER_COVER_PHOTO_DIRECTORY)
-
+        if flask.request.files.get('image'):
+            product.setImagePropertyFromImageFile(flask.request.files.get('image'), LOCAL_SERVER_COVER_PHOTO_DIRECTORY)
 
         records_updated = product.update()
 
         if records_updated == -1:
-            return ('Did not update product', 400)
+            return ('Did not update product', HTTPStatus.BAD_REQUEST.value)
         else:
             return ('', 200)
             
-    else:
-        return jsonify(product.get())
+        

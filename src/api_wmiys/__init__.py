@@ -5,9 +5,9 @@ Available Routes:
 Resource             | URI
 ---------------------|---------------------------------------------------------------------------
 User                 | /users/:user_id
-Products             | /users/:user_id/products/:product_id
-Product Availability | /users/:user_id/products/:product_id/availability/:product_availability_id
-Product Images       | /users/:user_id/products/:product_id/images/:product_image_id
+Products             | /products/:product_id
+Product Availability | /products/:product_id/availability/:product_availability_id
+Product Images       | /products/:product_id/images/:product_image_id
 Listings             | /listings/:product_id
 Product Categories   | /product-categories
 Login                | /login
@@ -44,12 +44,12 @@ def registerBlueprints(flaskApp):
     """
     flaskApp.register_blueprint(routes.product_categories.bp_product_categories, url_prefix='/product-categories')
     flaskApp.register_blueprint(routes.users.routeUser, url_prefix='/users')
-    flaskApp.register_blueprint(routes.products.products, url_prefix='/users/<int:user_id>/products')
-    flaskApp.register_blueprint(routes.product_availability.productAvailabilityRoute, url_prefix='/users/<int:user_id>/products/<int:product_id>/availability')
+    flaskApp.register_blueprint(routes.products.products, url_prefix='/products')
+    flaskApp.register_blueprint(routes.product_availability.productAvailabilityRoute, url_prefix='/products/<int:product_id>/availability')
+    flaskApp.register_blueprint(routes.product_images.bpProductImages, url_prefix='/products/<int:product_id>/images')
     flaskApp.register_blueprint(routes.login.login, url_prefix='/login')
     flaskApp.register_blueprint(routes.search.search, url_prefix='/search')
     flaskApp.register_blueprint(routes.search_products.searchProducts, url_prefix='/search/products')
-    flaskApp.register_blueprint(routes.product_images.bpProductImages, url_prefix='/users/<int:user_id>/products/<int:product_id>/images')
     flaskApp.register_blueprint(routes.listings.productListings, url_prefix='/listings/<int:product_id>')
     flaskApp.register_blueprint(routes.locations.locationsBP, url_prefix='/locations')
     flaskApp.register_blueprint(routes.requests.bp_requests, url_prefix='/requests')
