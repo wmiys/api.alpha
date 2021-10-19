@@ -33,7 +33,7 @@ def userProductsPost():
     # set the object properties from the fields in the request body
     # if the request body contains an invalid field, abort
     if not newProduct.setPropertyValuesFromDict(flask.request.form.to_dict()):
-        flask.abort(400)
+        return ('Request contained an invalid body field.', HTTPStatus.BAD_REQUEST.value)
 
     # set the image if one was uploaded
     if flask.request.files.get('image'):
@@ -55,7 +55,7 @@ def productRequest(product_id):
     product.loadData()  # load the product data from the database
 
     if product.user_id != security.requestGlobals.client_id:
-        return ('', HTTPStatus.UNAUTHORIZED.value)
+        return ('', HTTPStatus.FORBIDDEN.value)
 
     if flask.request.method != 'PUT':
         return flask.jsonify(product.get())
@@ -73,6 +73,6 @@ def productRequest(product_id):
         if records_updated == -1:
             return ('Did not update product', HTTPStatus.BAD_REQUEST.value)
         else:
-            return ('', 200)
+            return ('', HTTPStatus.OK.value)
             
         

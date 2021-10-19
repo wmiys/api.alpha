@@ -5,11 +5,11 @@ Description:    Handles all the product_availability routing.
 """
 
 import flask
-from flask import Blueprint, jsonify, request
+from http import HTTPStatus
 from ..common import security
 from ..models import ProductAvailability, product
 
-productAvailabilityRoute = Blueprint('productAvailabilityRoute', __name__)
+productAvailabilityRoute = flask.Blueprint('productAvailabilityRoute', __name__)
 
 
 #----------------------------------------------------------
@@ -20,11 +20,11 @@ productAvailabilityRoute = Blueprint('productAvailabilityRoute', __name__)
 def productAvailabilities(product_id: int):
     # verify that the user owns the product 
     if not product.doesUserOwnProduct(product_id, security.requestGlobals.client_id):
-        return ('', 403)
+        return ('', HTTPStatus.FORBIDDEN.value)
 
     # get the availabilities
     availabilities = ProductAvailability.getProductAvailabilities(product_id)
-    return jsonify(availabilities)
+    return flask.jsonify(availabilities)
 
 
 #----------------------------------------------------------
@@ -35,18 +35,18 @@ def productAvailabilities(product_id: int):
 def productAvailabilityPost(product_id: int):
     # verify that the user owns the product 
     if not product.doesUserOwnProduct(product_id, security.requestGlobals.client_id):
-        return ('', 403)
+        return ('', HTTPStatus.FORBIDDEN.value)
 
     # get the availabilities
     availability = ProductAvailability(product_id=product_id)
     
     # set the objects properties to the fields in the request body
-    if not availability.setPropertyValuesFromDict(request.form.to_dict()):
-        flask.abort(400)    # the request body contained a field that does not belong in the product class
+    if not availability.setPropertyValuesFromDict(flask.request.form.to_dict()):
+        return ('Invalid request body field.', HTTPStatus.BAD_REQUEST.value)
     
     availability.insert()
 
-    return jsonify(availability.get())
+    return flask.jsonify(availability.get())
 
 
 #------------------------------------------------------
@@ -57,27 +57,27 @@ def productAvailabilityPost(product_id: int):
 def productAvailability(product_id: int, product_availability_id: int):
     # verify that the user owns the product 
     if not product.doesUserOwnProduct(product_id, security.requestGlobals.client_id):
-        return ('', 403)
+        return ('', HTTPStatus.FORBIDDEN.value)
 
     availability = ProductAvailability(id=product_availability_id)
     
-    if request.method == 'GET':
-        return jsonify(availability.get())
+    if flask.request.method == 'GET':
+        return flask.jsonify(availability.get())
     
-    elif request.method == 'PUT':
+    elif flask.request.method == 'PUT':
         availability.loadData() # load the current values into the object properties
 
         # set the objects properties to the fields in the request body
-        if not availability.setPropertyValuesFromDict(request.form.to_dict()):
-            flask.abort(400)    # the request body contained a field that does not belong in the product class
+        if not availability.setPropertyValuesFromDict(flask.request.form.to_dict()):
+            return ('Invalid request body field.', HTTPStatus.BAD_REQUEST.value)
     
         dbResult = availability.update()    # update the database
-        return jsonify(availability.get())
+        return flask.jsonify(availability.get())
     
-    elif request.method == 'DELETE':
+    elif flask.request.method == 'DELETE':
         row_count = availability.delete()
 
         if row_count != 1:
             pass    # error something went wrong
         
-        return ('', 204)
+        return ('', HTTPStatus.NO_CONTENT.value)

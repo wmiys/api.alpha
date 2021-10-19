@@ -5,6 +5,7 @@ Description:    Handles all the routing for loggin in.
 """
 
 import flask
+from http import HTTPStatus
 from ..common import security
 from ..models import User
 
@@ -17,12 +18,19 @@ login = flask.Blueprint('login', __name__)
 #----------------------------------------------------------
 @login.route('', methods=['GET'])
 def loginRoute():
-    userID = security.getUserID(flask.request.args['email'], flask.request.args['password'])
+
+    email = flask.request.args.get('email', None)
+    password = flask.request.args.get('password', None)
+    
+    if None in [email, password]:
+        return ('Missing required field.', HTTPStatus.BAD_REQUEST.value)
+
+    user_id = security.getUserID(email, password)
 
     # make sure the user is authorized
-    if userID == None:
-        flask.abort(404)
+    if not user_id:
+        return ('', HTTPStatus.NOT_FOUND.value)
 
-    user = User(id=userID)
+    user = User(id=user_id)
     user.fetch()
     return flask.jsonify(user.as_dict(False))
