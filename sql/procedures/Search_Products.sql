@@ -1,7 +1,7 @@
 DELIMITER $$
-CREATEs PROCEDURE `Search_Products`(
+CREATE PROCEDURE `Search_Products`(
 	IN in_dropoff_location_id INT UNSIGNED, 
-    IN in_starts_on DATE,s
+    IN in_starts_on DATE,
     IN in_ends_on DATE
 )
 BEGIN
