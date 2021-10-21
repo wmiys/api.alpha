@@ -14,13 +14,9 @@ BEGIN
     SELECT COUNT(*) 
     INTO num_records
     FROM Product_Availability pa
-    WHERE 
-        (
-            -- ensure the input dates don't conflict with any product availability records
-            (in_starts_on >= pa.starts_on AND in_starts_on <= pa.ends_on) OR    -- requested starts on does not fall into a Product_Availability record
-            (in_ends_on >= pa.starts_on AND in_ends_on <= pa.ends_on)           -- requested ends on does not fall into a Product_Availability record
-        ) 
-        AND pa.product_id = in_product_id;
+    WHERE
+		pa.product_id = in_product_id AND
+		RANGES_CONFLICT(in_starts_on, in_ends_on, pa.starts_on, pa.ends_on) = TRUE;
     
     IF num_records > 0 THEN     -- no conflicting dates
         SET result = FALSE;
