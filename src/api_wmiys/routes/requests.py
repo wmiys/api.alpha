@@ -32,22 +32,23 @@ m_product_request: ProductRequest = None
 @security.no_external_requests
 @security.login_required
 def newRequest():
-    productRequest = ProductRequest()
+    product_request = ProductRequest()
 
-    requestData: dict = flask.request.form.to_dict()
+    incoming_data: dict = flask.request.form.to_dict()
 
     # set the object's attribute values from the incoming request form body
-    if utilities.areAllKeysValidProperties(requestData, productRequest):
-        utilities.setPropertyValuesFromDict(requestData, productRequest)
+    if utilities.areAllKeysValidProperties(incoming_data, product_request):
+        utilities.setPropertyValuesFromDict(incoming_data, product_request)
     else:
         return ('Invalid request body field.', HTTPStatus.UNPROCESSABLE_ENTITY.value)
+
     
     # make sure all the required object attributes are set in order to save the object 
-    if not productRequest.areInsertAttributesSet():
+    if not product_request.areInsertAttributesSet():
         return ('Request body is missing a required field.', HTTPStatus.UNPROCESSABLE_ENTITY.value)
 
     # insert the object into the database
-    if not productRequest.insert():
+    if not product_request.insert():
         return ('Error inserting the product request. Check log', HTTPStatus.INTERNAL_SERVER_ERROR.value)
     
 
@@ -115,6 +116,26 @@ def respondToRequest(request_id: int, status: str):
         return ('', HTTPStatus.NO_CONTENT.value)
     else:
         return ('Error updating the product request.', HTTPStatus.INTERNAL_SERVER_ERROR.value)
+
+
+
+
+
+#-----------------------------------------------------
+# Get all submitted requests
+# ----------------------------------------------------
+@bp_requests.route('submitted', methods=['GET'])
+@security.login_required
+def getSubmitted():
+    return 'submitted'
+
+
+
+
+
+
+
+
 
 
 #-----------------------------------------------------

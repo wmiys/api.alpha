@@ -11,9 +11,8 @@ from ..db import DB
 # ----------------------------------------------------
 def getReceivedAll(lender_id) -> list[dict]:
     sql = '''
-        SELECT * 
-        FROM View_Requests_Lender v 
-        WHERE v.product_id IN (SELECT id FROM Products p WHERE p.user_id = %s)
+    SELECT * FROM View_Requests_Lender v 
+    WHERE v.product_id IN (SELECT id FROM Products p WHERE p.user_id = %s)
     '''
 
     parms = (lender_id,)
@@ -29,19 +28,14 @@ def getReceivedAll(lender_id) -> list[dict]:
 # ----------------------------------------------------
 def getReceivedFilterByStatus(lender_id, status: RequestStatus) -> list[dict]:
     sql = '''
-        SELECT * 
-        FROM View_Requests_Lender v 
-        WHERE 
-            v.product_id IN (SELECT id FROM Products p WHERE p.user_id = %s) 
+    SELECT  * FROM View_Requests_Lender v 
+    WHERE   v.product_id IN (SELECT id FROM Products p WHERE p.user_id = %s) 
             AND v.status = %s 
     '''
 
     parms = (lender_id, status.value)
 
     return _getReceivedLenderBase(sql, parms)
-
-
-
 
 
 def _getReceivedLenderBase(sql: str, parms: tuple):
