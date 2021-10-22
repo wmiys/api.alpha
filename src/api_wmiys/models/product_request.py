@@ -3,6 +3,11 @@ from enum import Enum
 from ..db import DB
 
 
+# database table views
+SQL_VIEW_LENDER = 'View_Requests_Lender'
+SQL_VIEW_RENTER = 'View_Requests_Renter'
+
+
 #-----------------------------------------------------
 # Retrieve all the requests that a lender has received.
 # 
@@ -10,14 +15,11 @@ from ..db import DB
 #   lender_id - the lender's user_id
 # ----------------------------------------------------
 def getReceivedAll(lender_id) -> list[dict]:
-    sql = '''
-    SELECT * FROM View_Requests_Lender v 
-    WHERE v.product_id IN (SELECT id FROM Products p WHERE p.user_id = %s)
-    '''
+    sql = f'SELECT * FROM {SQL_VIEW_LENDER} v WHERE v.product_id IN (SELECT id FROM Products p WHERE p.user_id = %s)'
 
     parms = (lender_id,)
 
-    return _getReceivedLenderBase(sql, parms)
+    return _getRequestsBase(sql, parms)
 
 
 #-----------------------------------------------------
@@ -27,18 +29,36 @@ def getReceivedAll(lender_id) -> list[dict]:
 #   lender_id - the lender's user_id
 # ----------------------------------------------------
 def getReceivedFilterByStatus(lender_id, status: RequestStatus) -> list[dict]:
-    sql = '''
-    SELECT  * FROM View_Requests_Lender v 
+    sql = f'''
+    SELECT  * FROM {SQL_VIEW_LENDER} v 
     WHERE   v.product_id IN (SELECT id FROM Products p WHERE p.user_id = %s) 
             AND v.status = %s 
     '''
 
     parms = (lender_id, status.value)
 
-    return _getReceivedLenderBase(sql, parms)
+    return _getRequestsBase(sql, parms)
+
+#-----------------------------------------------------
+# Retrieve all the requests that a renter has submitted.
+# 
+# Parms:
+#   renter_id: the renter's user id
+# ----------------------------------------------------
+def getSubmittedAll(renter_id) -> list[dict]:
+    sql = f'SELECT * FROM {SQL_VIEW_RENTER} v WHERE v.renter_id = %s'
+    parms = (renter_id,)
+    return _getRequestsBase(sql, parms)
 
 
-def _getReceivedLenderBase(sql: str, parms: tuple):
+#-----------------------------------------------------
+# Base template function for getting requests
+# 
+# Parms:
+#   sql: sql to execute
+#   parms: the parms to submit
+# ----------------------------------------------------
+def _getRequestsBase(sql: str, parms: tuple):
     db = DB()
     db.connect()
     cursor = db.getCursor(True)
@@ -52,7 +72,7 @@ def _getReceivedLenderBase(sql: str, parms: tuple):
 
 
 #-----------------------------------------------------
-# This is the different type of status' a request can have.
+# Possible product request status values
 # ----------------------------------------------------
 class RequestStatus(str, Enum):
     pending  = 'pending'
@@ -60,21 +80,15 @@ class RequestStatus(str, Enum):
     denied   = 'denied'
     expired  = 'expired'
 
-
-    @staticmethod
-    def getStatus(status: str) -> RequestStatus:
-        if status == RequestStatus.expired.value:
-            return RequestStatus.expired
-        elif status == RequestStatus.accepted.value:
-            return RequestStatus.accepted
-        elif status == RequestStatus.denied.value:
-            return RequestStatus.denied
-        elif status == RequestStatus.pending.value:
-            return RequestStatus.pending
-        else:
-            return None
+    # default is pending
+    @classmethod
+    def _missing_(cls, value: object) -> RequestStatus:
+        return RequestStatus.pending
 
 
+#-----------------------------------------------------
+# Product Request class
+# ----------------------------------------------------
 class ProductRequest:
 
     #-----------------------------------------------------
@@ -88,10 +102,17 @@ class ProductRequest:
         self.responded_on = responded_on
         self.created_on   = created_on
 
+
     #-----------------------------------------------------
     # Retrieve a lender's request from the database
     # ----------------------------------------------------
     def getLender(self) -> dict:
+        return self._getBase(SQL_VIEW_LENDER)
+
+    def getRenter(self) -> dict:        
+        return self._getBase(SQL_VIEW_RENTER)
+
+    def _getBase(self, sql_table_source: str) -> dict:
         if not self.id:
             return None
         
@@ -99,12 +120,7 @@ class ProductRequest:
         db.connect()
         cursor = db.getCursor(True)
 
-        sql = '''
-            SELECT * 
-            FROM View_Requests_Lender v 
-            WHERE v.id = %s
-        '''
-
+        sql = f'SELECT * FROM {sql_table_source} v WHERE v.id = %s'
         parms = (self.id,)
 
         try:
@@ -117,6 +133,7 @@ class ProductRequest:
             db.close()
 
         return request
+
 
 
     #-----------------------------------------------------
@@ -197,7 +214,7 @@ class ProductRequest:
         self.session_id   = dbRecord.get('session_id', None)
         self.responded_on = dbRecord.get('responded_on', None)
         self.created_on   = dbRecord.get('created_on', None)
-        self.status       = RequestStatus.getStatus(dbRecord.get('status', RequestStatus.pending))
+        self.status       = RequestStatus(dbRecord.get('status'))
 
         return True
 

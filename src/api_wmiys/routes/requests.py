@@ -13,13 +13,11 @@ from .. import payments
 # route blueprint
 bp_requests = flask.Blueprint('bp_requests', __name__)
 
-
 LENDER_RESPONSE_ACCEPT = 'accept'
 LENDER_RESPONSE_DECLINE = 'decline'
 
 # global variable to hold the information of a lender product request response
 m_product_request: ProductRequest = None
-
 
 
 #-----------------------------------------------------
@@ -62,12 +60,12 @@ def newRequest():
 @security.login_required
 def getLenderRequests():
 
-    requestStatus = RequestStatus.getStatus(flask.request.args.get('status', 'all'))
+    request_status = RequestStatus(flask.request.args.get('status', 'all'))
 
-    if not requestStatus:
+    if not request_status:
         requests = product_request.getReceivedAll(security.requestGlobals.client_id)
     else:
-        requests = product_request.getReceivedFilterByStatus(security.requestGlobals.client_id, requestStatus)
+        requests = product_request.getReceivedFilterByStatus(security.requestGlobals.client_id, request_status)
     
     return flask.jsonify(requests)
 
@@ -118,24 +116,29 @@ def respondToRequest(request_id: int, status: str):
         return ('Error updating the product request.', HTTPStatus.INTERNAL_SERVER_ERROR.value)
 
 
-
-
-
 #-----------------------------------------------------
 # Get all submitted requests
 # ----------------------------------------------------
 @bp_requests.route('submitted', methods=['GET'])
 @security.login_required
-def getSubmitted():
-    return 'submitted'
+def getSubmittedAll():
+    requests = product_request.getSubmittedAll(security.requestGlobals.client_id)
+    return flask.jsonify(requests)
 
 
+#-----------------------------------------------------
+# Get a single submitted request
+# ----------------------------------------------------
+@bp_requests.route('submitted/<int:request_id>', methods=['GET'])
+@security.login_required
+def getSubmitted(request_id: int):
+    request = ProductRequest(id=request_id)
+    request_dict = request.getRenter()
 
+    if request_dict.get('renter_id') != security.requestGlobals.client_id:
+        return ('', HTTPStatus.FORBIDDEN.value)
 
-
-
-
-
+    return flask.jsonify(request_dict)
 
 
 #-----------------------------------------------------
