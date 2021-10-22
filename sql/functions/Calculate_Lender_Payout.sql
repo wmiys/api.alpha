@@ -15,7 +15,7 @@ BEGIN
     DECLARE num_days INT;
     DECLARE sub_total DOUBLE(10,2);
     
-    SET num_days = DATEDIFF(in_ends_on, in_starts_on);
+    SET num_days = DATEDIFF(in_ends_on, in_starts_on) + 1;
     
     SET sub_total = num_days * in_daily_price;
     

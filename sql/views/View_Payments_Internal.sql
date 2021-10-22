@@ -10,7 +10,7 @@ CREATE VIEW `View_Payments_Internal` AS
         `pay`.`dropoff_location_id` AS `dropoff_location_id`,
         `pay`.`starts_on` AS `starts_on`,
         `pay`.`ends_on` AS `ends_on`,
-        (TO_DAYS(`pay`.`ends_on`) - TO_DAYS(`pay`.`starts_on`)) AS `num_days`,
+        ((TO_DAYS(`pay`.`ends_on`) - TO_DAYS(`pay`.`starts_on`)) + 1) AS `num_days`,
         `pay`.`price_full` AS `price_full`,
         `pay`.`fee_renter` AS `fee_renter`,
         `pay`.`fee_lender` AS `fee_lender`,
