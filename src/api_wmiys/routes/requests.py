@@ -13,13 +13,11 @@ from .. import payments
 # route blueprint
 bp_requests = flask.Blueprint('bp_requests', __name__)
 
-
 LENDER_RESPONSE_ACCEPT = 'accept'
 LENDER_RESPONSE_DECLINE = 'decline'
 
 # global variable to hold the information of a lender product request response
 m_product_request: ProductRequest = None
-
 
 
 #-----------------------------------------------------
@@ -32,22 +30,23 @@ m_product_request: ProductRequest = None
 @security.no_external_requests
 @security.login_required
 def newRequest():
-    productRequest = ProductRequest()
+    product_request = ProductRequest()
 
-    requestData: dict = flask.request.form.to_dict()
+    incoming_data: dict = flask.request.form.to_dict()
 
     # set the object's attribute values from the incoming request form body
-    if utilities.areAllKeysValidProperties(requestData, productRequest):
-        utilities.setPropertyValuesFromDict(requestData, productRequest)
+    if utilities.areAllKeysValidProperties(incoming_data, product_request):
+        utilities.setPropertyValuesFromDict(incoming_data, product_request)
     else:
         return ('Invalid request body field.', HTTPStatus.UNPROCESSABLE_ENTITY.value)
+
     
     # make sure all the required object attributes are set in order to save the object 
-    if not productRequest.areInsertAttributesSet():
+    if not product_request.areInsertAttributesSet():
         return ('Request body is missing a required field.', HTTPStatus.UNPROCESSABLE_ENTITY.value)
 
     # insert the object into the database
-    if not productRequest.insert():
+    if not product_request.insert():
         return ('Error inserting the product request. Check log', HTTPStatus.INTERNAL_SERVER_ERROR.value)
     
 
@@ -61,12 +60,12 @@ def newRequest():
 @security.login_required
 def getLenderRequests():
 
-    requestStatus = RequestStatus.getStatus(flask.request.args.get('status', 'all'))
+    request_status = flask.request.args.get('status')
 
-    if not requestStatus:
+    if not request_status:
         requests = product_request.getReceivedAll(security.requestGlobals.client_id)
     else:
-        requests = product_request.getReceivedFilterByStatus(security.requestGlobals.client_id, requestStatus)
+        requests = product_request.getReceivedFilterByStatus(security.requestGlobals.client_id, RequestStatus(request_status))
     
     return flask.jsonify(requests)
 
@@ -115,6 +114,37 @@ def respondToRequest(request_id: int, status: str):
         return ('', HTTPStatus.NO_CONTENT.value)
     else:
         return ('Error updating the product request.', HTTPStatus.INTERNAL_SERVER_ERROR.value)
+
+
+#-----------------------------------------------------
+# Get all SUBMITTED requests
+# ----------------------------------------------------
+@bp_requests.route('submitted', methods=['GET'])
+@security.login_required
+def getSubmittedAll():
+    request_status = flask.request.args.get('status')
+
+    if not request_status:
+        requests = product_request.getSubmitted(security.requestGlobals.client_id)
+    else:
+        requests = product_request.getSubmittedFilterByStatus(security.requestGlobals.client_id, RequestStatus(request_status))
+
+    return flask.jsonify(requests)
+
+
+#-----------------------------------------------------
+# Get a single SUBMITTED request
+# ----------------------------------------------------
+@bp_requests.route('submitted/<int:request_id>', methods=['GET'])
+@security.login_required
+def getSubmitted(request_id: int):
+    request = ProductRequest(id=request_id)
+    request_dict = request.getRenter()
+
+    if request_dict.get('renter_id') != security.requestGlobals.client_id:
+        return ('', HTTPStatus.FORBIDDEN.value)
+
+    return flask.jsonify(request_dict)
 
 
 #-----------------------------------------------------

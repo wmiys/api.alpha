@@ -7,40 +7,64 @@ class Sorting:
     TYPE_ASC = 'ASC'
     TYPE_DESC = 'DESC'
 
-    def __init__(self, acceptable_fields: list, default_field: str,  field: str=None, type: str='ASC'):
-        self.acceptable_fields = list(acceptable_fields)
+
+    #-----------------------------------------------------
+    # Constructor
+    # ----------------------------------------------------
+    def __init__(self, acceptable_fields: list, default_field: str,  field: str=None, sort_type: str='ASC'):
+        self.acceptable_fields = acceptable_fields
         self.default_field = default_field
+        self.field = field or self.default_field        
+        self.set_type(sort_type)
         
-        if not field:
-            self.field = self.default_field
-        else:
-            self.field = field
+    #-----------------------------------------------------
+    # Parse the sort url query parm
+    # 
+    # Parms:
+    #   url_query_value (str): 'field_name:sort_type'
+    #
+    # Returns a bool: whether it was parsed successfully
+    # ----------------------------------------------------
+    def parse_sort_query(self, url_query_value: str) -> bool:        
+        result = True
         
-        self.set_type(type)
-        
-    
+        try:
+            split_query = url_query_value.split(":", 1)
+            potential_field = split_query[0]
+            potential_type = split_query[1]
+
+            if not self.set_field(potential_field):
+                result = False
+            
+            self.set_type(potential_type)
+
+        except Exception:
+            result = False
+
+        return result
+
+
+    #-----------------------------------------------------
+    # Sets the type of sorting.
+    #
+    # Parms:
+    #   new_type (str): new sorting type either 'ASC' or 'DESC'
+    # ----------------------------------------------------
     def set_type(self, new_type: str):
-        """Sets the type of sorting.
-
-        Args:
-            new_type (str): new sorting type either 'ASC' or 'DESC'
-        """
-
         if new_type.upper() == self.TYPE_DESC:
             self.type = self.TYPE_DESC
         else:
             self.type = self.TYPE_ASC
     
+    #-----------------------------------------------------
+    # Sets the sorting field
+    # 
+    # Parms:
+    #   new_field (str): new field to sort by
+    #
+    # Returns a bool: whether the field is set or not
+    # ----------------------------------------------------
     def set_field(self, new_field: str) -> bool:
-        """Sets the sorting field
-
-        Args:
-            new_field (str): new field to sort by
-
-        Returns:
-            bool: whether the field is set or not
-        """
-
         if new_field not in self.acceptable_fields:
             return False
         else:
@@ -48,25 +72,7 @@ class Sorting:
         
         return True
     
-    def parse_sort_query(self, url_query_value: str) -> bool:
-        """Parse the sort url query parm
 
-        Args:
-            url_query_value (str): 'field_name:sort_type'
-
-        Returns:
-            bool: whether it was parsed successfully
-        """
-        
-        split_query = url_query_value.split(":", 1)
-        potential_field = split_query[0]
-        potential_type = split_query[1]
-
-        if not self.set_field(potential_field):
-            return False
-        
-        self.set_type(potential_type)
-        return True
         
 
 class SortingSearchProducts(Sorting):
@@ -79,5 +85,5 @@ class SortingSearchProducts(Sorting):
         'minimum_age', 'user_id', 'user_name_first', 'user_name_last']
 
     def __init__(self, acceptable_fields, default_field, field=None, type=Sorting.TYPE_ASC):
-        super().__init__(acceptable_fields, default_field, field=field, type=type)
+        super().__init__(acceptable_fields, default_field, field=field, sort_type=type)
     

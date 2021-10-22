@@ -31,9 +31,11 @@ def initApp(flaskApp):
         flaskApp (obj): the flask application
     """
     
-    flaskApp.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0    # remove cacheing
-    flaskApp.json_encoder = CustomJSONEncoder           # setup the custom encoder for dates
-    CORS(flaskApp)                                      # setup the CORS policy
+    flaskApp.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0        # remove cacheing
+    flaskApp.config['JSON_SORT_KEYS'] = False               # remove cacheing
+    flaskApp.config['JSONIFY_PRETTYPRINT_REGULAR'] = False  # remove cacheing
+    flaskApp.json_encoder = CustomJSONEncoder               # setup the custom encoder for dates
+    CORS(flaskApp)                                          # setup the CORS policy
 
 
 def registerBlueprints(flaskApp):

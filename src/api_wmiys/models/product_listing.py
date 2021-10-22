@@ -77,7 +77,10 @@ class ProductListing:
     #----------------------------------------------------------
     def _getMetaDict(self) -> dict:
 
-        img = product.LOCAL_SERVER_COVER_PHOTO_DIRECTORY_ABS + '/' + self.dbResult.get('image')
+        if self.dbResult.get('image'):
+            img = product.LOCAL_SERVER_COVER_PHOTO_DIRECTORY_ABS + '/' + self.dbResult.get('image')
+        else:
+            img = None
 
         metaDict = dict(
             id          = self.dbResult.get('id'),
