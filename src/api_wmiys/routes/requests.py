@@ -60,12 +60,12 @@ def newRequest():
 @security.login_required
 def getLenderRequests():
 
-    request_status = RequestStatus(flask.request.args.get('status', 'all'))
+    request_status = flask.request.args.get('status')
 
     if not request_status:
         requests = product_request.getReceivedAll(security.requestGlobals.client_id)
     else:
-        requests = product_request.getReceivedFilterByStatus(security.requestGlobals.client_id, request_status)
+        requests = product_request.getReceivedFilterByStatus(security.requestGlobals.client_id, RequestStatus(request_status))
     
     return flask.jsonify(requests)
 
@@ -117,17 +117,23 @@ def respondToRequest(request_id: int, status: str):
 
 
 #-----------------------------------------------------
-# Get all submitted requests
+# Get all SUBMITTED requests
 # ----------------------------------------------------
 @bp_requests.route('submitted', methods=['GET'])
 @security.login_required
 def getSubmittedAll():
-    requests = product_request.getSubmittedAll(security.requestGlobals.client_id)
+    request_status = flask.request.args.get('status')
+
+    if not request_status:
+        requests = product_request.getSubmitted(security.requestGlobals.client_id)
+    else:
+        requests = product_request.getSubmittedFilterByStatus(security.requestGlobals.client_id, RequestStatus(request_status))
+
     return flask.jsonify(requests)
 
 
 #-----------------------------------------------------
-# Get a single submitted request
+# Get a single SUBMITTED request
 # ----------------------------------------------------
 @bp_requests.route('submitted/<int:request_id>', methods=['GET'])
 @security.login_required

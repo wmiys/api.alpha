@@ -2,6 +2,7 @@ CREATE VIEW View_Requests_Renter AS
 SELECT 
     pr.id AS id,
     pr.status AS status,
+    pr.created_on AS created_on,
     pay.renter_id AS renter_id,
     pay.product_id AS product_id,
     p.name AS product_name,

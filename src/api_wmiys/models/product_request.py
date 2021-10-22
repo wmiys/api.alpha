@@ -15,7 +15,11 @@ SQL_VIEW_RENTER = 'View_Requests_Renter'
 #   lender_id - the lender's user_id
 # ----------------------------------------------------
 def getReceivedAll(lender_id) -> list[dict]:
-    sql = f'SELECT * FROM {SQL_VIEW_LENDER} v WHERE v.product_id IN (SELECT id FROM Products p WHERE p.user_id = %s)'
+    sql = f'''
+    SELECT * FROM {SQL_VIEW_LENDER} v 
+    WHERE v.product_id IN (SELECT id FROM Products p WHERE p.user_id = %s)
+    ORDER BY v.created_on DESC
+    '''
 
     parms = (lender_id,)
 
@@ -23,16 +27,19 @@ def getReceivedAll(lender_id) -> list[dict]:
 
 
 #-----------------------------------------------------
-# Retrieve all the requests that a lender has received.
+# Retrieve all the requests that a lender has received
+# that have the specified status.
 # 
 # Parms:
-#   lender_id - the lender's user_id
+#   lender_id: the lender's user_id
+#   status: the status to filter by
 # ----------------------------------------------------
 def getReceivedFilterByStatus(lender_id, status: RequestStatus) -> list[dict]:
     sql = f'''
     SELECT  * FROM {SQL_VIEW_LENDER} v 
     WHERE   v.product_id IN (SELECT id FROM Products p WHERE p.user_id = %s) 
-            AND v.status = %s 
+            AND v.status = %s
+    ORDER BY v.created_on DESC
     '''
 
     parms = (lender_id, status.value)
@@ -45,9 +52,27 @@ def getReceivedFilterByStatus(lender_id, status: RequestStatus) -> list[dict]:
 # Parms:
 #   renter_id: the renter's user id
 # ----------------------------------------------------
-def getSubmittedAll(renter_id) -> list[dict]:
-    sql = f'SELECT * FROM {SQL_VIEW_RENTER} v WHERE v.renter_id = %s'
+def getSubmitted(renter_id) -> list[dict]:
+    sql = f'SELECT * FROM {SQL_VIEW_RENTER} v WHERE v.renter_id = %s ORDER BY v.created_on'
     parms = (renter_id,)
+    return _getRequestsBase(sql, parms)
+
+
+#-----------------------------------------------------
+# Retrieve all the requests that a renter has submitted
+# that have the specified status.
+# 
+# Parms:
+#   renter_id: the renter's user_id
+#   status: the status to filter by
+# ----------------------------------------------------
+def getSubmittedFilterByStatus(renter_id: int, status: RequestStatus) -> list[dict]:
+    sql = f'''
+    SELECT * FROM {SQL_VIEW_RENTER} v 
+    WHERE v.renter_id = %s AND v.status = %s
+    ORDER BY v.created_on DESC
+    '''
+    parms = (renter_id, status.value)
     return _getRequestsBase(sql, parms)
 
 
