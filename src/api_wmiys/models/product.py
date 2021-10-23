@@ -5,13 +5,13 @@
 #************************************************************************************
 from __future__ import annotations
 import os
-from typing import Optional
 from ..db import DB
-from ..common import utilities
+from ..common import utilities, paths
 from .. import common
 
 LOCAL_SERVER_COVER_PHOTO_DIRECTORY = 'product-images/covers'
-LOCAL_SERVER_COVER_PHOTO_DIRECTORY_ABS = "http://10.0.0.82/files/api.wmiys/src/product-images/covers"
+LOCAL_SERVER_COVER_PHOTO_DIRECTORY_ABS = "http://10.0.0.82/files/api.wmiys/src/product-images/covers"    
+
 
 class Product:
 
