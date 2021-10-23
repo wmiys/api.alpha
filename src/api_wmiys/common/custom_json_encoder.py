@@ -10,16 +10,21 @@
 #************************************************************************************
 from flask.json import JSONEncoder
 from datetime import date
+from decimal import Decimal
 
 class CustomJSONEncoder(JSONEncoder):
     def default(self, obj):
         try:
             if isinstance(obj, date):
                 return obj.isoformat()
+            elif isinstance(obj, Decimal):
+                return float(obj)
             iterable = iter(obj)
         except TypeError:
             pass
         else:
             return list(iterable)
+
+        
 
         return JSONEncoder.default(self, obj)
