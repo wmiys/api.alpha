@@ -15,7 +15,6 @@ mod_wsgi-express start-server /var/www/wmiys/api/api_wmiys.wsgi \
 
 
 --log-to-terminal \
---reload-on-changes \
 
 
 
