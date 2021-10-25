@@ -37,7 +37,7 @@ def userProductsPost():
 
     # set the image if one was uploaded
     if flask.request.files.get('image'):
-        newProduct.setImagePropertyFromImageFile(flask.request.files.get('image'), LOCAL_SERVER_COVER_PHOTO_DIRECTORY)
+        newProduct.setImagePropertyFromImageFile(flask.request.files.get('image'), f'{flask.current_app.static_folder}{LOCAL_SERVER_COVER_PHOTO_DIRECTORY}')
 
     newProduct.insert()
 
@@ -66,7 +66,7 @@ def productRequest(product_id):
 
         # set the image if one was uploaded
         if flask.request.files.get('image'):
-            product.setImagePropertyFromImageFile(flask.request.files.get('image'), LOCAL_SERVER_COVER_PHOTO_DIRECTORY)
+            product.setImagePropertyFromImageFile(flask.request.files.get('image'), f'{flask.current_app.static_folder}product-images/covers')
 
         records_updated = product.update()
 
