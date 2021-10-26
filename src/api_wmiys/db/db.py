@@ -23,7 +23,13 @@ class DB:
     # Connect to the database
     #----------------------------------------------------------
     def connect(self):
-        self.connection = mysql.connector.connect(user=db_credentials.user, host=db_credentials.host, database=db_credentials.database, password=db_credentials.password)
+
+        self.connection = mysql.connector.connect(
+            user=db_credentials.user, 
+            host=db_credentials.getHost(), 
+            database=db_credentials.database, 
+            password=db_credentials.password
+        )
     
     #----------------------------------------------------------
     # Close the database connection

@@ -1,12 +1,10 @@
 from __future__ import annotations
+import flask
 import os
 from ..db import DB
 from ..common import utilities, user_image
 
 class ProductImage:
-    # LOCAL_SERVER_IMAGE_DIRECTORY = 'product-images/images'
-
-    LOCAL_SERVER_IMAGE_DIRECTORY = "http://10.0.0.82/files/api.wmiys/src/product-images/images"
     LOCAL_SERVER_IMAGE_DIRECTORY_RELATIVE = 'product-images/images'
 
     #----------------------------------------------------------
@@ -106,7 +104,12 @@ class ProductImage:
     # Returns the object as a dict
     #----------------------------------------------------------
     def toDict(self) -> dict:
-        return dict(id=self.id, product_id=self.product_id, file_name=self.file_name, created_on=self.created_on)
+        return dict(
+            id         = self.id,
+            product_id = self.product_id,
+            file_name  = self.file_name,
+            created_on = self.created_on
+        )
 
 
     #----------------------------------------------------------
@@ -122,9 +125,12 @@ class ProductImage:
     def getAll(product_id: int) -> list[dict]:
         images = ProductImage._getAllProductImageRecords(product_id)
 
+
+        prefix = f'{flask.request.root_url}static/{ProductImage.LOCAL_SERVER_IMAGE_DIRECTORY_RELATIVE}/'
+
         # prepend the absolute url for each image file_name
         for image in images:
-            image['file_name'] = ProductImage.LOCAL_SERVER_IMAGE_DIRECTORY + '/' + image['file_name']
+            image['file_name'] = prefix + image['file_name']
 
         return images
 
@@ -144,8 +150,10 @@ class ProductImage:
     #----------------------------------------------------------
     @staticmethod
     def _deleteAllImageFiles(product_id: int):
+        prefix = f'{flask.request.root_url}static/{ProductImage.LOCAL_SERVER_IMAGE_DIRECTORY_RELATIVE}/'
+
         for img in ProductImage._getAllProductImageRecords(product_id):
-            os.remove(ProductImage.LOCAL_SERVER_IMAGE_DIRECTORY_RELATIVE + '/' + img.get('file_name'))
+            os.remove(prefix + img.get('file_name'))
 
     #----------------------------------------------------------
     # Deletes all the image files from the database that belong 
