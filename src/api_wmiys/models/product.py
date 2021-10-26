@@ -176,9 +176,9 @@ class Product:
             return False
 
         # set the object properties
-        for key in newPropertyValues:
-            if newPropertyValues[key]:
-                setattr(self, key, newPropertyValues[key])
+        for key, value in newPropertyValues.items():
+            if value and value != '':
+                setattr(self, key, value)
             else:
                 setattr(self, key, None)
             

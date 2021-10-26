@@ -28,10 +28,12 @@ def getProductListings(product_id: int):
 @productListings.route('availability', methods=['GET'])
 @security.login_required
 def getProductListingAvailability(product_id: int):
-    listingAvailability = ProductListingAvailability(product_id=product_id)
-    listingAvailability.location_id = flask.request.args.get('location_id')
-    listingAvailability.starts_on = flask.request.args.get('starts_on')
-    listingAvailability.ends_on = flask.request.args.get('ends_on')
+    listingAvailability = ProductListingAvailability(
+        product_id  = product_id,
+        location_id = flask.request.args.get('location_id'),
+        starts_on   = flask.request.args.get('starts_on'),
+        ends_on     = flask.request.args.get('ends_on'),
+    )
 
     # be sure all 3 required query parms have a non-None value
     if not listingAvailability.areAllPropertiesSet():
