@@ -1,3 +1,4 @@
+import flask
 from ..db import DB
 from . import product
 
@@ -78,7 +79,8 @@ class ProductListing:
     def _getMetaDict(self) -> dict:
 
         if self.dbResult.get('image'):
-            img = product.LOCAL_SERVER_COVER_PHOTO_DIRECTORY_ABS + '/' + self.dbResult.get('image')
+            prefix = f'{flask.request.root_url}static/{product.LOCAL_SERVER_COVER_PHOTO_DIRECTORY}/'
+            img = prefix + self.dbResult.get('image')
         else:
             img = None
 
@@ -107,7 +109,6 @@ class ProductListing:
 
         priceDict = dict(
             full = self.dbResult.get('price_full'),
-            half = self.dbResult.get('price_half'),
         )
 
         return priceDict
