@@ -108,6 +108,7 @@ class ProductSearchRequest:
     def searchCategories(self, filter_category: FilterCategories, product_category_id: int) -> tuple:
         # create the sql statements
         categoryTableName = self._getSearchProductCategoryTableName(filter_category)
+
         stmt_template = f'{_SQL_STMT_PREFIX} AND {categoryTableName} = %s ORDER BY {self.sorting.field} {self.sorting.type}'
 
         # setup the parms
@@ -115,11 +116,11 @@ class ProductSearchRequest:
 
         search_result_records, record_count  = self._getSearchRecordsAndCountTuple(stmt_template, parms)
 
-        prefix = f'{flask.request.root_url}static/{product.LOCAL_SERVER_COVER_PHOTO_DIRECTORY}/'
+        img_path_prefix = f'{flask.request.root_url}static/{product.LOCAL_SERVER_COVER_PHOTO_DIRECTORY}/'
 
         for product_result in search_result_records:
             if product_result['image']:
-                product_result['image'] = prefix + product_result['image']
+                product_result['image'] = img_path_prefix + product_result['image']
 
         return (search_result_records, record_count)
 
@@ -144,6 +145,7 @@ class ProductSearchRequest:
 
             # fetch the count
             cursor.execute(stmtTotalCount, parms)
+
             record_count = cursor.fetchone()
         except Exception as e:
             print(e)
@@ -167,15 +169,13 @@ class ProductSearchRequest:
     #     str: name of the product category table 
     #----------------------------------------------------------
     def _getSearchProductCategoryTableName(self, category_type: FilterCategories) -> str:
-        categoryTableName = ''
-
         if category_type == FilterCategories.MAJOR:
             categoryTableName = PRODUCT_CATEGORY_TABLE_NAME_MAJOR
-        elif category_type == FilterCategories.MAJOR:
+        elif category_type == FilterCategories.MINOR:
             categoryTableName = PRODUCT_CATEGORY_TABLE_NAME_MINOR
         elif category_type == FilterCategories.SUB:
             categoryTableName = PRODUCT_CATEGORY_TABLE_NAME_SUB
-        
+
         return categoryTableName
 
 
