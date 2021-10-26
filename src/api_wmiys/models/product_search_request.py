@@ -3,10 +3,11 @@
 #                           Product Search Request
 #
 #************************************************************************************
-import datetime
-import typing
+from __future__ import annotations
+import flask
 from ..db import DB
 from ..common import sorting, Pagination
+from ..models import product
 from enum import Enum 
 
 
@@ -76,10 +77,18 @@ class ProductSearchRequest:
     # Returns a tuple: (records, count)
     #----------------------------------------------------------
     def searchAll(self) -> tuple:
-        stmt_template = f'''{_SQL_STMT_PREFIX} ORDER BY {self.sorting.field} {self.sorting.type}'''
+        stmt_template = f'{_SQL_STMT_PREFIX} ORDER BY {self.sorting.field} {self.sorting.type}'
         parms = (self.location_id, self.starts_on, self.ends_on)
 
-        return self._getSearchRecordsAndCountTuple(stmt_template, parms)
+        search_result_records, record_count  = self._getSearchRecordsAndCountTuple(stmt_template, parms)
+
+        prefix = f'{flask.request.root_url}static/{product.LOCAL_SERVER_COVER_PHOTO_DIRECTORY}/'
+
+        for product_result in search_result_records:
+            if product_result['image']:
+                product_result['image'] = prefix + product_result['image']
+
+        return (search_result_records, record_count)
 
     #----------------------------------------------------------
     # Search for products and filter by the given category
@@ -96,15 +105,23 @@ class ProductSearchRequest:
     # Returns a list: 
     #   the results of the search query
     #----------------------------------------------------------
-    def searchCategories(self, filter_category: FilterCategories, product_category_id: int):
+    def searchCategories(self, filter_category: FilterCategories, product_category_id: int) -> tuple:
         # create the sql statements
         categoryTableName = self._getSearchProductCategoryTableName(filter_category)
-        stmt_template = f'''{_SQL_STMT_PREFIX} AND {categoryTableName} = %s ORDER BY {self.sorting.field} {self.sorting.type}'''
+        stmt_template = f'{_SQL_STMT_PREFIX} AND {categoryTableName} = %s ORDER BY {self.sorting.field} {self.sorting.type}'
 
         # setup the parms
         parms = (self.location_id, self.starts_on, self.ends_on, product_category_id)
 
-        return self._getSearchRecordsAndCountTuple(stmt_template, parms)
+        search_result_records, record_count  = self._getSearchRecordsAndCountTuple(stmt_template, parms)
+
+        prefix = f'{flask.request.root_url}static/{product.LOCAL_SERVER_COVER_PHOTO_DIRECTORY}/'
+
+        for product_result in search_result_records:
+            if product_result['image']:
+                product_result['image'] = prefix + product_result['image']
+
+        return (search_result_records, record_count)
 
     #----------------------------------------------------------
     # Helper function that executes the given sql statement with the given parms.
@@ -120,13 +137,18 @@ class ProductSearchRequest:
         # create the sql statement to calculate the count
         stmtTotalCount = self.pagination.getSqlStmtTotalCount(sql_stmt_prefix)
 
-        # fetch the records
-        cursor.execute(stmtWithLimit, parms)
-        search_result_records = cursor.fetchall()
+        try:
+            # fetch the records
+            cursor.execute(stmtWithLimit, parms)
+            search_result_records = cursor.fetchall()
 
-        # fetch the count
-        cursor.execute(stmtTotalCount, parms)
-        record_count = cursor.fetchone()
+            # fetch the count
+            cursor.execute(stmtTotalCount, parms)
+            record_count = cursor.fetchone()
+        except Exception as e:
+            print(e)
+        finally:
+            db.close()
 
         return (search_result_records, record_count.get('count'))
 
