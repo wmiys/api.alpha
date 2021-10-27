@@ -9,13 +9,13 @@ from http import HTTPStatus
 from ..common import security
 from ..models import ProductAvailability, product
 
-productAvailabilityRoute = flask.Blueprint('productAvailabilityRoute', __name__)
+bp_product_availability = flask.Blueprint('productAvailabilityRoute', __name__)
 
 
 #----------------------------------------------------------
 # Retrieve all the product availabilities of a single product
 #----------------------------------------------------------
-@productAvailabilityRoute.route('', methods=['GET'])
+@bp_product_availability.route('', methods=['GET'])
 @security.login_required
 def productAvailabilities(product_id: int):
     # verify that the user owns the product 
@@ -30,7 +30,7 @@ def productAvailabilities(product_id: int):
 #----------------------------------------------------------
 # Create a new product availability
 #----------------------------------------------------------
-@productAvailabilityRoute.route('', methods=['POST'])
+@bp_product_availability.route('', methods=['POST'])
 @security.login_required
 def productAvailabilityPost(product_id: int):
     # verify that the user owns the product 
@@ -52,7 +52,7 @@ def productAvailabilityPost(product_id: int):
 #------------------------------------------------------
 # Retrieve all the product availabilities of a single product
 #------------------------------------------------------
-@productAvailabilityRoute.route('<int:product_availability_id>', methods=['GET', 'PUT', 'DELETE'])
+@bp_product_availability.route('<int:product_availability_id>', methods=['GET', 'PUT', 'DELETE'])
 @security.login_required
 def productAvailability(product_id: int, product_availability_id: int):
     # verify that the user owns the product 

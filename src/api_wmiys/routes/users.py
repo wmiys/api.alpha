@@ -4,12 +4,12 @@ from http import HTTPStatus
 from ..common import security
 from ..models import User
 
-routeUser = flask.Blueprint('routeUser', __name__)
+bp_users = flask.Blueprint('routeUser', __name__)
 
 #------------------------------------------------------
 # Create new user
 #------------------------------------------------------
-@routeUser.route('', methods=['POST'])
+@bp_users.route('', methods=['POST'])
 def usersPost():
     new_user = User()
 
@@ -29,7 +29,7 @@ def usersPost():
 #------------------------------------------------------
 # Get a single user
 #------------------------------------------------------
-@routeUser.route('<int:user_id>', methods=['GET', 'PUT'])
+@bp_users.route('<int:user_id>', methods=['GET', 'PUT'])
 @security.login_required
 def userGetPost(user_id):
     # make sure the user is authorized

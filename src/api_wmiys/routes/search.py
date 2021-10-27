@@ -11,13 +11,13 @@ from ..db import DB
 DEFAULT_PER_PAGE_VALUE = 20
 MAX_PER_PAGE_VALUE = 100
 
-search = flask.Blueprint('search', __name__)
+bp_search = flask.Blueprint('search', __name__)
 
 
 #------------------------------------------------------
 # Location search url routing logic
 #------------------------------------------------------
-@search.route('locations', methods=['GET'])
+@bp_search.route('locations', methods=['GET'])
 def _searchLocations():
     query = _getQuery()
     per_page = getPerPage()

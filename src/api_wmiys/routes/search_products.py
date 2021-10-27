@@ -10,7 +10,7 @@ from ..common import security, SortingSearchProducts, Pagination
 from ..models import ProductSearchRequest, FilterCategories
 
 # Flask blueprint
-searchProducts = flask.Blueprint('searchProducts', __name__)
+bp_search_products = flask.Blueprint('searchProducts', __name__)
 
 # module variables to store request parms
 m_sorting = SortingSearchProducts(SortingSearchProducts.ACCEPTABLE_FIELDS, 'name')
@@ -41,7 +41,7 @@ def init_module_members(f):
 #-----------------------------------------------------
 # Seach all
 # ----------------------------------------------------
-@searchProducts.route('', methods=['GET'])
+@bp_search_products.route('', methods=['GET'])
 @security.login_required
 @init_module_members
 def searchAll():
@@ -53,7 +53,7 @@ def searchAll():
 #-----------------------------------------------------
 # Seach major categories
 # ----------------------------------------------------
-@searchProducts.route('categories/major/<int:product_categories_major_id>', methods=['GET'])
+@bp_search_products.route('categories/major/<int:product_categories_major_id>', methods=['GET'])
 @security.login_required
 @init_module_members
 def searchProductCategoriesMajor(product_categories_major_id):
@@ -64,7 +64,7 @@ def searchProductCategoriesMajor(product_categories_major_id):
 #-----------------------------------------------------
 # Seach minor categories
 # ----------------------------------------------------
-@searchProducts.route('categories/minor/<int:product_categories_minor_id>', methods=['GET'])
+@bp_search_products.route('categories/minor/<int:product_categories_minor_id>', methods=['GET'])
 @security.login_required
 @init_module_members
 def searchProductCategoriesMinor(product_categories_minor_id):
@@ -74,7 +74,7 @@ def searchProductCategoriesMinor(product_categories_minor_id):
 #-----------------------------------------------------
 # Seach sub categories
 # ----------------------------------------------------
-@searchProducts.route('categories/sub/<int:product_categories_sub_id>', methods=['GET'])
+@bp_search_products.route('categories/sub/<int:product_categories_sub_id>', methods=['GET'])
 @security.login_required
 @init_module_members
 def searchProductCategoriesSub(product_categories_sub_id):

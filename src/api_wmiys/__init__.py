@@ -24,36 +24,32 @@ from flask_cors import CORS
 from .common import CustomJSONEncoder
 from . import routes
 
-def initApp(flaskApp):
-    """Sets up and initializes the flask application
 
-    Args:
-        flaskApp (obj): the flask application
-    """
-    
+#----------------------------------------------------------
+# Sets up and initializes the flask application
+#----------------------------------------------------------
+def initApp(flaskApp: Flask):    
     flaskApp.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0        # remove cacheing
-    flaskApp.config['JSON_SORT_KEYS'] = False               # remove cacheing
-    flaskApp.config['JSONIFY_PRETTYPRINT_REGULAR'] = False  # remove cacheing
+    flaskApp.config['JSON_SORT_KEYS'] = False               # don't sort the json keys
+    flaskApp.config['JSONIFY_PRETTYPRINT_REGULAR'] = False  # print the json pretty
     flaskApp.json_encoder = CustomJSONEncoder               # setup the custom encoder for dates
     CORS(flaskApp)                                          # setup the CORS policy
 
 
-def registerBlueprints(flaskApp):
-    """Register all of the Flask blueprints
-
-    Args:
-        flaskApp (obj): the flask application
-    """
+#----------------------------------------------------------
+# Register all of the Flask blueprints
+#----------------------------------------------------------
+def registerBlueprints(flaskApp: Flask):
     flaskApp.register_blueprint(routes.product_categories.bp_product_categories, url_prefix='/product-categories')
-    flaskApp.register_blueprint(routes.users.routeUser, url_prefix='/users')
-    flaskApp.register_blueprint(routes.products.products, url_prefix='/products')
-    flaskApp.register_blueprint(routes.product_availability.productAvailabilityRoute, url_prefix='/products/<int:product_id>/availability')
-    flaskApp.register_blueprint(routes.product_images.bpProductImages, url_prefix='/products/<int:product_id>/images')
-    flaskApp.register_blueprint(routes.login.login, url_prefix='/login')
-    flaskApp.register_blueprint(routes.search.search, url_prefix='/search')
-    flaskApp.register_blueprint(routes.search_products.searchProducts, url_prefix='/search/products')
-    flaskApp.register_blueprint(routes.listings.productListings, url_prefix='/listings/<int:product_id>')
-    flaskApp.register_blueprint(routes.locations.locationsBP, url_prefix='/locations')
+    flaskApp.register_blueprint(routes.users.bp_users, url_prefix='/users')
+    flaskApp.register_blueprint(routes.products.bp_products, url_prefix='/products')
+    flaskApp.register_blueprint(routes.product_availability.bp_product_availability, url_prefix='/products/<int:product_id>/availability')
+    flaskApp.register_blueprint(routes.product_images.bp_product_images, url_prefix='/products/<int:product_id>/images')
+    flaskApp.register_blueprint(routes.login.bp_login, url_prefix='/login')
+    flaskApp.register_blueprint(routes.search.bp_search, url_prefix='/search')
+    flaskApp.register_blueprint(routes.search_products.bp_search_products, url_prefix='/search/products')
+    flaskApp.register_blueprint(routes.listings.bp_listings, url_prefix='/listings/<int:product_id>')
+    flaskApp.register_blueprint(routes.locations.bp_locations, url_prefix='/locations')
     flaskApp.register_blueprint(routes.requests.bp_requests, url_prefix='/requests')
     flaskApp.register_blueprint(routes.payments.bp_payments, url_prefix='/payments')
 
