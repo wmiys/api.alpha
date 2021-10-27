@@ -9,13 +9,13 @@ from http import HTTPStatus
 from ..common import security
 from ..models import product_image, ProductImage, product
 
-bpProductImages = flask.Blueprint('bpProductImages', __name__)
+bp_product_images = flask.Blueprint('bpProductImages', __name__)
 
 
 #-----------------------------------------------------
 # Access/modify the images for a product
 # ----------------------------------------------------
-@bpProductImages.route('', methods=['GET', 'POST', 'DELETE'])
+@bp_product_images.route('', methods=['GET', 'POST', 'DELETE'])
 @security.login_required
 def searchAll(product_id: int):
     if flask.request.method == 'GET':
@@ -46,7 +46,7 @@ def searchAll(product_id: int):
 #----------------------------------------------------------
 # Get a single product image
 #----------------------------------------------------------
-@bpProductImages.route('<int:product_image_id>', methods=['GET'])
+@bp_product_images.route('<int:product_image_id>', methods=['GET'])
 @security.login_required
 def singleImage(product_id: int, product_image_id: int):
     # make sure the user is authorized

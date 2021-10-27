@@ -9,13 +9,13 @@ from http import HTTPStatus
 from ..common import security
 from ..models import ProductListing, ProductListingAvailability
 
-productListings = flask.Blueprint('productListings', __name__)
+bp_listings = flask.Blueprint('productListings', __name__)
 
 
 #----------------------------------------------------------
 # Get a product's listing information for a single product
 #----------------------------------------------------------
-@productListings.route('', methods=['GET'])
+@bp_listings.route('', methods=['GET'])
 @security.login_required
 def getProductListings(product_id: int):
     listing = ProductListing(product_id)
@@ -25,7 +25,7 @@ def getProductListings(product_id: int):
 #----------------------------------------------------------
 # Check if a product is available for rent
 #----------------------------------------------------------
-@productListings.route('availability', methods=['GET'])
+@bp_listings.route('availability', methods=['GET'])
 @security.login_required
 def getProductListingAvailability(product_id: int):
     listingAvailability = ProductListingAvailability(

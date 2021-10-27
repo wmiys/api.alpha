@@ -8,13 +8,13 @@ import flask
 from ..common import security
 from ..models import Location
 
-locationsBP = flask.Blueprint('locationsBP', __name__)
+bp_locations = flask.Blueprint('locationsBP', __name__)
 
 
 #----------------------------------------------------------
 # Get a single location
 #----------------------------------------------------------
-@locationsBP.route('<int:location_id>', methods=['GET'])
+@bp_locations.route('<int:location_id>', methods=['GET'])
 @security.login_required
 def getLocations(location_id: int):
     location = Location(location_id)

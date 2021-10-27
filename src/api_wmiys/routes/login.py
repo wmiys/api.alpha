@@ -10,13 +10,13 @@ from ..common import security
 from ..models import User
 
 
-login = flask.Blueprint('login', __name__)
+bp_login = flask.Blueprint('login', __name__)
 
 
 #----------------------------------------------------------
 # Login a client
 #----------------------------------------------------------
-@login.route('', methods=['GET'])
+@bp_login.route('', methods=['GET'])
 def loginRoute():
 
     email = flask.request.args.get('email', None)

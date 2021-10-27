@@ -10,12 +10,12 @@ from ..common import security
 from ..models import Product
 from ..models.product import LOCAL_SERVER_COVER_PHOTO_DIRECTORY
 
-products = flask.Blueprint('products', __name__)
+bp_products = flask.Blueprint('products', __name__)
 
 #------------------------------------------------------
 # Fetch all of a user's products
 #------------------------------------------------------
-@products.route('', methods=['GET'])
+@bp_products.route('', methods=['GET'])
 @security.login_required
 def userProductsGet():
     userProducts = Product.getAll(security.requestGlobals.client_id)
@@ -25,7 +25,7 @@ def userProductsGet():
 #------------------------------------------------------
 # Create a new product
 #------------------------------------------------------
-@products.route('', methods=['POST'])
+@bp_products.route('', methods=['POST'])
 @security.login_required
 def userProductsPost():
     newProduct = Product(user_id=security.requestGlobals.client_id)
@@ -47,7 +47,7 @@ def userProductsPost():
 #------------------------------------------------------
 # Retrieve or update an existing product
 #------------------------------------------------------
-@products.route('<int:product_id>', methods=['GET', 'PUT'])
+@bp_products.route('<int:product_id>', methods=['GET', 'PUT'])
 @security.login_required
 def productRequest(product_id):
     # load the product data
