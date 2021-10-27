@@ -7,10 +7,10 @@ from __future__ import annotations
 import flask
 import os
 from ..db import DB
-from ..common import utilities, paths
+from ..common import utilities, user_image
 from .. import common
 
-LOCAL_SERVER_COVER_PHOTO_DIRECTORY = 'product-images/covers'
+# LOCAL_SERVER_COVER_PHOTO_DIRECTORY = 'product-images/covers'
 # LOCAL_SERVER_COVER_PHOTO_DIRECTORY_ABS = "http://10.0.0.82/files/api.wmiys/src/product-images/covers"    
 
 
@@ -134,7 +134,8 @@ class Product:
 
         # prepend the absolute url to the image value
         if product_rs['image']:
-            prefix = f'{flask.request.root_url}static/{LOCAL_SERVER_COVER_PHOTO_DIRECTORY}/'
+            # prefix = f'{flask.request.root_url}static/{LOCAL_SERVER_COVER_PHOTO_DIRECTORY}/'
+            prefix = user_image.getCoverUrl()
             product_rs['image'] = prefix + product_rs['image']
 
         return product_rs
@@ -216,7 +217,7 @@ class Product:
         # prepend the absolute image file path to each image field, if one exists
         for product in products:
             if product['image']:
-                prefix = f'{flask.request.root_url}static/{LOCAL_SERVER_COVER_PHOTO_DIRECTORY}/'
+                prefix = user_image.getCoverUrl()
                 product['image'] = prefix + product['image']
 
 

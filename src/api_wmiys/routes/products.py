@@ -6,16 +6,17 @@ Description:    Handles all the products routing.
 
 import flask
 from http import HTTPStatus
+
+from api_wmiys.common import user_image
 from ..common import security
-from ..models import Product
-from ..models.product import LOCAL_SERVER_COVER_PHOTO_DIRECTORY
+from ..models import Product, product_image
 
 bp_products = flask.Blueprint('products', __name__)
 
 #------------------------------------------------------
 # Fetch all of a user's products
 #------------------------------------------------------
-@bp_products.route('', methods=['GET'])
+@bp_products.get('')
 @security.login_required
 def userProductsGet():
     userProducts = Product.getAll(security.requestGlobals.client_id)
@@ -25,7 +26,7 @@ def userProductsGet():
 #------------------------------------------------------
 # Create a new product
 #------------------------------------------------------
-@bp_products.route('', methods=['POST'])
+@bp_products.post('')
 @security.login_required
 def userProductsPost():
     newProduct = Product(user_id=security.requestGlobals.client_id)
@@ -35,9 +36,10 @@ def userProductsPost():
     if not newProduct.setPropertyValuesFromDict(flask.request.form.to_dict()):
         return ('Request contained an invalid body field.', HTTPStatus.BAD_REQUEST.value)
 
+
     # set the image if one was uploaded
     if flask.request.files.get('image'):
-        newProduct.setImagePropertyFromImageFile(flask.request.files.get('image'), f'{flask.current_app.static_folder}{LOCAL_SERVER_COVER_PHOTO_DIRECTORY}')
+        newProduct.setImagePropertyFromImageFile(flask.request.files.get('image'), user_image.getCoverDirectory())
 
     newProduct.insert()
 
@@ -64,9 +66,10 @@ def productRequest(product_id):
         if not product.setPropertyValuesFromDict(flask.request.form.to_dict()):
             return ('Invalid request body field.', HTTPStatus.BAD_REQUEST.value)
 
+    
         # set the image if one was uploaded
         if flask.request.files.get('image'):
-            product.setImagePropertyFromImageFile(flask.request.files.get('image'), f'{flask.current_app.static_folder}product-images/covers')
+            product.setImagePropertyFromImageFile(flask.request.files.get('image'), user_image.getCoverDirectory())
 
         records_updated = product.update()
 

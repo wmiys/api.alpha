@@ -2,10 +2,7 @@ from __future__ import annotations
 import flask
 import os
 from ..db import DB
-from ..common import utilities, UserImage
-
-LOCAL_SERVER_IMAGE_DIRECTORY_RELATIVE = 'product-images/images'
-
+from ..common import utilities, UserImage, user_image
 
 
 #----------------------------------------------------------
@@ -20,7 +17,7 @@ LOCAL_SERVER_IMAGE_DIRECTORY_RELATIVE = 'product-images/images'
 def getAll(product_id: int) -> list[dict]:
     images = _getAllProductImageRecords(product_id)
 
-    prefix = getDirectoryPath()
+    prefix = user_image.getImagesUrl()
 
     # prepend the absolute url for each image file_name
     for image in images:
@@ -42,7 +39,7 @@ def deleteAll(product_id: int):
 # given product id.
 #----------------------------------------------------------
 def _deleteAllImageFiles(product_id: int):
-    prefix = getDirectoryPath()
+    prefix = user_image.getImagesDirectory()
 
     for img in _getAllProductImageRecords(product_id):
         os.remove(prefix + img.get('file_name'))
@@ -87,15 +84,6 @@ def _getAllProductImageRecords(product_id: int) -> list[dict]:
     db.close()
 
     return images
-
-
-#----------------------------------------------------------
-# Retrieve the absolute directory product images path:
-# C:\xampp\htdocs\files\api.wmiys\src\api_wmiys\static/product-images/images/
-#----------------------------------------------------------
-def getDirectoryPath() -> str:
-    return  f'{flask.current_app.static_folder}/{LOCAL_SERVER_IMAGE_DIRECTORY_RELATIVE}/'
-
 
 class ProductImage:
 
