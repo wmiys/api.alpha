@@ -1,6 +1,7 @@
 import flask
 from ..db import DB
 from . import product
+from ..common import user_image
 
 class ProductListing:
 
@@ -79,7 +80,7 @@ class ProductListing:
     def _getMetaDict(self) -> dict:
 
         if self.dbResult.get('image'):
-            prefix = f'{flask.request.root_url}static/{product.LOCAL_SERVER_COVER_PHOTO_DIRECTORY}/'
+            prefix = user_image.getCoverUrl()
             img = prefix + self.dbResult.get('image')
         else:
             img = None

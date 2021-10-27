@@ -1,6 +1,7 @@
 from __future__ import annotations
 from enum import Enum
 from ..db import DB
+from ..common import user_image
 
 
 # database table views
@@ -53,9 +54,18 @@ def getReceivedFilterByStatus(lender_id, status: RequestStatus) -> list[dict]:
 #   renter_id: the renter's user id
 # ----------------------------------------------------
 def getSubmitted(renter_id) -> list[dict]:
-    sql = f'SELECT * FROM {SQL_VIEW_RENTER} v WHERE v.renter_id = %s ORDER BY v.created_on'
+    sql = f'SELECT * FROM {SQL_VIEW_RENTER} v WHERE v.renter_id = %s ORDER BY v.created_on DESC'
     parms = (renter_id,)
-    return _getRequestsBase(sql, parms)
+
+    db_result = _getRequestsBase(sql, parms)
+
+    image_prefix = user_image.getCoverUrl()
+
+    for record in db_result:
+        if record.get('product_image'):
+            record['product_image'] = image_prefix + record['product_image']
+
+    return db_result
 
 
 #-----------------------------------------------------
@@ -73,7 +83,16 @@ def getSubmittedFilterByStatus(renter_id: int, status: RequestStatus) -> list[di
     ORDER BY v.created_on DESC
     '''
     parms = (renter_id, status.value)
-    return _getRequestsBase(sql, parms)
+    
+    db_result = _getRequestsBase(sql, parms)
+
+    image_prefix = user_image.getCoverUrl()
+
+    for record in db_result:
+        if record.get('product_image'):
+            record['product_image'] = image_prefix + record['product_image']
+
+    return db_result
 
 
 #-----------------------------------------------------
