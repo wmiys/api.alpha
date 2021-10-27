@@ -13,26 +13,40 @@ bp_product_images = flask.Blueprint('bpProductImages', __name__)
 
 
 #-----------------------------------------------------
-# Access/modify the images for a product
+# GET the images for a product
 # ----------------------------------------------------
-@bp_product_images.route('', methods=['GET', 'POST', 'DELETE'])
+@bp_product_images.get('')
 @security.login_required
 def searchAll(product_id: int):
-    if flask.request.method == 'GET':
-        # all we need to do is fetch all the product images
-        return flask.jsonify(product_image.getAll(product_id))
-    
+    # all we need to do is fetch all the product images
+    return flask.jsonify(product_image.getAll(product_id))
+
+
+#-----------------------------------------------------
+# DELETE the images for a product
+# ----------------------------------------------------
+@bp_product_images.delete('')
+@security.login_required
+def delete(product_id: int):
     # make sure the user is authorized
     if not product.doesUserOwnProduct(product_id, security.requestGlobals.client_id):
         return ('', HTTPStatus.FORBIDDEN.value)
     
-    if flask.request.method == 'DELETE':
-        product_image.deleteAll(product_id)
-        return ('', HTTPStatus.NO_CONTENT.value)
-    
-    # if we get to this point, we are creating a new product image record
-    imagesData: dict = flask.request.files.to_dict()
+    product_image.deleteAll(product_id)
+    return ('', HTTPStatus.NO_CONTENT.value)
 
+
+#-----------------------------------------------------
+# POST the images for a product
+# ----------------------------------------------------
+@bp_product_images.post('')
+@security.login_required
+def post(product_id: int):
+    # make sure the user is authorized
+    if not product.doesUserOwnProduct(product_id, security.requestGlobals.client_id):
+        return ('', HTTPStatus.FORBIDDEN.value)
+    
+    imagesData: dict = flask.request.files.to_dict()
     directory_path = product_image.getDirectoryPath()
 
     for img in imagesData.values():
