@@ -2,10 +2,102 @@ from __future__ import annotations
 import flask
 import os
 from ..db import DB
-from ..common import utilities, user_image
+from ..common import utilities, UserImage
+
+LOCAL_SERVER_IMAGE_DIRECTORY_RELATIVE = 'product-images/images'
+
+
+
+#----------------------------------------------------------
+# Retrieve all of the product images for a product
+#
+# Parms:
+#   product_id (int): product id
+#
+# Returns a list:
+#   all of the product images that belong to a product
+#----------------------------------------------------------
+def getAll(product_id: int) -> list[dict]:
+    images = _getAllProductImageRecords(product_id)
+
+    prefix = getDirectoryPath()
+
+    # prepend the absolute url for each image file_name
+    for image in images:
+        image['file_name'] = prefix + image['file_name']
+
+    return images
+
+#----------------------------------------------------------
+# Delete all the product images for a product
+#----------------------------------------------------------
+def deleteAll(product_id: int):
+    _deleteAllImageFiles(product_id)
+    record_count = _deleteAllImageDatabaseRecords(product_id)
+    return record_count
+
+
+#----------------------------------------------------------
+# Deletes all the image files from storage that belong to the 
+# given product id.
+#----------------------------------------------------------
+def _deleteAllImageFiles(product_id: int):
+    prefix = getDirectoryPath()
+
+    for img in _getAllProductImageRecords(product_id):
+        os.remove(prefix + img.get('file_name'))
+
+#----------------------------------------------------------
+# Deletes all the image files from the database that belong 
+# to the given product id.
+#----------------------------------------------------------
+def _deleteAllImageDatabaseRecords(product_id: int) -> int:
+    db = DB()
+    db.connect()
+    cursor = db.getCursor(True)
+
+    sql = 'DELETE FROM Product_Images WHERE product_id = %s'
+
+    parms = (product_id,)
+    cursor.execute(sql, parms)
+    db.commit()
+    record_count = cursor.rowcount
+    db.close()
+
+    return record_count
+
+#----------------------------------------------------------
+# Retrieve all the product image database records that belong
+# to the given product.
+#----------------------------------------------------------
+def _getAllProductImageRecords(product_id: int) -> list[dict]:
+    db = DB()
+    db.connect()
+    cursor = db.getCursor(True)
+
+    sql = """
+    SELECT   *
+    FROM     Product_Images pi
+    WHERE    pi.product_id = %s
+    """
+
+    parms = (product_id,)
+    cursor.execute(sql, parms)
+    images = cursor.fetchall()
+    db.close()
+
+    return images
+
+
+#----------------------------------------------------------
+# Retrieve the absolute directory product images path:
+# C:\xampp\htdocs\files\api.wmiys\src\api_wmiys\static/product-images/images/
+#----------------------------------------------------------
+def getDirectoryPath() -> str:
+    return  f'{flask.current_app.static_folder}/{LOCAL_SERVER_IMAGE_DIRECTORY_RELATIVE}/'
+
 
 class ProductImage:
-    LOCAL_SERVER_IMAGE_DIRECTORY_RELATIVE = 'product-images/images'
 
     #----------------------------------------------------------
     # Constructor
@@ -82,6 +174,7 @@ class ProductImage:
         db.close()
 
         return True
+
     #----------------------------------------------------------
     # Takes a raw image file, saves it locally, and sets the image 
     # field in the database to the image file name as saved on the server.
@@ -90,14 +183,18 @@ class ProductImage:
     #     newImageFile (object): the raw image file
     #     relative_image_directory_path (str): the folder name to save the image to    
     #----------------------------------------------------------
-    def setImagePropertyFromImageFile(self, newImageFile: object, relative_image_directory_path: str):
+    def setImagePropertyFromImageFile(self, newImageFile: object, image_directory_path: str):
         # remove the old image
         if self.file_name:
-            os.remove(os.path.join(relative_image_directory_path, self.file_name))
+            os.remove(os.path.join(image_directory_path, self.file_name))
 
-        productImage = user_image.UserImage(newImageFile)
-        newImageFileName = utilities.getUUID(True) + productImage.getFileExtension()
-        self.file_name = productImage.saveImageFile(relative_image_directory_path, newImageFileName)
+        image_file = UserImage(newImageFile)
+        
+        # create a unique name for the product image (GUID + it's original extension)
+        new_image_file_name = utilities.getUUID(True) + image_file.getFileExtension()
+
+        # now save the file to the server
+        self.file_name = image_file.saveImageFile(image_directory_path, new_image_file_name)
 
 
     #----------------------------------------------------------
@@ -111,92 +208,6 @@ class ProductImage:
             created_on = self.created_on
         )
 
-
-    #----------------------------------------------------------
-    # Retrieve all of the product images for a product
-    #
-    # Parms:
-    #   product_id (int): product id
-    #
-    # Returns a list:
-    #   all of the product images that belong to a product
-    #----------------------------------------------------------
-    @staticmethod
-    def getAll(product_id: int) -> list[dict]:
-        images = ProductImage._getAllProductImageRecords(product_id)
-
-
-        prefix = f'{flask.request.root_url}static/{ProductImage.LOCAL_SERVER_IMAGE_DIRECTORY_RELATIVE}/'
-
-        # prepend the absolute url for each image file_name
-        for image in images:
-            image['file_name'] = prefix + image['file_name']
-
-        return images
-
-    #----------------------------------------------------------
-    # Delete all the product images for a product
-    #----------------------------------------------------------
-    @staticmethod
-    def deleteAll(product_id: int):
-        ProductImage._deleteAllImageFiles(product_id)
-        record_count = ProductImage._deleteAllImageDatabaseRecords(product_id)
-        return record_count
-    
-    
-    #----------------------------------------------------------
-    # Deletes all the image files from storage that belong to the 
-    # given product id.
-    #----------------------------------------------------------
-    @staticmethod
-    def _deleteAllImageFiles(product_id: int):
-        prefix = f'{flask.request.root_url}static/{ProductImage.LOCAL_SERVER_IMAGE_DIRECTORY_RELATIVE}/'
-
-        for img in ProductImage._getAllProductImageRecords(product_id):
-            os.remove(prefix + img.get('file_name'))
-
-    #----------------------------------------------------------
-    # Deletes all the image files from the database that belong 
-    # to the given product id.
-    #----------------------------------------------------------
-    @staticmethod
-    def _deleteAllImageDatabaseRecords(product_id: int) -> int:
-        db = DB()
-        db.connect()
-        cursor = db.getCursor(True)
-
-        sql = 'DELETE FROM Product_Images WHERE product_id = %s'
-
-        parms = (product_id,)
-        cursor.execute(sql, parms)
-        db.commit()
-        record_count = cursor.rowcount
-        db.close()
-
-        return record_count
-
-    #----------------------------------------------------------
-    # Retrieve all the product image database records that belong
-    # to the given product.
-    #----------------------------------------------------------
-    @staticmethod
-    def _getAllProductImageRecords(product_id: int) -> list[dict]:
-        db = DB()
-        db.connect()
-        cursor = db.getCursor(True)
-
-        sql = """
-        SELECT   *
-        FROM     Product_Images pi
-        WHERE    pi.product_id = %s
-        """
-
-        parms = (product_id,)
-        cursor.execute(sql, parms)
-        images = cursor.fetchall()
-        db.close()
-
-        return images
         
 
 
