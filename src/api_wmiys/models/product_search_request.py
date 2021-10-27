@@ -6,7 +6,7 @@
 from __future__ import annotations
 import flask
 from ..db import DB
-from ..common import sorting, Pagination
+from ..common import sorting, Pagination, user_image
 from ..models import product
 from enum import Enum 
 
@@ -82,11 +82,11 @@ class ProductSearchRequest:
 
         search_result_records, record_count  = self._getSearchRecordsAndCountTuple(stmt_template, parms)
 
-        prefix = f'{flask.request.root_url}static/{product.LOCAL_SERVER_COVER_PHOTO_DIRECTORY}/'
+        image_url_prefix = user_image.getCoverUrl()
 
         for product_result in search_result_records:
             if product_result['image']:
-                product_result['image'] = prefix + product_result['image']
+                product_result['image'] = image_url_prefix + product_result['image']
 
         return (search_result_records, record_count)
 
@@ -116,7 +116,8 @@ class ProductSearchRequest:
 
         search_result_records, record_count  = self._getSearchRecordsAndCountTuple(stmt_template, parms)
 
-        img_path_prefix = f'{flask.request.root_url}static/{product.LOCAL_SERVER_COVER_PHOTO_DIRECTORY}/'
+        # img_path_prefix = f'{flask.request.root_url}static/{product.LOCAL_SERVER_COVER_PHOTO_DIRECTORY}/'
+        img_path_prefix = user_image.getCoverUrl()
 
         for product_result in search_result_records:
             if product_result['image']:
