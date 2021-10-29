@@ -5,10 +5,6 @@
 #************************************************************************************
 import mysql.connector
 from mysql.connector.cursor import MySQLCursor
-from typing import Type
-import os
-import datetime
-from ..common import utilities
 from . import credentials as db_credentials
 
 class DB:
@@ -25,10 +21,10 @@ class DB:
     def connect(self):
 
         self.connection = mysql.connector.connect(
-            user=db_credentials.user, 
-            host=db_credentials.getHost(), 
-            database=db_credentials.database, 
-            password=db_credentials.password
+            user     = db_credentials.user,
+            host     = db_credentials.getHost(),
+            database = db_credentials.database,
+            password = db_credentials.password
         )
     
     #----------------------------------------------------------

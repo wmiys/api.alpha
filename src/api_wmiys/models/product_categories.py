@@ -24,10 +24,6 @@ def getAllSeperate():
     minors = []
     subs = []
 
-    Major = namedtuple('Major', ['id', 'name'])
-    Minor = namedtuple('Minor', ['id', 'name', 'parent_id'])
-    Sub   = namedtuple('Sub', ['id', 'name', 'parent_id'])
-
     for row in categoryTable:
         major = dict(id=row.get('major_id'), name=row.get('major_name'))
         minor = dict(id=row.get('minor_id'), name=row.get('minor_name'), parent_id=row.get('major_id'))
