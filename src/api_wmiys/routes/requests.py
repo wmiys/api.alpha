@@ -6,7 +6,8 @@ Description:    Handles all the pproduct requests.
 # import re
 import flask
 from http import HTTPStatus
-from ..common import security, utilities
+from wmiys_common import utilities
+from ..common import security
 from ..models import ProductRequest, RequestStatus, product_request
 from .. import payments
 

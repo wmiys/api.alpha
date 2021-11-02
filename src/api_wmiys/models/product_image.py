@@ -1,8 +1,8 @@
 from __future__ import annotations
-import flask
 import os
+from wmiys_common import utilities
 from ..db import DB
-from ..common import utilities, UserImage, user_image
+from ..common import UserImage, user_image
 
 
 #----------------------------------------------------------
