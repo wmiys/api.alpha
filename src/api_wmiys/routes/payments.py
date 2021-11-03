@@ -13,7 +13,8 @@ Required form fields:
 """
 
 import flask
-from ..common import security, utilities
+from wmiys_common import utilities
+from ..common import security
 from ..models import Payment
 from http import HTTPStatus
 

@@ -1,9 +1,9 @@
 import flask
 from flask import request
-from functools import wraps, update_wrapper
+from functools import wraps
+from wmiys_common import keys
 from ..db import DB
 from .globals import Globals
-from .. import keys
 
 # setup the global variables container
 requestGlobals = Globals(client_id=None)

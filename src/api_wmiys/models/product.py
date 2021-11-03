@@ -4,14 +4,12 @@
 #
 #************************************************************************************
 from __future__ import annotations
-import flask
-import os
-from ..db import DB
-from ..common import utilities, user_image
-from .. import common
 
-# LOCAL_SERVER_COVER_PHOTO_DIRECTORY = 'product-images/covers'
-# LOCAL_SERVER_COVER_PHOTO_DIRECTORY_ABS = "http://10.0.0.82/files/api.wmiys/src/product-images/covers"    
+import os
+from wmiys_common import utilities
+from ..db import DB
+from ..common import user_image
+from .. import common  
 
 
 class Product:

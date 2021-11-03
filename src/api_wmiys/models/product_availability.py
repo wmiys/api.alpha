@@ -4,8 +4,8 @@
 #
 #************************************************************************************
 from __future__ import annotations
+from wmiys_common import utilities
 from ..db import DB
-from ..common import utilities
 
 class ProductAvailability:
 

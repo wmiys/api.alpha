@@ -1,7 +1,5 @@
-
-
 import stripe
-from .. import keys
+from wmiys_common import keys
 
 stripe.api_key = keys.payments.test
 

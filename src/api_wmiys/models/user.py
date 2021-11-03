@@ -4,8 +4,9 @@
 #
 #************************************************************************************
 
+from wmiys_common import utilities
 from ..db import DB
-from ..common import utilities
+
 
 class User:
 
