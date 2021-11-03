@@ -16,12 +16,10 @@ CREATE VIEW `View_Payments_Internal` AS
         `pay`.`fee_lender` AS `fee_lender`,
         (SELECT (`num_days` * `prod`.`price_full`)) AS `total_price`,
         (SELECT CALCULATE_RENTER_PRICE(`total_price`, `pay`.`fee_renter`)) AS `total_renter_fee`,
-        (SELECT 
-                CALCULATE_LENDER_PAYOUT(`pay`.`price_full`,
-                            `pay`.`fee_lender`,
-                            `pay`.`starts_on`,
-                            `pay`.`ends_on`)
-            ) AS `total_payout_lender`,
+        CALCULATE_LENDER_PAYOUT(`pay`.`price_full`,
+                `pay`.`fee_lender`,
+                `pay`.`starts_on`,
+                `pay`.`ends_on`) AS `total_payout_lender`,
         `pay`.`payment_session_id` AS `payment_session_id`
     FROM
         ((`Payments` `pay`
