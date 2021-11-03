@@ -81,7 +81,7 @@ def no_external_requests(f):
     def wrap(*args, **kwargs):        
         header_value = flask.request.headers.get(CLIENT_CUSTOM_HEADER_KEY, '', str)
 
-        if header_value != keys.client_verification.header:
+        if header_value != keys.verification.header:
             flask.abort(403)
 
         # finally call f. f() now haves access to g.user

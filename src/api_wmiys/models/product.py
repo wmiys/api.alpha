@@ -190,12 +190,12 @@ class Product:
     #   newImageFile - the raw image file
     #   relative_image_directory_path - the folder name to save the image to
     #------------------------------------------------------
-    def setImagePropertyFromImageFile(self, newImageFile: object, relative_image_directory_path: str):
+    def setImagePropertyFromImageFile(self, new_image_file: object, relative_image_directory_path: str):
         # remove the old image
         if self.image:
             os.remove(os.path.join(relative_image_directory_path, self.image))
 
-        productImage = common.UserImage(newImageFile)
+        productImage = common.UserImage(new_image_file)
         newImageFileName = utilities.getUUID(True) + productImage.getFileExtension()
         self.image = productImage.saveImageFile(relative_image_directory_path, newImageFileName)
 

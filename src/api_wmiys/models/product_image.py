@@ -42,7 +42,8 @@ def _deleteAllImageFiles(product_id: int):
     prefix = user_image.getImagesDirectory()
 
     for img in _getAllProductImageRecords(product_id):
-        os.remove(prefix + img.get('file_name'))
+        img_file_path = os.path.join(prefix, img.get('file_name'))
+        os.remove(img_file_path)
 
 #----------------------------------------------------------
 # Deletes all the image files from the database that belong 
