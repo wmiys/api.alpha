@@ -6,6 +6,8 @@ Description:    Handles all the product images routing
 
 import flask
 from http import HTTPStatus
+
+from api_wmiys.common import user_image
 from ..common import security
 from ..models import product_image, ProductImage, product
 
@@ -17,7 +19,7 @@ bp_product_images = flask.Blueprint('bpProductImages', __name__)
 # ----------------------------------------------------
 @bp_product_images.get('')
 @security.login_required
-def searchAll(product_id: int):
+def get(product_id: int):
     # all we need to do is fetch all the product images
     return flask.jsonify(product_image.getAll(product_id))
 
@@ -47,7 +49,7 @@ def post(product_id: int):
         return ('', HTTPStatus.FORBIDDEN.value)
     
     imagesData: dict = flask.request.files.to_dict()
-    directory_path = product_image.getDirectoryPath()
+    directory_path = user_image.getImagesDirectory()
 
     for img in imagesData.values():
         productImage = ProductImage(product_id=product_id)
