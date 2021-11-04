@@ -6,8 +6,8 @@ SELECT
     `u`.`name_last` AS `name_last`,
     `u`.`birth_date` AS `birth_date`,
     `u`.`created_on` AS `created_on`,
-    COUNT(`p`.`id`) AS `count_products`,
-    COUNT(`pay`.`id`) AS `count_agreements`,
+    (SELECT COUNT(*) FROM Products p2 WHERE p2.user_id = u.id) AS count_products,
+    COUNT(`pr`.`id`) AS `count_agreements`,
     CALCULATE_LENDER_BALANCE(`u`.`id`) AS `lender_balance`
 FROM
     (((`Users` `u`
