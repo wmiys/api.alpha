@@ -11,19 +11,20 @@ bp_users = flask.Blueprint('routeUser', __name__)
 #------------------------------------------------------
 @bp_users.route('', methods=['POST'])
 def usersPost():
-    new_user = User()
-
     # set the user properties
-    new_user.email      = flask.request.form.get('email') or None
-    new_user.password   = flask.request.form.get('password') or None
-    new_user.name_first = flask.request.form.get('name_first') or None
-    new_user.name_last  = flask.request.form.get('name_last') or None
-    new_user.birth_date = flask.request.form.get('birth_date') or None
-    
-    new_user.insert()
-    new_user.fetch()
+    new_user = User(
+        email      = flask.request.form.get('email') or None,
+        password   = flask.request.form.get('password') or None,
+        name_first = flask.request.form.get('name_first') or None,
+        name_last  = flask.request.form.get('name_last') or None,
+        birth_date = flask.request.form.get('birth_date') or None,
+    )
 
-    return flask.jsonify(new_user.__dict__)
+    # insert the object into the database
+    new_user.insert()
+
+    # return the user object
+    return flask.jsonify(new_user.get())
 
 
 #------------------------------------------------------
@@ -37,16 +38,21 @@ def userGetPost(user_id):
         return ('', HTTPStatus.FORBIDDEN.value)
 
     user = User(id=user_id)
-    user.fetch()
 
     if flask.request.method == 'PUT':
+        # load the user's data into the object's fields
+        user.fetch()
+
         # be sure the request body has all the correct fields
         if not user.setPropertyValuesFromDict(flask.request.form.to_dict()):  
             return ('Request body contained an invalid field', HTTPStatus.BAD_REQUEST.value) 
         
+        # update the database record
         updateResultRowCount = user.update()
 
+        # make sure there's no errors
         if updateResultRowCount not in [0, 1]:
             return ('', HTTPStatus.INTERNAL_SERVER_ERROR.value)
 
-    return flask.jsonify(user.as_dict(return_password=False))
+    # return the user object
+    return flask.jsonify(user.get())

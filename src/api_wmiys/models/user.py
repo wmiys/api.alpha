@@ -56,6 +56,27 @@ class User:
         
         db.close()
 
+    #------------------------------------------------------
+    # Retrieve the user record from the database
+    #------------------------------------------------------
+    def get(self) -> dict:
+        db = DB()
+        db.connect()
+        cursor = db.getCursor(True)
+
+        sql = 'SELECT * FROM View_Users WHERE id=%s LIMIT 1'
+        parms = (self.id,)
+
+        try:
+            cursor.execute(sql, parms)
+            result = cursor.fetchone()
+        except Exception as ex:
+            print(ex)
+            result = None
+        finally:
+            db.close()
+
+        return result
 
     
 
