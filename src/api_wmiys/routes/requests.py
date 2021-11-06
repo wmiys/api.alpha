@@ -60,13 +60,14 @@ def newRequest():
 @bp_requests.route('/received', methods=['GET'])
 @security.login_required
 def getLenderRequests():
+    status_arg = flask.request.args.get('status')
 
-    request_status = flask.request.args.get('status')
-
-    if not request_status:
+    try:
+        request_status = RequestStatus(status_arg)
+        requests = product_request.getReceivedFilterByStatus(security.requestGlobals.client_id, request_status)
+    except ValueError:
+        # client provided an invalid status value, so return all of them... dipshit
         requests = product_request.getReceivedAll(security.requestGlobals.client_id)
-    else:
-        requests = product_request.getReceivedFilterByStatus(security.requestGlobals.client_id, RequestStatus(request_status))
     
     return flask.jsonify(requests)
 
@@ -123,12 +124,20 @@ def respondToRequest(request_id: int, status: str):
 @bp_requests.route('submitted', methods=['GET'])
 @security.login_required
 def getSubmittedAll():
-    request_status = flask.request.args.get('status')
+    status_arg = flask.request.args.get('status')
 
-    if not request_status:
+    try:
+        # try to parse the status url query parm
+        request_status = RequestStatus(status_arg)
+        
+        requests = product_request.getSubmittedFilterByStatus(
+            renter_id = security.requestGlobals.client_id,
+            status    = RequestStatus(request_status)
+        )
+
+    except ValueError:
+        # client provided an invalid status value... so return all of them
         requests = product_request.getSubmitted(security.requestGlobals.client_id)
-    else:
-        requests = product_request.getSubmittedFilterByStatus(security.requestGlobals.client_id, RequestStatus(request_status))
 
     return flask.jsonify(requests)
 
