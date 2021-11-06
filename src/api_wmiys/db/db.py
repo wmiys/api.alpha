@@ -3,9 +3,25 @@
 # This class handles all the database interactions
 #
 #************************************************************************************
+import enum
 import mysql.connector
 from mysql.connector.cursor import MySQLCursor
 from . import credentials as db_credentials
+
+
+
+class SqlBool(enum.Enum):
+    FALSE = 0
+    TRUE = 1
+
+
+def sqlBoolToPython(value: SqlBool) -> bool:
+    if value == SqlBool.FALSE:
+        return False
+    else:
+        return True
+
+
 
 class DB:
 

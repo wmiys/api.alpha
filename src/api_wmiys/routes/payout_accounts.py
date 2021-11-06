@@ -36,9 +36,4 @@ def post():
     if not account.insert():
         return ('Did not insert!', HTTPStatus.BAD_REQUEST.value)
     
-
-
-    
-
-
     return flask.jsonify(account.__dict__)
