@@ -1,22 +1,41 @@
 
-
+from __future__ import annotations
 import uuid
 from datetime import datetime
-
 import stripe
-
 from wmiys_common import keys
-
 from ..db import DB, sqlBoolToPython, SqlBool
-
 
 
 stripe.api_key = keys.payments.test
 
 
+#------------------------------------------------------
+# Create a new stripe account
+#------------------------------------------------------
 def getNewStripeAccount() -> stripe.Account:
     return stripe.Account.create(type='express')
 
+#------------------------------------------------------
+# Get all payout accounts owned by the given user
+#------------------------------------------------------
+def getAll(user_id: int) -> list[dict]:
+    db = DB()
+    db.connect()
+    cursor = db.getCursor(True)
+
+    sql = 'SELECT * FROM Payout_Accounts WHERE user_id=%s ORDER BY created_on DESC'
+    parms = (user_id,)
+    cursor.execute(sql, parms)
+    records: list = cursor.fetchall()
+
+    db.close()
+
+    # transform all sql bool types into python bools
+    for i, record in enumerate(records):
+        records[i]['confirmed'] = sqlBoolToPython(SqlBool(record.get('confirmed')))
+    
+    return records
 
 
 class PayoutAccount:
@@ -55,20 +74,22 @@ class PayoutAccount:
         
         return success
 
-    
+    #------------------------------------------------------
+    # Get a single payout account
+    #------------------------------------------------------
     def get(self) -> dict:
         db = DB()
         db.connect()
         cursor = db.getCursor(True)
 
-        sql = 'SELECT * FROM Payout_Accounts WHERE id=%s LIMIT 1'
-        parms = (str(self.id),)
+        sql = 'SELECT * FROM Payout_Accounts WHERE id=%s and user_id=%s LIMIT 1'
+        parms = (str(self.id), self.user_id)
         cursor.execute(sql, parms)
         result = cursor.fetchone()
 
         db.close()
 
-        result['confirmed'] = sqlBoolToPython(SqlBool(result.get('confirmed')))
-
+        if result:
+            result['confirmed'] = sqlBoolToPython(SqlBool(result.get('confirmed')))
 
         return result   
