@@ -61,3 +61,25 @@ def get(payout_account_id: uuid.UUID):
     )
     
     return flask.jsonify(account.get())
+
+
+#------------------------------------------------------
+# Update a record
+#------------------------------------------------------
+@bp_payout_accounts.put('<uuid:payout_account_id>')
+@security.no_external_requests
+@security.login_required
+def put(payout_account_id: uuid.UUID):
+    account = PayoutAccount(
+        id      = payout_account_id,
+        user_id = security.requestGlobals.client_id
+    )
+
+    if flask.request.form.get('confirmed', False) in [True, "true"]:
+        account.confirmed = True
+    else:
+        account.confirmed = False
+
+    account.update()
+    
+    return flask.jsonify(account.get())

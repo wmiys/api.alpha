@@ -74,6 +74,24 @@ class PayoutAccount:
         
         return success
 
+
+
+
+    def load(self):
+        db_result = self.get()
+
+        if not db_result:
+            return False
+
+        # self.id         = db_result.get('id')
+        self.user_id    = db_result.get('user_id')
+        self.account_id = db_result.get('account_id')
+        self.created_on = db_result.get('created_on')
+        self.confirmed  = db_result.get('confirmed')
+
+        return True
+
+
     #------------------------------------------------------
     # Get a single payout account
     #------------------------------------------------------
@@ -92,4 +110,28 @@ class PayoutAccount:
         if result:
             result['confirmed'] = sqlBoolToPython(SqlBool(result.get('confirmed')))
 
-        return result   
+        return result
+
+    #------------------------------------------------------
+    # Update the object
+    #------------------------------------------------------
+    def update(self) -> int:
+        db = DB()
+        db.connect()
+        cursor = db.getCursor(False)
+
+        sql = 'UPDATE Payout_Accounts SET confirmed = %s WHERE id=%s and user_id=%s'
+        parms = (self.confirmed, str(self.id), self.user_id)
+
+        try:
+            cursor.execute(sql, parms)
+            db.commit()
+            row_count = cursor.rowcount
+        except Exception as e:
+            print(e)
+            row_count = -1
+        finally:
+            db.close()
+
+        return row_count
+
