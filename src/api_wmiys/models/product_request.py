@@ -10,112 +10,6 @@ SQL_VIEW_RENTER = 'View_Requests_Renter'
 
 
 #-----------------------------------------------------
-# Retrieve all the requests that a lender has received.
-# 
-# Parms:
-#   lender_id - the lender's user_id
-# ----------------------------------------------------
-def getReceivedAll(lender_id) -> list[dict]:
-    sql = f'''
-    SELECT * FROM {SQL_VIEW_LENDER} v 
-    WHERE v.product_id IN (SELECT id FROM Products p WHERE p.user_id = %s)
-    ORDER BY v.created_on DESC
-    '''
-
-    parms = (lender_id,)
-
-    return _getRequestsBase(sql, parms)
-
-
-#-----------------------------------------------------
-# Retrieve all the requests that a lender has received
-# that have the specified status.
-# 
-# Parms:
-#   lender_id: the lender's user_id
-#   status: the status to filter by
-# ----------------------------------------------------
-def getReceivedFilterByStatus(lender_id, status: RequestStatus) -> list[dict]:
-    sql = f'''
-    SELECT  * FROM {SQL_VIEW_LENDER} v 
-    WHERE   v.product_id IN (SELECT id FROM Products p WHERE p.user_id = %s) 
-            AND v.status = %s
-    ORDER BY v.created_on DESC
-    '''
-
-    parms = (lender_id, status.value)
-
-    return _getRequestsBase(sql, parms)
-
-#-----------------------------------------------------
-# Retrieve all the requests that a renter has submitted.
-# 
-# Parms:
-#   renter_id: the renter's user id
-# ----------------------------------------------------
-def getSubmitted(renter_id) -> list[dict]:
-    sql = f'SELECT * FROM {SQL_VIEW_RENTER} v WHERE v.renter_id = %s ORDER BY v.created_on DESC'
-    parms = (renter_id,)
-
-    db_result = _getRequestsBase(sql, parms)
-
-    image_prefix = user_image.getCoverUrl()
-
-    for record in db_result:
-        if record.get('product_image'):
-            record['product_image'] = image_prefix + record['product_image']
-
-    return db_result
-
-
-#-----------------------------------------------------
-# Retrieve all the requests that a renter has submitted
-# that have the specified status.
-# 
-# Parms:
-#   renter_id: the renter's user_id
-#   status: the status to filter by
-# ----------------------------------------------------
-def getSubmittedFilterByStatus(renter_id: int, status: RequestStatus) -> list[dict]:
-    sql = f'''
-    SELECT * FROM {SQL_VIEW_RENTER} v 
-    WHERE v.renter_id = %s AND v.status = %s
-    ORDER BY v.created_on DESC
-    '''
-    parms = (renter_id, status.value)
-    
-    db_result = _getRequestsBase(sql, parms)
-
-    image_prefix = user_image.getCoverUrl()
-
-    for record in db_result:
-        if record.get('product_image'):
-            record['product_image'] = image_prefix + record['product_image']
-
-    return db_result
-
-
-#-----------------------------------------------------
-# Base template function for getting requests
-# 
-# Parms:
-#   sql: sql to execute
-#   parms: the parms to submit
-# ----------------------------------------------------
-def _getRequestsBase(sql: str, parms: tuple):
-    db = DB()
-    db.connect()
-    cursor = db.getCursor(True)
-
-    cursor.execute(sql, parms)
-    requests = cursor.fetchall()
-    
-    db.close()
-
-    return requests
-
-
-#-----------------------------------------------------
 # Possible product request status values
 # ----------------------------------------------------
 class RequestStatus(str, Enum):
@@ -123,11 +17,6 @@ class RequestStatus(str, Enum):
     accepted = 'accepted'
     denied   = 'denied'
     expired  = 'expired'
-
-    # default is pending
-    @classmethod
-    def _missing_(cls, value: object) -> RequestStatus:
-        return RequestStatus.pending
 
 
 #-----------------------------------------------------
@@ -300,7 +189,109 @@ class ProductRequest:
         return row_count
 
 
+#-----------------------------------------------------
+# Retrieve all the requests that a lender has received.
+# 
+# Parms:
+#   lender_id - the lender's user_id
+# ----------------------------------------------------
+def getReceivedAll(lender_id) -> list[dict]:
+    sql = f'''
+    SELECT * FROM {SQL_VIEW_LENDER} v 
+    WHERE v.product_id IN (SELECT id FROM Products p WHERE p.user_id = %s)
+    ORDER BY v.created_on DESC
+    '''
 
+    parms = (lender_id,)
+
+    return _getRequestsBase(sql, parms)
+
+
+#-----------------------------------------------------
+# Retrieve all the requests that a lender has received
+# that have the specified status.
+# 
+# Parms:
+#   lender_id: the lender's user_id
+#   status: the status to filter by
+# ----------------------------------------------------
+def getReceivedFilterByStatus(lender_id, status: RequestStatus) -> list[dict]:
+    sql = f'''
+    SELECT  * FROM {SQL_VIEW_LENDER} v 
+    WHERE   v.product_id IN (SELECT id FROM Products p WHERE p.user_id = %s) 
+            AND v.status = %s
+    ORDER BY v.created_on DESC
+    '''
+
+    parms = (lender_id, status.value)
+
+    return _getRequestsBase(sql, parms)
+
+#-----------------------------------------------------
+# Retrieve all the requests that a renter has submitted.
+# 
+# Parms:
+#   renter_id: the renter's user id
+# ----------------------------------------------------
+def getSubmitted(renter_id) -> list[dict]:
+    sql = f'SELECT * FROM {SQL_VIEW_RENTER} v WHERE v.renter_id = %s ORDER BY v.created_on DESC'
+    parms = (renter_id,)
+
+    db_result = _getRequestsBase(sql, parms)
+
+    image_prefix = user_image.getCoverUrl()
+
+    for record in db_result:
+        if record.get('product_image'):
+            record['product_image'] = image_prefix + record['product_image']
+
+    return db_result
+
+#-----------------------------------------------------
+# Retrieve all the requests that a renter has submitted
+# that have the specified status.
+# 
+# Parms:
+#   renter_id: the renter's user_id
+#   status: the status to filter by
+# ----------------------------------------------------
+def getSubmittedFilterByStatus(renter_id: int, status: RequestStatus) -> list[dict]:
+    sql = f'''
+    SELECT * FROM {SQL_VIEW_RENTER} v 
+    WHERE v.renter_id = %s AND v.status = %s
+    ORDER BY v.created_on DESC
+    '''
+    parms = (renter_id, status.value)
+    
+    db_result = _getRequestsBase(sql, parms)
+
+    image_prefix = user_image.getCoverUrl()
+
+    for record in db_result:
+        if record.get('product_image'):
+            record['product_image'] = image_prefix + record['product_image']
+
+    return db_result
+
+
+#-----------------------------------------------------
+# Base template function for getting requests
+# 
+# Parms:
+#   sql: sql to execute
+#   parms: the parms to submit
+# ----------------------------------------------------
+def _getRequestsBase(sql: str, parms: tuple):
+    db = DB()
+    db.connect()
+    cursor = db.getCursor(True)
+
+    cursor.execute(sql, parms)
+    requests = cursor.fetchall()
+    
+    db.close()
+
+    return requests
 
 
 

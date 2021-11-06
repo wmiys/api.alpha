@@ -1,6 +1,10 @@
-from api_wmiys import app 
-from api_wmiys.common import constants, user_image
+from wmiys_common.config_pairs import ApiUrls, DbHosts
+from api_wmiys import app, db
+from api_wmiys.common import user_image
 
 if __name__ == "__main__":
-    user_image.STATIC_URL_PREFIX = constants.DevConfig.STATIC_URL_PREFIX.value
+    # set some development constants
+    user_image.STATIC_URL_PREFIX = f'{ApiUrls.DEV}/'
+    db.credentials.HOST          = DbHosts.DEV
+
     app.run(debug=True, host="0.0.0.0", port=5000, threaded=True)
