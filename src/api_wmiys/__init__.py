@@ -52,6 +52,7 @@ def registerBlueprints(flaskApp: Flask):
     flaskApp.register_blueprint(routes.locations.bp_locations, url_prefix='/locations')
     flaskApp.register_blueprint(routes.requests.bp_requests, url_prefix='/requests')
     flaskApp.register_blueprint(routes.payments.bp_payments, url_prefix='/payments')
+    flaskApp.register_blueprint(routes.payout_accounts.bp_payout_accounts, url_prefix='/payout-accounts')
 
 app = Flask(__name__)
 

@@ -10,3 +10,4 @@ from . import search_products as search_products
 from . import users as users
 from . import requests as requests
 from . import payments as payments
+from . import payout_accounts as payout_accounts
