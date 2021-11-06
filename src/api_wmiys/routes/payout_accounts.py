@@ -75,7 +75,9 @@ def put(payout_account_id: uuid.UUID):
         user_id = security.requestGlobals.client_id
     )
 
-    if flask.request.form.get('confirmed', False) in [True, "true"]:
+    print(flask.json.dumps(flask.request.form.to_dict(), indent=4))
+
+    if flask.request.form.get('confirmed', False) in [True, "true", "True"]:
         account.confirmed = True
     else:
         account.confirmed = False
