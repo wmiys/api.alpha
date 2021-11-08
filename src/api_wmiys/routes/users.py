@@ -55,7 +55,4 @@ def userGetPost(user_id):
             return ('', HTTPStatus.INTERNAL_SERVER_ERROR.value)
 
     # return the user object without the payout_account_id
-    user_dict = user.get()
-    user_dict.pop('payout_account_id')
-
-    return flask.jsonify(user_dict)
+    return flask.jsonify(user.get())
