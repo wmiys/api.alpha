@@ -13,8 +13,12 @@ stripe.api_key = keys.payments.test
 #------------------------------------------------------
 # Create a new stripe account
 #------------------------------------------------------
-def getNewStripeAccount() -> stripe.Account:
-    return stripe.Account.create(type='express')
+def getNewStripeAccount(user_id: int) -> stripe.Account:
+    
+    return stripe.Account.create(
+        type='express',
+        metadata=dict(user_id=user_id)
+    )
 
 #------------------------------------------------------
 # Get all payout accounts owned by the given user

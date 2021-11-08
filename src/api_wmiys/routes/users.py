@@ -54,5 +54,8 @@ def userGetPost(user_id):
         if updateResultRowCount not in [0, 1]:
             return ('', HTTPStatus.INTERNAL_SERVER_ERROR.value)
 
-    # return the user object
-    return flask.jsonify(user.get())
+    # return the user object without the payout_account_id
+    user_dict = user.get()
+    user_dict.pop('payout_account_id')
+
+    return flask.jsonify(user_dict)

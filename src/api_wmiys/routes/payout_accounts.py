@@ -23,7 +23,7 @@ bp_payout_accounts = flask.Blueprint('bp_payout_accounts', __name__)
 @security.no_external_requests
 @security.login_required
 def post():
-    new_stripe_account = payout_account.getNewStripeAccount()
+    new_stripe_account = payout_account.getNewStripeAccount(security.requestGlobals.client_id)
 
     account = PayoutAccount(
         id         = utilities.getUUID(False),
