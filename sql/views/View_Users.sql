@@ -13,7 +13,7 @@ SELECT
         WHERE
             (`p2`.`user_id` = `u`.`id`)) AS `count_products`,
     COUNT(`pr`.`id`) AS `count_agreements`,
-    CALCULATE_LENDER_BALANCE(`u`.`id`) AS `lender_balance`,
+    CALCULATE_LENDER_EARNINGS(`u`.`id`) AS `lender_balance`,
     `pa`.`account_id` AS `payout_account_id`
 FROM
     ((((`Users` `u`
