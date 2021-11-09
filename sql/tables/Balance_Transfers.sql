@@ -3,6 +3,8 @@ CREATE TABLE `Balance_Transfers` (
   `user_id` int unsigned NOT NULL,
   `amount` double unsigned NOT NULL,
   `created_on` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `destination_account_id` char(30) DEFAULT NULL,
+  `transfer_id` char(30) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `id` (`id`),
   KEY `user_id` (`user_id`),
