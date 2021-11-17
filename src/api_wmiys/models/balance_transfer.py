@@ -1,4 +1,10 @@
-
+"""
+**********************************************************************************************
+This class represents a balance transfer. 
+Balance transfers occur when a lender wants to transfer their earnings to their bank account.
+Lenders need to have a balance greater than 1 in order to successfully transfer their balance.
+**********************************************************************************************
+"""
 
 from uuid import UUID
 from datetime import datetime
@@ -11,7 +17,11 @@ stripe.api_key = keys.payments.test
 
 
 class BalanceTransfer:
+    """Balance Transfers"""
 
+    #------------------------------------------------------
+    # Constructor
+    #------------------------------------------------------
     def __init__(self, id: UUID=None, user_id: int=None, amount: float=0, created_on: datetime=None, destination_account_id: str=None, transfer_id: str=None):
         self.id                     = id
         self.user_id                = user_id
@@ -20,7 +30,9 @@ class BalanceTransfer:
         self.destination_account_id = destination_account_id
         self.transfer_id            = transfer_id
 
-
+    #------------------------------------------------------
+    # Tell stripe to send a lender their current balance
+    #------------------------------------------------------
     def sendTransfer(self) -> bool:
         
         try:
@@ -39,7 +51,9 @@ class BalanceTransfer:
         
         return result
 
-    
+    #------------------------------------------------------
+    # Record the transfer in the database
+    #------------------------------------------------------ 
     def insert(self):
         db = DB()
         db.connect()

@@ -2,7 +2,6 @@
 Package:        balance_transfers
 Url Prefix:     /balance-transfers
 Description:    Routing for balance transfers
-
 """
 
 import flask
