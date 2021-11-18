@@ -17,7 +17,7 @@ bp_search = flask.Blueprint('search', __name__)
 #------------------------------------------------------
 # Location search url routing logic
 #------------------------------------------------------
-@bp_search.route('locations', methods=['GET'])
+@bp_search.get('locations')
 def _searchLocations():
     query = _getQuery()
     per_page = getPerPage()

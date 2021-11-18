@@ -27,7 +27,7 @@ m_product_request: ProductRequest = None
 # This get's called from the front-end ONLY!!
 # Normal users ARE NOT allowed to do this themselves.
 # ----------------------------------------------------
-@bp_requests.route('/received', methods=['POST'])
+@bp_requests.post('/received')
 @security.no_external_requests
 @security.login_required
 def newRequest():
@@ -57,7 +57,7 @@ def newRequest():
 #-----------------------------------------------------
 # Get all received product requests
 # ----------------------------------------------------
-@bp_requests.route('/received', methods=['GET'])
+@bp_requests.get('/received')
 @security.login_required
 def getLenderRequests():
     status_arg = flask.request.args.get('status')
@@ -75,7 +75,7 @@ def getLenderRequests():
 #-----------------------------------------------------
 # Retrieve a single received request
 # ----------------------------------------------------
-@bp_requests.route('/received/<int:request_id>', methods=['GET'])
+@bp_requests.get('/received/<int:request_id>')
 @security.login_required
 def getSingleRequest(request_id: int):
     request = ProductRequest(id=request_id)
@@ -85,7 +85,7 @@ def getSingleRequest(request_id: int):
 #-----------------------------------------------------
 # Lender responds to a request with either accept or decline
 # ----------------------------------------------------
-@bp_requests.route('/received/<int:request_id>/<string:status>', methods=['POST'])
+@bp_requests.post('/received/<int:request_id>/<string:status>')
 @security.login_required
 def respondToRequest(request_id: int, status: str):
     # response url should be either accept or decline
@@ -121,7 +121,7 @@ def respondToRequest(request_id: int, status: str):
 #-----------------------------------------------------
 # Get all SUBMITTED requests
 # ----------------------------------------------------
-@bp_requests.route('submitted', methods=['GET'])
+@bp_requests.get('submitted')
 @security.login_required
 def getSubmittedAll():
     status_arg = flask.request.args.get('status')
@@ -145,7 +145,7 @@ def getSubmittedAll():
 #-----------------------------------------------------
 # Get a single SUBMITTED request
 # ----------------------------------------------------
-@bp_requests.route('submitted/<int:request_id>', methods=['GET'])
+@bp_requests.get('submitted/<int:request_id>')
 @security.login_required
 def getSubmitted(request_id: int):
     request = ProductRequest(id=request_id)

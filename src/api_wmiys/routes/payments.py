@@ -24,11 +24,10 @@ bp_payments = flask.Blueprint('bp_payments', __name__)
 #------------------------------------------------------
 # Create a new payment route
 #------------------------------------------------------
-@bp_payments.route('', methods=['POST'])
+@bp_payments.post('')
 @security.no_external_requests
 @security.login_required
 def insertPayment():
-    
     payment = Payment(
         id        = utilities.getUUID(True),
         renter_id = flask.g.client_id,

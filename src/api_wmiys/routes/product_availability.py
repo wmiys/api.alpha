@@ -15,7 +15,7 @@ bp_product_availability = flask.Blueprint('productAvailabilityRoute', __name__)
 #----------------------------------------------------------
 # Retrieve all the product availabilities of a single product
 #----------------------------------------------------------
-@bp_product_availability.route('', methods=['GET'])
+@bp_product_availability.get('')
 @security.login_required
 def productAvailabilities(product_id: int):
     # verify that the user owns the product 
@@ -30,7 +30,7 @@ def productAvailabilities(product_id: int):
 #----------------------------------------------------------
 # Create a new product availability
 #----------------------------------------------------------
-@bp_product_availability.route('', methods=['POST'])
+@bp_product_availability.post('')
 @security.login_required
 def productAvailabilityPost(product_id: int):
     # verify that the user owns the product 

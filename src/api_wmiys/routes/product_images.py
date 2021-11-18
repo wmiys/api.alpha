@@ -62,7 +62,7 @@ def post(product_id: int):
 #----------------------------------------------------------
 # Get a single product image
 #----------------------------------------------------------
-@bp_product_images.route('<int:product_image_id>', methods=['GET'])
+@bp_product_images.get('<int:product_image_id>')
 @security.login_required
 def singleImage(product_id: int, product_image_id: int):
     # make sure the user is authorized

@@ -1,4 +1,5 @@
 """
+
 Package:        payout_accounts
 Url Prefix:     /payout-accounts/
 Description:    Routing for creating payout accounts
@@ -74,8 +75,6 @@ def put(payout_account_id: uuid.UUID):
         id      = payout_account_id,
         user_id = flask.g.client_id
     )
-
-    print(flask.json.dumps(flask.request.form.to_dict(), indent=4))
 
     if flask.request.form.get('confirmed', False) in [True, "true", "True"]:
         account.confirmed = True
