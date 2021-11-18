@@ -1,11 +1,12 @@
 import os
 import flask
+from wmiys_common.config_pairs import ApiUrls
 
 IMAGES_DIRECTORY_NAME         = 'product-images'
 PRODUCT_COVERS_DIRECTORY_NAME = 'covers'
 PRODUCT_IMAGES_DIRECTORY_NAME = 'images'
 
-STATIC_URL_PREFIX = 'https://api.wmiys.com/'
+STATIC_URL_PREFIX = f'{ApiUrls.PRODUCTION}/'
 
 
 #----------------------------------------------------------
@@ -49,7 +50,7 @@ class UserImage:
     #------------------------------------------------------
     # Returns the image file extension
     #------------------------------------------------------
-    def getFileExtension(self):
+    def getFileExtension(self) -> str:
         file_extension = os.path.splitext(self.img_file.filename)[1]
         return file_extension
     
@@ -62,11 +63,11 @@ class UserImage:
     #
     # returns the filename of the local copy of the image
     #------------------------------------------------------
-    def saveImageFile(self, relative_directory_path: str, new_file_name: str=None):
+    def saveImageFile(self, directory_path: str, new_file_name: str=None) -> str:
         if not new_file_name:
             new_file_name = self.img_file.filename
 
-        self.img_file.save(os.path.join(relative_directory_path, new_file_name))     # save the image
+        self.img_file.save(os.path.join(directory_path, new_file_name))     # save the image
 
         return new_file_name
 
