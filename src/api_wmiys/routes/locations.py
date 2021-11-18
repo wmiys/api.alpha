@@ -14,7 +14,7 @@ bp_locations = flask.Blueprint('locationsBP', __name__)
 #----------------------------------------------------------
 # Get a single location
 #----------------------------------------------------------
-@bp_locations.route('<int:location_id>', methods=['GET'])
+@bp_locations.get('<int:location_id>')
 @security.login_required
 def getLocations(location_id: int):
     location = Location(location_id)

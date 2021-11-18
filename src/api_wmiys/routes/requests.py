@@ -64,10 +64,10 @@ def getLenderRequests():
 
     try:
         request_status = RequestStatus(status_arg)
-        requests = product_request.getReceivedFilterByStatus(security.requestGlobals.client_id, request_status)
+        requests = product_request.getReceivedFilterByStatus(flask.g.client_id, request_status)
     except ValueError:
         # client provided an invalid status value, so return all of them... dipshit
-        requests = product_request.getReceivedAll(security.requestGlobals.client_id)
+        requests = product_request.getReceivedAll(flask.g.client_id)
     
     return flask.jsonify(requests)
 
@@ -131,13 +131,13 @@ def getSubmittedAll():
         request_status = RequestStatus(status_arg)
         
         requests = product_request.getSubmittedFilterByStatus(
-            renter_id = security.requestGlobals.client_id,
+            renter_id = flask.g.client_id,
             status    = RequestStatus(request_status)
         )
 
     except ValueError:
         # client provided an invalid status value... so return all of them
-        requests = product_request.getSubmitted(security.requestGlobals.client_id)
+        requests = product_request.getSubmitted(flask.g.client_id)
 
     return flask.jsonify(requests)
 
@@ -151,7 +151,7 @@ def getSubmitted(request_id: int):
     request = ProductRequest(id=request_id)
     request_dict = request.getRenter()
 
-    if request_dict.get('renter_id') != security.requestGlobals.client_id:
+    if request_dict.get('renter_id') != flask.g.client_id:
         return ('', HTTPStatus.FORBIDDEN.value)
 
     return flask.jsonify(request_dict)

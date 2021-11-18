@@ -31,7 +31,7 @@ def insertPayment():
     
     payment = Payment(
         id        = utilities.getUUID(True),
-        renter_id = security.requestGlobals.client_id,
+        renter_id = flask.g.client_id,
     )
 
     # set the object's property values from the request form data
