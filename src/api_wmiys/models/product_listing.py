@@ -1,6 +1,15 @@
-import flask
+"""
+**********************************************************************************************
+A product listing represents a product that is publicly visible to all renters. This is what
+data is used when a renter goes to a product-listing page. 
+
+It's essentially the same thing as the product view from the lender's side.
+
+I just thought it would be a good idea to seperate out the views for security... might have been a mistake.
+**********************************************************************************************
+"""
+
 from ..db import DB
-from . import product
 from ..common import user_image
 
 class ProductListing:
@@ -33,14 +42,12 @@ class ProductListing:
     #     dict: product listing dictionary.
     #----------------------------------------------------------
     def get(self) -> dict:
-
         product_listing = dict(
             meta       = self._getMetaDict(),
             price      = self._getPriceDict(),
             categories = self._getCategoriesDict(),
             lender     = self._getLenderDict()
         )
-
 
         return product_listing
 

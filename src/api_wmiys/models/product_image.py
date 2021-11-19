@@ -1,3 +1,14 @@
+"""
+**********************************************************************************************
+A product image represents a single additional image given to a product (not the cover photo).
+
+Currently, the only way to update the images for a product is by first deleting all of them,
+then you can post a list of new ones.
+
+This will need to be updated soon.
+**********************************************************************************************
+"""
+
 from __future__ import annotations
 import os
 from wmiys_common import utilities

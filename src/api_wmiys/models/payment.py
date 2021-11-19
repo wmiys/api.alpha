@@ -1,7 +1,12 @@
 """
+**********************************************************************************************
 This class represents a payment record in the database.
 
 payment_session_id represents the session_id generated from the stripe API.
+
+A payment occurs when a renter finds a product that they want to rent, and they have successfully
+gave stripe their card information and it was successfully charged.
+**********************************************************************************************
 """
 
 from ..db import DB

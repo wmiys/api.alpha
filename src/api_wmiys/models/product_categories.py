@@ -1,13 +1,11 @@
-#************************************************************************************
-#
-# This class handles all the product-category requests.
-#
-#************************************************************************************
+"""
+**********************************************************************************************
+This class handles all the product-category requests.
+All products must be assigned a specific sub-category id.
+**********************************************************************************************
+"""
 
 from ..db import DB
-from collections import namedtuple
-
-
 
 #------------------------------------------------------
 # Returns all categories
