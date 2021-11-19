@@ -31,7 +31,7 @@ def get(product_id: int):
 @security.login_required
 def delete(product_id: int):
     # make sure the user is authorized
-    if not product.doesUserOwnProduct(product_id, security.requestGlobals.client_id):
+    if not product.doesUserOwnProduct(product_id, flask.g.client_id):
         return ('', HTTPStatus.FORBIDDEN.value)
     
     product_image.deleteAll(product_id)
@@ -45,7 +45,7 @@ def delete(product_id: int):
 @security.login_required
 def post(product_id: int):
     # make sure the user is authorized
-    if not product.doesUserOwnProduct(product_id, security.requestGlobals.client_id):
+    if not product.doesUserOwnProduct(product_id, flask.g.client_id):
         return ('', HTTPStatus.FORBIDDEN.value)
     
     imagesData: dict = flask.request.files.to_dict()
@@ -62,11 +62,11 @@ def post(product_id: int):
 #----------------------------------------------------------
 # Get a single product image
 #----------------------------------------------------------
-@bp_product_images.route('<int:product_image_id>', methods=['GET'])
+@bp_product_images.get('<int:product_image_id>')
 @security.login_required
 def singleImage(product_id: int, product_image_id: int):
     # make sure the user is authorized
-    if not product.doesUserOwnProduct(product_id, security.requestGlobals.client_id):
+    if not product.doesUserOwnProduct(product_id, flask.g.client_id):
         return ('', HTTPStatus.FORBIDDEN.value)
 
     productImage = ProductImage(newID=product_image_id)    

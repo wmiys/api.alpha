@@ -16,10 +16,10 @@ class Payment:
     #------------------------------------------------------
     # Constructor
     #------------------------------------------------------
-    def __init__(self, id=None, product_id=None, renter_id=None, 
-        dropoff_location_id=None, starts_on=None, ends_on=None, 
-        price_full=None, fee_renter=FEE_RENTER, fee_lender=FEE_LENDER,
-        payment_session_id=None, created_on=None):
+    def __init__(self,  id=None,                    product_id=None,        renter_id=None, 
+                        dropoff_location_id=None,   starts_on=None,         ends_on=None, 
+                        price_full=None,            fee_renter=FEE_RENTER,  fee_lender=FEE_LENDER,
+                        created_on=None):
 
         self.id                  = id
         self.product_id          = product_id
@@ -30,7 +30,6 @@ class Payment:
         self.price_full          = price_full
         self.fee_renter          = fee_renter
         self.fee_lender          = fee_lender
-        self.payment_session_id  = payment_session_id
         self.created_on          = created_on
 
 
@@ -43,9 +42,11 @@ class Payment:
     #   false - 1 or more required keys do NOT have a value.
     #------------------------------------------------------
     def areAllValidInsertFieldsSet(self) -> bool:
-        if None in [self.id, self.product_id, self.renter_id, 
-            self.dropoff_location_id, self.starts_on, self.ends_on, 
-            self.price_full, self.fee_lender, self.fee_renter]:
+        if None in [
+            self.id,                    self.product_id,    self.renter_id, 
+            self.dropoff_location_id,   self.starts_on,     self.ends_on, 
+            self.price_full,            self.fee_lender,    self.fee_renter
+        ]:
             return False
         else:
             return True
@@ -63,14 +64,12 @@ class Payment:
             INSERT INTO Payments (
                 id,                     product_id,     renter_id,
                 dropoff_location_id,    starts_on,      ends_on,
-                payment_session_id,     fee_renter,     fee_lender,
-                price_full
+                fee_renter,             fee_lender,     price_full
             )
             SELECT 
                 %s,     %s,     %s,
                 %s,     %s,     %s,
-                %s,     %s,     %s,
-                p.price_full
+                %s,     %s,     p.price_full
             FROM Products p
             WHERE p.id = %s
             LIMIT 1
@@ -98,11 +97,8 @@ class Payment:
         return (
                 self.id,                    self.product_id,    self.renter_id,
                 self.dropoff_location_id,   self.starts_on,     self.ends_on,
-                self.payment_session_id,    self.fee_renter,    self.fee_lender,
-                self.product_id
+                self.fee_renter,            self.fee_lender,    self.product_id
         )
-
-
     
     def get(self) -> dict:
         db = DB()

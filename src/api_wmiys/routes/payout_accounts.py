@@ -1,4 +1,5 @@
 """
+
 Package:        payout_accounts
 Url Prefix:     /payout-accounts/
 Description:    Routing for creating payout accounts
@@ -23,11 +24,11 @@ bp_payout_accounts = flask.Blueprint('bp_payout_accounts', __name__)
 @security.no_external_requests
 @security.login_required
 def post():
-    new_stripe_account = payout_account.getNewStripeAccount(security.requestGlobals.client_id)
+    new_stripe_account = payout_account.getNewStripeAccount(flask.g.client_id)
 
     account = PayoutAccount(
         id         = utilities.getUUID(False),
-        user_id    = security.requestGlobals.client_id,
+        user_id    = flask.g.client_id,
         account_id = new_stripe_account.stripe_id
     )
 
@@ -44,7 +45,7 @@ def post():
 @security.no_external_requests
 @security.login_required
 def getAll():
-    accounts = payout_account.getAll(security.requestGlobals.client_id)
+    accounts = payout_account.getAll(flask.g.client_id)
     return flask.jsonify(accounts)
     
 
@@ -57,7 +58,7 @@ def getAll():
 def get(payout_account_id: uuid.UUID):
     account = PayoutAccount(
         id      = payout_account_id,
-        user_id = security.requestGlobals.client_id
+        user_id = flask.g.client_id
     )
     
     return flask.jsonify(account.get())
@@ -72,10 +73,8 @@ def get(payout_account_id: uuid.UUID):
 def put(payout_account_id: uuid.UUID):
     account = PayoutAccount(
         id      = payout_account_id,
-        user_id = security.requestGlobals.client_id
+        user_id = flask.g.client_id
     )
-
-    print(flask.json.dumps(flask.request.form.to_dict(), indent=4))
 
     if flask.request.form.get('confirmed', False) in [True, "true", "True"]:
         account.confirmed = True

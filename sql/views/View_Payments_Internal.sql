@@ -19,8 +19,7 @@ CREATE VIEW `View_Payments_Internal` AS
         CALCULATE_LENDER_PAYOUT(`pay`.`price_full`,
                 `pay`.`fee_lender`,
                 `pay`.`starts_on`,
-                `pay`.`ends_on`) AS `total_payout_lender`,
-        `pay`.`payment_session_id` AS `payment_session_id`
+                `pay`.`ends_on`) AS `total_payout_lender`
     FROM
         ((`Payments` `pay`
         LEFT JOIN `Products` `prod` ON ((`pay`.`product_id` = `prod`.`id`)))

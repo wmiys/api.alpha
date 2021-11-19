@@ -3,9 +3,9 @@ Package:        requests
 Url Prefix:     /requests
 Description:    Handles all the pproduct requests.
 """
-# import re
 import flask
 from http import HTTPStatus
+from uuid import UUID
 from wmiys_common import utilities
 from ..common import security
 from ..models import ProductRequest, RequestStatus, product_request
@@ -25,13 +25,15 @@ m_product_request: ProductRequest = None
 # Create a new product request for the lender.
 # 
 # This get's called from the front-end ONLY!!
-# Normal users ARE NOT allowed to do this themselves.
+# Normal users are NOT allowed to do this themselves.
 # ----------------------------------------------------
-@bp_requests.route('/received', methods=['POST'])
+@bp_requests.post('/received')
 @security.no_external_requests
 @security.login_required
 def newRequest():
-    product_request = ProductRequest()
+    product_request = ProductRequest(
+        id = utilities.getUUID(False)
+    )
 
     incoming_data: dict = flask.request.form.to_dict()
 
@@ -57,17 +59,17 @@ def newRequest():
 #-----------------------------------------------------
 # Get all received product requests
 # ----------------------------------------------------
-@bp_requests.route('/received', methods=['GET'])
+@bp_requests.get('/received')
 @security.login_required
 def getLenderRequests():
     status_arg = flask.request.args.get('status')
 
     try:
         request_status = RequestStatus(status_arg)
-        requests = product_request.getReceivedFilterByStatus(security.requestGlobals.client_id, request_status)
+        requests = product_request.getReceivedFilterByStatus(flask.g.client_id, request_status)
     except ValueError:
         # client provided an invalid status value, so return all of them... dipshit
-        requests = product_request.getReceivedAll(security.requestGlobals.client_id)
+        requests = product_request.getReceivedAll(flask.g.client_id)
     
     return flask.jsonify(requests)
 
@@ -75,9 +77,9 @@ def getLenderRequests():
 #-----------------------------------------------------
 # Retrieve a single received request
 # ----------------------------------------------------
-@bp_requests.route('/received/<int:request_id>', methods=['GET'])
+@bp_requests.get('/received/<uuid:request_id>')
 @security.login_required
-def getSingleRequest(request_id: int):
+def getSingleRequest(request_id: UUID):
     request = ProductRequest(id=request_id)
     return flask.jsonify(request.getLender())
 
@@ -85,9 +87,9 @@ def getSingleRequest(request_id: int):
 #-----------------------------------------------------
 # Lender responds to a request with either accept or decline
 # ----------------------------------------------------
-@bp_requests.route('/received/<int:request_id>/<string:status>', methods=['POST'])
+@bp_requests.post('/received/<uuid:request_id>/<string:status>')
 @security.login_required
-def respondToRequest(request_id: int, status: str):
+def respondToRequest(request_id: UUID, status: str):
     # response url should be either accept or decline
     if status not in [LENDER_RESPONSE_ACCEPT, LENDER_RESPONSE_DECLINE]:
         return ("Status needs to be either 'accept' or 'decline'.", HTTPStatus.BAD_REQUEST.value)
@@ -121,7 +123,7 @@ def respondToRequest(request_id: int, status: str):
 #-----------------------------------------------------
 # Get all SUBMITTED requests
 # ----------------------------------------------------
-@bp_requests.route('submitted', methods=['GET'])
+@bp_requests.get('submitted')
 @security.login_required
 def getSubmittedAll():
     status_arg = flask.request.args.get('status')
@@ -131,13 +133,13 @@ def getSubmittedAll():
         request_status = RequestStatus(status_arg)
         
         requests = product_request.getSubmittedFilterByStatus(
-            renter_id = security.requestGlobals.client_id,
+            renter_id = flask.g.client_id,
             status    = RequestStatus(request_status)
         )
 
     except ValueError:
         # client provided an invalid status value... so return all of them
-        requests = product_request.getSubmitted(security.requestGlobals.client_id)
+        requests = product_request.getSubmitted(flask.g.client_id)
 
     return flask.jsonify(requests)
 
@@ -145,13 +147,13 @@ def getSubmittedAll():
 #-----------------------------------------------------
 # Get a single SUBMITTED request
 # ----------------------------------------------------
-@bp_requests.route('submitted/<int:request_id>', methods=['GET'])
+@bp_requests.get('submitted/<uuid:request_id>')
 @security.login_required
-def getSubmitted(request_id: int):
+def getSubmitted(request_id: UUID):
     request = ProductRequest(id=request_id)
     request_dict = request.getRenter()
 
-    if request_dict.get('renter_id') != security.requestGlobals.client_id:
+    if request_dict.get('renter_id') != flask.g.client_id:
         return ('', HTTPStatus.FORBIDDEN.value)
 
     return flask.jsonify(request_dict)

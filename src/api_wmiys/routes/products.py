@@ -19,7 +19,7 @@ bp_products = flask.Blueprint('products', __name__)
 @bp_products.get('')
 @security.login_required
 def userProductsGet():
-    userProducts = Product.getAll(security.requestGlobals.client_id)
+    userProducts = Product.getAll(flask.g.client_id)
     return flask.jsonify(userProducts)
 
 
@@ -29,7 +29,7 @@ def userProductsGet():
 @bp_products.post('')
 @security.login_required
 def userProductsPost():
-    newProduct = Product(user_id=security.requestGlobals.client_id)
+    newProduct = Product(user_id=flask.g.client_id)
 
     # set the object properties from the fields in the request body
     # if the request body contains an invalid field, abort
@@ -56,7 +56,7 @@ def productRequest(product_id):
     product = Product(id=product_id)
     product.loadData()  # load the product data from the database
 
-    if product.user_id != security.requestGlobals.client_id:
+    if product.user_id != flask.g.client_id:
         return ('', HTTPStatus.FORBIDDEN.value)
 
     if flask.request.method != 'PUT':

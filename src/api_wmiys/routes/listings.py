@@ -15,7 +15,7 @@ bp_listings = flask.Blueprint('productListings', __name__)
 #----------------------------------------------------------
 # Get a product's listing information for a single product
 #----------------------------------------------------------
-@bp_listings.route('', methods=['GET'])
+@bp_listings.get('')
 @security.login_required
 def getProductListings(product_id: int):
     listing = ProductListing(product_id)
@@ -25,7 +25,7 @@ def getProductListings(product_id: int):
 #----------------------------------------------------------
 # Check if a product is available for rent
 #----------------------------------------------------------
-@bp_listings.route('availability', methods=['GET'])
+@bp_listings.get('availability')
 @security.login_required
 def getProductListingAvailability(product_id: int):
     listingAvailability = ProductListingAvailability(

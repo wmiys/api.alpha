@@ -1,13 +1,8 @@
+from __future__ import annotations
 import flask
-from flask import request
 from functools import wraps
 from wmiys_common import keys
 from ..db import DB
-from .globals import Globals
-
-# setup the global variables container
-requestGlobals = Globals(client_id=None)
-
 
 CLIENT_CUSTOM_HEADER_KEY = 'x-client-key'
 
@@ -21,18 +16,17 @@ def login_required(f):
     @wraps(f)
     def wrap(*args, **kwargs):
         # if user is not logged in, redirect to login page
-        if not request.authorization:
+        if not flask.request.authorization:
             flask.abort(401)
         
         # make sure the user is authorized
-        clientID = getUserID(request.authorization.username, request.authorization.password)
-        if clientID == None:
-            flask.abort(401)
-        
-        global requestGlobals
-        requestGlobals.client_id = clientID
+        client_id = getUserID(flask.request.authorization.username, flask.request.authorization.password)
 
-        # finally call f. f() now haves access to g.user
+        if client_id == None:
+            flask.abort(403)
+        
+        flask.g.client_id = client_id
+
         return f(*args, **kwargs)
 
     return wrap
@@ -49,7 +43,7 @@ def login_required(f):
 #   user's id - (email/password combo was correct)
 #   None - (INCORRECT email/password combo)
 #------------------------------------------------------
-def getUserID(email: str, password: str):
+def getUserID(email: str, password: str) -> int | None:
     db = DB()
     db.connect()
 
@@ -60,14 +54,14 @@ def getUserID(email: str, password: str):
 
     try:
         cursor.execute(sql, parms)
-        record_set: dict = cursor.fetchone()
-        result = record_set.get('id', None)
+        rs: dict = cursor.fetchone()
+        user_id = rs.get('id', None)
     except:
-        result = None
+        user_id = None
     finally:
         db.close()
 
-    return result   
+    return user_id   
 
 
 #------------------------------------------------------
@@ -84,7 +78,6 @@ def no_external_requests(f):
         if header_value != keys.verification.header:
             flask.abort(403)
 
-        # finally call f. f() now haves access to g.user
         return f(*args, **kwargs)
 
     return wrap

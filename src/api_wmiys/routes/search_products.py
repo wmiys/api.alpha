@@ -41,7 +41,7 @@ def init_module_members(f):
 #-----------------------------------------------------
 # Seach all
 # ----------------------------------------------------
-@bp_search_products.route('', methods=['GET'])
+@bp_search_products.get('')
 @security.login_required
 @init_module_members
 def searchAll():
@@ -53,7 +53,7 @@ def searchAll():
 #-----------------------------------------------------
 # Seach major categories
 # ----------------------------------------------------
-@bp_search_products.route('categories/major/<int:product_categories_major_id>', methods=['GET'])
+@bp_search_products.get('categories/major/<int:product_categories_major_id>')
 @security.login_required
 @init_module_members
 def searchProductCategoriesMajor(product_categories_major_id):
@@ -64,7 +64,7 @@ def searchProductCategoriesMajor(product_categories_major_id):
 #-----------------------------------------------------
 # Seach minor categories
 # ----------------------------------------------------
-@bp_search_products.route('categories/minor/<int:product_categories_minor_id>', methods=['GET'])
+@bp_search_products.get('categories/minor/<int:product_categories_minor_id>')
 @security.login_required
 @init_module_members
 def searchProductCategoriesMinor(product_categories_minor_id):
@@ -74,7 +74,7 @@ def searchProductCategoriesMinor(product_categories_minor_id):
 #-----------------------------------------------------
 # Seach sub categories
 # ----------------------------------------------------
-@bp_search_products.route('categories/sub/<int:product_categories_sub_id>', methods=['GET'])
+@bp_search_products.get('categories/sub/<int:product_categories_sub_id>')
 @security.login_required
 @init_module_members
 def searchProductCategoriesSub(product_categories_sub_id):

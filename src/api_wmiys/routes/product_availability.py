@@ -15,11 +15,11 @@ bp_product_availability = flask.Blueprint('productAvailabilityRoute', __name__)
 #----------------------------------------------------------
 # Retrieve all the product availabilities of a single product
 #----------------------------------------------------------
-@bp_product_availability.route('', methods=['GET'])
+@bp_product_availability.get('')
 @security.login_required
 def productAvailabilities(product_id: int):
     # verify that the user owns the product 
-    if not product.doesUserOwnProduct(product_id, security.requestGlobals.client_id):
+    if not product.doesUserOwnProduct(product_id, flask.g.client_id):
         return ('', HTTPStatus.FORBIDDEN.value)
 
     # get the availabilities
@@ -30,11 +30,11 @@ def productAvailabilities(product_id: int):
 #----------------------------------------------------------
 # Create a new product availability
 #----------------------------------------------------------
-@bp_product_availability.route('', methods=['POST'])
+@bp_product_availability.post('')
 @security.login_required
 def productAvailabilityPost(product_id: int):
     # verify that the user owns the product 
-    if not product.doesUserOwnProduct(product_id, security.requestGlobals.client_id):
+    if not product.doesUserOwnProduct(product_id, flask.g.client_id):
         return ('', HTTPStatus.FORBIDDEN.value)
 
     # get the availabilities
@@ -56,7 +56,7 @@ def productAvailabilityPost(product_id: int):
 @security.login_required
 def productAvailability(product_id: int, product_availability_id: int):
     # verify that the user owns the product 
-    if not product.doesUserOwnProduct(product_id, security.requestGlobals.client_id):
+    if not product.doesUserOwnProduct(product_id, flask.g.client_id):
         return ('', HTTPStatus.FORBIDDEN.value)
 
     availability = ProductAvailability(id=product_availability_id)

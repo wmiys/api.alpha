@@ -20,7 +20,7 @@ bp_balance_transfers = flask.Blueprint('bp_balance_transfers', __name__)
 @security.login_required
 def post():
     # make sure that the lender has a balance greater than 1
-    user = User(id=security.requestGlobals.client_id)
+    user = User(id=flask.g.client_id)
     user_stats = user.get()
 
     if user_stats.get('lender_balance', 0) < 1:
@@ -29,7 +29,7 @@ def post():
     # create a new balance transfer object
     transfer = BalanceTransfer(
         id                     = utilities.getUUID(False),              # generate a new UUID
-        user_id                = security.requestGlobals.client_id,
+        user_id                = flask.g.client_id,
         amount                 = user_stats.get('lender_balance', 0),
         destination_account_id = user_stats.get('payout_account_id'),
     )

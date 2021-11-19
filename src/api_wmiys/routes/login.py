@@ -16,10 +16,9 @@ bp_login = flask.Blueprint('login', __name__)
 #----------------------------------------------------------
 # Login a client
 #----------------------------------------------------------
-@bp_login.route('', methods=['GET'])
+@bp_login.get('')
 def loginRoute():
-
-    email = flask.request.args.get('email', None)
+    email    = flask.request.args.get('email', None)
     password = flask.request.args.get('password', None)
     
     if None in [email, password]:
@@ -33,4 +32,5 @@ def loginRoute():
 
     user = User(id=user_id)
     user.fetch()
+
     return flask.jsonify(user.as_dict(False))

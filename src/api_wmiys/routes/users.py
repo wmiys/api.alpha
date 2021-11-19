@@ -9,7 +9,7 @@ bp_users = flask.Blueprint('routeUser', __name__)
 #------------------------------------------------------
 # Create new user
 #------------------------------------------------------
-@bp_users.route('', methods=['POST'])
+@bp_users.post('')
 def usersPost():
     # set the user properties
     new_user = User(
@@ -34,7 +34,7 @@ def usersPost():
 @security.login_required
 def userGetPost(user_id):
     # make sure the user is authorized
-    if security.requestGlobals.client_id != user_id:
+    if flask.g.client_id != user_id:
         return ('', HTTPStatus.FORBIDDEN.value)
 
     user = User(id=user_id)
