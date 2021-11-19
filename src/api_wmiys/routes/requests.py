@@ -3,9 +3,9 @@ Package:        requests
 Url Prefix:     /requests
 Description:    Handles all the pproduct requests.
 """
-# import re
 import flask
 from http import HTTPStatus
+from uuid import UUID
 from wmiys_common import utilities
 from ..common import security
 from ..models import ProductRequest, RequestStatus, product_request
@@ -25,13 +25,15 @@ m_product_request: ProductRequest = None
 # Create a new product request for the lender.
 # 
 # This get's called from the front-end ONLY!!
-# Normal users ARE NOT allowed to do this themselves.
+# Normal users are NOT allowed to do this themselves.
 # ----------------------------------------------------
 @bp_requests.post('/received')
 @security.no_external_requests
 @security.login_required
 def newRequest():
-    product_request = ProductRequest()
+    product_request = ProductRequest(
+        id = utilities.getUUID(False)
+    )
 
     incoming_data: dict = flask.request.form.to_dict()
 
@@ -75,9 +77,9 @@ def getLenderRequests():
 #-----------------------------------------------------
 # Retrieve a single received request
 # ----------------------------------------------------
-@bp_requests.get('/received/<int:request_id>')
+@bp_requests.get('/received/<uuid:request_id>')
 @security.login_required
-def getSingleRequest(request_id: int):
+def getSingleRequest(request_id: UUID):
     request = ProductRequest(id=request_id)
     return flask.jsonify(request.getLender())
 
@@ -85,9 +87,9 @@ def getSingleRequest(request_id: int):
 #-----------------------------------------------------
 # Lender responds to a request with either accept or decline
 # ----------------------------------------------------
-@bp_requests.post('/received/<int:request_id>/<string:status>')
+@bp_requests.post('/received/<uuid:request_id>/<string:status>')
 @security.login_required
-def respondToRequest(request_id: int, status: str):
+def respondToRequest(request_id: UUID, status: str):
     # response url should be either accept or decline
     if status not in [LENDER_RESPONSE_ACCEPT, LENDER_RESPONSE_DECLINE]:
         return ("Status needs to be either 'accept' or 'decline'.", HTTPStatus.BAD_REQUEST.value)
@@ -145,9 +147,9 @@ def getSubmittedAll():
 #-----------------------------------------------------
 # Get a single SUBMITTED request
 # ----------------------------------------------------
-@bp_requests.get('submitted/<int:request_id>')
+@bp_requests.get('submitted/<uuid:request_id>')
 @security.login_required
-def getSubmitted(request_id: int):
+def getSubmitted(request_id: UUID):
     request = ProductRequest(id=request_id)
     request_dict = request.getRenter()
 

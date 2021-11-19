@@ -1,5 +1,6 @@
 from __future__ import annotations
 from enum import Enum
+from uuid import UUID
 from ..db import DB
 from ..common import user_image
 
@@ -27,7 +28,7 @@ class ProductRequest:
     #-----------------------------------------------------
     # Constructor
     # ----------------------------------------------------
-    def __init__(self, id=None, payment_id=None, session_id=None, status=RequestStatus.pending, responded_on=None, created_on=None):
+    def __init__(self, id: UUID=None, payment_id=None, session_id=None, status=RequestStatus.pending, responded_on=None, created_on=None):
         self.id           = id
         self.payment_id   = payment_id
         self.session_id   = session_id
@@ -54,7 +55,7 @@ class ProductRequest:
         cursor = db.getCursor(True)
 
         sql = f'SELECT * FROM {sql_table_source} v WHERE v.id = %s'
-        parms = (self.id,)
+        parms = (str(self.id),)
 
         try:
             cursor.execute(sql, parms)
@@ -78,7 +79,7 @@ class ProductRequest:
     #   false - one of the attributes are not set
     # ----------------------------------------------------
     def areInsertAttributesSet(self) -> bool:
-        if None in [self.payment_id, self.session_id]:
+        if None in [self.id, self.payment_id, self.session_id]:
             return False
         else:
             return True
@@ -93,15 +94,13 @@ class ProductRequest:
         db.connect()
         cursor = db.getCursor(False)
 
-        sql = 'INSERT INTO Product_Requests (payment_id, session_id) VALUES (%s, %s)'
-        parms = (self.payment_id, self.session_id)
-
-        successful = True
+        sql = 'INSERT INTO Product_Requests (id, payment_id, session_id) VALUES (%s, %s, %s)'
+        parms = (str(self.id), self.payment_id, self.session_id)
 
         try:
             cursor.execute(sql, parms)
             db.commit()
-            self.id = cursor.lastrowid
+            successful = True
         except Exception as e:
             print(e)
             successful = False
@@ -134,7 +133,7 @@ class ProductRequest:
         WHERE   id = %s
         LIMIT   1
         '''
-        cursor.execute(sql, (self.id,))
+        cursor.execute(sql, (str(self.id),))
 
         dbRecord: dict = cursor.fetchone()
         
@@ -173,7 +172,7 @@ class ProductRequest:
         WHERE   id = %s
         '''
 
-        parms = (self.status.value, self.id)
+        parms = (self.status.value, str(self.id))
         
         row_count = -1
 
