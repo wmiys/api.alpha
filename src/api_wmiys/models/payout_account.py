@@ -1,4 +1,13 @@
+"""
+**********************************************************************************************
+Payout Accounts represent the lender's connected account on stripe. 
 
+Before users can start lending their products, they need to setup an account with stripe.
+
+This is so we can pay out their account balance to their bank account after successfully 
+lending out their products. 
+**********************************************************************************************
+"""
 from __future__ import annotations
 import uuid
 from datetime import datetime
@@ -8,7 +17,6 @@ from ..db import DB, sqlBoolToPython, SqlBool
 
 
 stripe.api_key = keys.payments.test
-
 
 #------------------------------------------------------
 # Create a new stripe account

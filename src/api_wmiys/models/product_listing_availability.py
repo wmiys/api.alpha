@@ -1,3 +1,10 @@
+"""
+**********************************************************************************************
+A product listing availability has 1 responsibility: checking if the given product is available
+to rent given the parms.
+**********************************************************************************************
+"""
+
 from ..db import DB
 
 class ProductListingAvailability:
@@ -6,10 +13,10 @@ class ProductListingAvailability:
     # Constructor
     #------------------------------------------------------
     def __init__(self, product_id: int=None, location_id: int=None, starts_on: str=None, ends_on: str=None):
-        self.product_id = product_id
+        self.product_id  = product_id
         self.location_id = location_id
-        self.starts_on = starts_on
-        self.ends_on = ends_on
+        self.starts_on   = starts_on
+        self.ends_on     = ends_on
 
 
     #------------------------------------------------------
