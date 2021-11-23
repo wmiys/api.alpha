@@ -54,6 +54,7 @@ def registerBlueprints(flaskApp: Flask):
     flaskApp.register_blueprint(routes.payments.bp_payments, url_prefix='/payments')
     flaskApp.register_blueprint(routes.payout_accounts.bp_payout_accounts, url_prefix='/payout-accounts')
     flaskApp.register_blueprint(routes.balance_transfers.bp_balance_transfers, url_prefix='/balance-transfers')
+    flaskApp.register_blueprint(routes.password_resets.bp_password_resets, url_prefix='/password-resets')
 
 app = Flask(__name__)
 

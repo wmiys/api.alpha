@@ -12,3 +12,4 @@ from . import requests as requests
 from . import payments as payments
 from . import payout_accounts as payout_accounts
 from . import balance_transfers as balance_transfers
+from . import password_resets as password_resets
