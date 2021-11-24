@@ -14,3 +14,14 @@ class DbCommand:
         self.result     = result
         self.successful = successful
         self.error      = error
+
+    #------------------------------------------------------
+    # Overrides the default __bool__ operator.
+    #
+    # This allows callers to check if there is an error by
+    # doing:
+    #   
+    # if dbCommand: etc...
+    #------------------------------------------------------
+    def __bool__(self) -> bool:
+        return self.successful
