@@ -6,6 +6,7 @@ from . import product_request as product_request
 from . import payment as payment
 from . import payout_account as payout_account
 from . import balance_transfer as balance_transfer
+from . import password_reset as password_reset
 
 # classes
 from .user import User as User
@@ -22,3 +23,4 @@ from .product_request import ProductRequest as ProductRequest
 from .product_request import RequestStatus as RequestStatus
 from .payout_account import PayoutAccount as PayoutAccount
 from .balance_transfer import BalanceTransfer as BalanceTransfer
+from .password_reset import PasswordReset as PasswordReset
