@@ -5,6 +5,7 @@ Description:    Update/reset a user's password
 """
 
 from uuid import UUID
+from datetime import datetime
 import flask
 from http import HTTPStatus
 from wmiys_common import utilities
@@ -26,8 +27,9 @@ def post():
     
     # insert the object into the database
     reset = PasswordReset(
-        id    = utilities.getUUID(False),
-        email = email
+        id         = utilities.getUUID(False),
+        email      = email,
+        created_on = datetime.now()
     )
     
     result = reset.insert()

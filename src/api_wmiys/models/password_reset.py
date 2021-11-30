@@ -37,8 +37,8 @@ class PasswordReset:
         db.connect()
         cursor = db.getCursor(False)
 
-        sql = 'INSERT INTO Password_Resets (id, email) VALUES (%s, %s)'
-        parms = (str(self.id), self.email)
+        sql = 'INSERT INTO Password_Resets (id, email, created_on) VALUES (%s, %s, %s)'
+        parms = (str(self.id), self.email, self.created_on)
 
         db_command = DbCommand(successful=False)
 
@@ -174,9 +174,9 @@ class PasswordReset:
 
 
     def isExpired(self) -> bool:
-        num_minutes = utilities.getDurationMinutes(self.created_on, datetime.now())
+        num_minutes_between = utilities.getDurationMinutes(datetime.now(), self.created_on)
 
-        if num_minutes <= NUM_MINS_EXPIRED:
+        if num_minutes_between <= NUM_MINS_EXPIRED:
             return False
         else:
             return True
