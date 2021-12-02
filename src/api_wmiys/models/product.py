@@ -209,7 +209,7 @@ class Product:
     # Returns: list of product dictionaries
     #------------------------------------------------------
     @staticmethod
-    def getAll(user_id: int) -> list[dict]:
+    def getAll(user_id: int) -> set[dict]:
         products = Product._getAllUserProductRecords(user_id)
 
         # prepend the absolute image file path to each image field, if one exists
