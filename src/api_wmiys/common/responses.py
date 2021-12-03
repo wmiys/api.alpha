@@ -11,14 +11,8 @@ A flask response is a tuple that consists of:
 """
 
 from http import HTTPStatus
-# from flask import jsonify, flask.Response, abort
 import flask
 
-
-
-def flask_abort(responses_fn, output=None):
-    body, code = responses_fn(output)
-    flask.abort(code, body)
 
 #----------------------------------------------------------
 # Resource successfully GET - the normal return

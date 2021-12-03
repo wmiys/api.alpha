@@ -7,7 +7,6 @@ Description:    Handles all the products routing.
 import flask
 from ..common import security
 from ..services import products as products_service
-from ..common import responses
 
 bp_products = flask.Blueprint('products', __name__)
 
@@ -30,11 +29,7 @@ def noID():
 @bp_products.route('<int:product_id>', methods=['GET', 'PUT'])
 @security.login_required
 def productRequest(product_id):
-
-    # responses.flask_abort(responses.badRequest, 'suck my dick')
-
-    return flask.jsonify('hiu')
-
+    
     if flask.request.method == 'PUT':
         return products_service.put(product_id)
     else:
