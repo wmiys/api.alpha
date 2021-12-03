@@ -4,5 +4,4 @@ from . import security as security
 from .sorting import Sorting as Sorting
 from .sorting import SortingSearchProducts as SortingSearchProducts
 from .user_image import UserImage as UserImage
-
-#from . import paths as paths
+from . import responses as responses
