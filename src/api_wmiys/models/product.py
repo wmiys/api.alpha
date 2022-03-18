@@ -11,6 +11,9 @@ from ..db import DB
 from ..common import user_image
 from .. import common  
 
+import pymysql.commands as sql_engine
+
+# from pymysql import commands as sql_engine
 
 class Product:
 
@@ -232,10 +235,6 @@ class Product:
     #------------------------------------------------------
     @staticmethod
     def _getAllUserProductRecords(user_id: int) -> list[dict]:
-        db = DB()
-        db.connect()
-        cursor = db.getCursor(True)
-
         sql = """
         SELECT  *
         FROM    View_Products p
@@ -245,11 +244,9 @@ class Product:
         """
 
         parms = (user_id,)
+        result = sql_engine.selectAll(sql, parms)
 
-        cursor.execute(sql, parms)
-        product_records = cursor.fetchall()
-
-        return product_records
+        return result.data
 
 
 

@@ -7,6 +7,7 @@ Description:    Handles all the products routing.
 import flask
 from ..common import security
 from ..services import products as products_service
+from ..common import responses
 
 bp_products = flask.Blueprint('products', __name__)
 
@@ -20,7 +21,7 @@ def noID():
     if flask.request.method == 'POST':
         return products_service.post()         # Create a new product
     else:
-        return products_service.getAll()       # Fetch all of a user's products
+        return responses.get(output = products_service.getAll())
 
 
 #------------------------------------------------------

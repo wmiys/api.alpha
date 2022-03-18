@@ -22,6 +22,9 @@ Payments             | /payments
 from flask import Flask
 from flask_cors import CORS
 import wmiys_common
+
+import pymysql
+
 from .common import CustomJSONEncoder
 from .common import user_image
 from . import db
@@ -56,7 +59,16 @@ def configureApp(flask_app: Flask):
     CORS(flask_app)
 
     configureAppOldWay(flask_app)
+
+    configureDatabaseConnection(flask_app)
     
+
+def configureDatabaseConnection(flask_app: Flask):
+    pymysql.credentials.USER     = db.credentials.USER
+    pymysql.credentials.PASSWORD = db.credentials.PASSWORD
+    pymysql.credentials.DATABASE = db.credentials.DATABASE
+    pymysql.credentials.HOST     = db.credentials.HOST
+
 
 def configureAppOldWay(flask_app: Flask):
     # api url

@@ -12,13 +12,24 @@ from api_wmiys.common import user_image
 from ..models import Product
 from ..common import responses
 
+from api_wmiys.repository import products as proudcts_repo
+
+
 #------------------------------------------------------
 # Fetch all of a user's products
 #------------------------------------------------------
-def getAll() -> flask.Response:
-    return responses.get(
-        output = Product.getAll(flask.g.client_id)
-    )
+def getAll():
+    records = proudcts_repo.selectAll(flask.g.client_id)
+    products = records.data
+
+    # prepend the absolute image file path to each image field, if one exists
+    for product in products:
+        if product['image']:
+            prefix = user_image.getCoverUrl()
+            product['image'] = prefix + product['image']
+
+    return products
+
 
 #------------------------------------------------------
 # Create a new product
