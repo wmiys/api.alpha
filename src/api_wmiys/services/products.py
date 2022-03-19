@@ -40,22 +40,6 @@ def getAllProducts():
 
     return products
 
-#------------------------------------------------------
-# Prepend the absolute image file path to each image field, if one exists
-#------------------------------------------------------
-def setImageUrlPrefix(product: dict):
-    if product['image']:
-        prefix = user_image.getCoverUrl()
-        product['image'] = prefix + product['image']
-
-
-#------------------------------------------------------
-# Retrieve a single product
-#------------------------------------------------------
-def get(product_id) -> flask.Response:
-    return responses.get(
-        output = _loadProductBase(product_id).get()
-    )
 
 #------------------------------------------------------
 # Update an existing product
@@ -75,6 +59,51 @@ def put(product_id) -> flask.Response:
         return responses.updated()
 
 
+#------------------------------------------------------
+# Retrieve a single product
+#------------------------------------------------------
+def responseGet(product_id) -> flask.Response:
+    db_result = getProduct(product_id, flask.g.client_id)
+
+    if not db_result.successful:
+        return responses.badRequest(db_result.error)
+    
+    # either the product does not exist, or the user does not own it
+    if not db_result.data:
+        return responses.notFound()
+
+    outgoing_stram = db_result.data
+    setImageUrlPrefix(outgoing_stram)
+
+    return responses.get(outgoing_stram)
+
+
+#------------------------------------------------------
+# Fetch a product with the given id/user_id combination
+#
+# Returns a DbOperationResult
+#------------------------------------------------------
+def getProduct(product_id: int, user_id: int):
+    product = models.Product(
+        id      = product_id,
+        user_id = user_id,
+    )
+
+    db_result = proudcts_repo.select(product)
+
+    return db_result
+
+
+#------------------------------------------------------
+# Prepend the absolute image file path to each image field, if one exists
+#------------------------------------------------------
+def setImageUrlPrefix(product_dict: dict):
+    if product_dict['image']:
+        prefix = user_image.getCoverUrl()
+        product_dict['image'] = prefix + product_dict['image']
+
+
+
 
 #------------------------------------------------------
 # Base method for generating a product object
@@ -82,7 +111,8 @@ def put(product_id) -> flask.Response:
 def _loadProductBase(product_id):
     # load the product data
     product = Product(id=product_id)
-    product.loadData()  # load the product data from the database
+    # product.loadData()  # load the product data from the database
+
 
     if product.user_id != flask.g.client_id:
         flask.abort(403)

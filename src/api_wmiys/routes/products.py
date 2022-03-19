@@ -34,6 +34,6 @@ def productRequest(product_id):
     if flask.request.method == 'PUT':
         return products_service.put(product_id)
     else:
-        return products_service.get(product_id)
+        return products_service.responseGet(product_id)
             
         
