@@ -19,9 +19,9 @@ bp_products = flask.Blueprint('products', __name__)
 def noID():
 
     if flask.request.method == 'POST':
-        return products_service.post()         # Create a new product
+        return products_service.responsePost()         # Create a new product
     else:
-        return responses.get(output = products_service.getAll())
+        return products_service.responseGetAll()
 
 
 #------------------------------------------------------
