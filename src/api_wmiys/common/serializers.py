@@ -1,14 +1,16 @@
 """
+**********************************************************************************************
 
 This module contains all the serializers.
-
 A serializer transforms a dictionary into a domain model.
 
+**********************************************************************************************
 """
 
+from __future__ import annotations
 from dataclasses import dataclass
-from api_wmiys.domain import models
 
+from api_wmiys.domain import models
 
 #------------------------------------------------------
 # Result of the serialize method
@@ -61,11 +63,33 @@ class SerializerBase:
         return result
 
 
-
+#------------------------------------------------------
 # Product
+#------------------------------------------------------
 class ProductSerializer(SerializerBase):
     DomainModel = models.Product
 
+
+#------------------------------------------------------
 # Location
+#------------------------------------------------------
 class LocationSerializer(SerializerBase):
     DomainModel = models.Location
+
+
+#------------------------------------------------------
+# Payout Account
+#------------------------------------------------------
+class PayoutAccountSerializer(SerializerBase):
+    DomainModel = models.PayoutAccount
+
+    # need to do some additional processing for this data class
+    def serialize(self) -> SerializationResult:
+        serialization_result = super().serialize()
+
+        if self.dictionary.get('confirmed', False) in [True, "true", "True"]:
+            serialization_result.model.confirmed = True
+        else:
+            serialization_result.model.confirmed = False
+
+        return serialization_result

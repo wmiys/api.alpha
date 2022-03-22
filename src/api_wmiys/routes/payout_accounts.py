@@ -6,16 +6,15 @@ Description:    Routing for creating payout accounts
 
 This is not accessible to any 3rd party clients.
 Only accessible by the front-end.
+
 """
+
 import uuid
 import flask
-from wmiys_common import utilities
-from ..common import security
-from ..models import PayoutAccount, payout_account
-from http import HTTPStatus
+from api_wmiys.common import security
+from api_wmiys.services import payout_accounts as payout_account_services
 
 bp_payout_accounts = flask.Blueprint('bp_payout_accounts', __name__)
-
 
 #------------------------------------------------------
 # Create a new payout account
@@ -24,19 +23,7 @@ bp_payout_accounts = flask.Blueprint('bp_payout_accounts', __name__)
 @security.no_external_requests
 @security.login_required
 def post():
-    new_stripe_account = payout_account.getNewStripeAccount(flask.g.client_id)
-
-    account = PayoutAccount(
-        id         = utilities.getUUID(False),
-        user_id    = flask.g.client_id,
-        account_id = new_stripe_account.stripe_id
-    )
-
-    if not account.insert():
-        return ('Did not insert!', HTTPStatus.BAD_REQUEST.value)
-    
-    return flask.jsonify(account.__dict__)
-
+    return payout_account_services.response_POST()
 
 #------------------------------------------------------
 # Get all payout accounts owned by the user
@@ -45,9 +32,7 @@ def post():
 @security.no_external_requests
 @security.login_required
 def getAll():
-    accounts = payout_account.getAll(flask.g.client_id)
-    return flask.jsonify(accounts)
-    
+    return payout_account_services.response_GET_ALL()
 
 #------------------------------------------------------
 # Get a single payout account 
@@ -56,12 +41,7 @@ def getAll():
 @security.no_external_requests
 @security.login_required
 def get(payout_account_id: uuid.UUID):
-    account = PayoutAccount(
-        id      = payout_account_id,
-        user_id = flask.g.client_id
-    )
-    
-    return flask.jsonify(account.get())
+    return payout_account_services.response_GET(payout_account_id)
 
 
 #------------------------------------------------------
@@ -71,16 +51,4 @@ def get(payout_account_id: uuid.UUID):
 @security.no_external_requests
 @security.login_required
 def put(payout_account_id: uuid.UUID):
-    account = PayoutAccount(
-        id      = payout_account_id,
-        user_id = flask.g.client_id
-    )
-
-    if flask.request.form.get('confirmed', False) in [True, "true", "True"]:
-        account.confirmed = True
-    else:
-        account.confirmed = False
-
-    account.update()
-    
-    return flask.jsonify(account.get())
+    return payout_account_services.response_PUT(payout_account_id)
