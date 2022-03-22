@@ -27,3 +27,13 @@ def _handlePayment(product_request_session_id, capture: bool):
         intent = stripe.PaymentIntent.cancel(session.payment_intent)
 
     return intent
+
+
+#------------------------------------------------------
+# Create a new stripe account
+#------------------------------------------------------
+def createNewStripeAccount(user_id: int) -> stripe.Account:
+    return stripe.Account.create(
+        type     = 'express',
+        metadata = dict(user_id=user_id)
+    )
