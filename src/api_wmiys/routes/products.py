@@ -7,7 +7,6 @@ Description:    Handles all the products routing.
 import flask
 from ..common import security
 from ..services import products as products_service
-from ..common import responses
 
 bp_products = flask.Blueprint('products', __name__)
 
@@ -19,10 +18,9 @@ bp_products = flask.Blueprint('products', __name__)
 def noID():
 
     if flask.request.method == 'POST':
-        return products_service.responsePost()         # Create a new product
+        return products_service.response_POST()         # Create a new product
     else:
-        return products_service.responseGetAll()
-
+        return products_service.response_GET_ALL()
 
 #------------------------------------------------------
 # Retrieve or update an existing product
@@ -32,8 +30,8 @@ def noID():
 def productRequest(product_id):
     
     if flask.request.method == 'PUT':
-        return products_service.put(product_id)
+        return products_service.response_PUT(product_id)
     else:
-        return products_service.responseGet(product_id)
+        return products_service.response_GET(product_id)
             
         
