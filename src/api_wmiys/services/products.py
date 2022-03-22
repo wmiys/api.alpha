@@ -89,9 +89,13 @@ def response_GET(product_id) -> flask.Response:
 # Explicitly set the Product's id and user_id
 #------------------------------------------------------
 def extractFormData(product_id: int = None) -> models.Product:
+    # get a Product domain model with all of it's database values set to its attributes
+    # this is so that for an update, it won't override missing fields in the request
+    existing_product = getProductModel(product_id, flask.g.client_id)
+
     # serialize the incoming form data into a Product domain model
     form = flask.request.form.to_dict()
-    serializer = serializers.ProductSerializer(form)
+    serializer = serializers.ProductSerializer(form, existing_product)
     product = serializer.serialize().model
 
     # Explicitly set the product's id and user_id
