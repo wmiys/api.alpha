@@ -10,7 +10,6 @@ from . import password_reset as password_reset
 
 # classes
 from .user import User as User
-from .location import Location as Location
 from .product_availability import ProductAvailability as ProductAvailability
 from .product_image import ProductImage as ProductImage
 from .product_listing_availability import ProductListingAvailability as ProductListingAvailability

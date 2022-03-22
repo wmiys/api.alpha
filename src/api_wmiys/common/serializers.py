@@ -61,9 +61,11 @@ class SerializerBase:
         return result
 
 
-#------------------------------------------------------
-# Product domain model serializer
-#------------------------------------------------------
+
+# Product
 class ProductSerializer(SerializerBase):
     DomainModel = models.Product
 
+# Location
+class LocationSerializer(SerializerBase):
+    DomainModel = models.Location
