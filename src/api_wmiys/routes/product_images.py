@@ -9,7 +9,8 @@ from http import HTTPStatus
 
 from api_wmiys.common import user_image
 from ..common import security
-from ..models import product_image, ProductImage, product
+from ..models import product_image, ProductImage
+from api_wmiys.services import products as product_services
 
 bp_product_images = flask.Blueprint('bpProductImages', __name__)
 
@@ -31,7 +32,7 @@ def get(product_id: int):
 @security.login_required
 def delete(product_id: int):
     # make sure the user is authorized
-    if not product.doesUserOwnProduct(product_id, flask.g.client_id):
+    if not product_services.doesUserOwnProduct(product_id, flask.g.client_id):
         return ('', HTTPStatus.FORBIDDEN.value)
     
     product_image.deleteAll(product_id)
@@ -45,7 +46,7 @@ def delete(product_id: int):
 @security.login_required
 def post(product_id: int):
     # make sure the user is authorized
-    if not product.doesUserOwnProduct(product_id, flask.g.client_id):
+    if not product_services.doesUserOwnProduct(product_id, flask.g.client_id):
         return ('', HTTPStatus.FORBIDDEN.value)
     
     imagesData: dict = flask.request.files.to_dict()
@@ -66,7 +67,7 @@ def post(product_id: int):
 @security.login_required
 def singleImage(product_id: int, product_image_id: int):
     # make sure the user is authorized
-    if not product.doesUserOwnProduct(product_id, flask.g.client_id):
+    if not product_services.doesUserOwnProduct(product_id, flask.g.client_id):
         return ('', HTTPStatus.FORBIDDEN.value)
 
     productImage = ProductImage(newID=product_image_id)    

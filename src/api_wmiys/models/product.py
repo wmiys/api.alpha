@@ -20,6 +20,10 @@ class Product:
     # Constructor
     #------------------------------------------------------
     def __init__(self, id=None, user_id=None, name=None, description=None, product_categories_sub_id=None, location_id=None, dropoff_distance=None, price_full=None, image=None, minimum_age=None, created_on=None):
+
+        raise Exception('Old code')
+
+
         self.id                        = id
         self.user_id                   = user_id
         self.name                      = name
@@ -36,6 +40,8 @@ class Product:
     # Insert the product into the database
     #------------------------------------------------------
     def insert(self):
+        raise Exception('Old code')
+
         db = DB()
         db.connect()
         cursor = db.getCursor(False)
@@ -64,6 +70,8 @@ class Product:
     # Update the product database record
     #------------------------------------------------------
     def update(self) -> int:
+        raise Exception('Old code')
+
         db = DB()
         db.connect()
         cursor = db.getCursor(False)
@@ -105,6 +113,9 @@ class Product:
     # Loads the product data fields from the database
     #------------------------------------------------------
     def loadData(self):
+        raise Exception('Old code')
+
+
         # make sure the product id is set
         if self.id == None:
             return
@@ -126,6 +137,8 @@ class Product:
     # Fetch the product data from the database
     #------------------------------------------------------
     def get(self) -> dict:
+        raise Exception('Old code')
+
         # make sure the product id is set
         if self.id == None:
             return None
@@ -144,6 +157,9 @@ class Product:
     # Get the object's record set from the database
     #------------------------------------------------------
     def _getProductDbRecordSet(self) -> dict:
+        raise Exception('Old code')
+
+
         db = DB()
         db.connect()
         cursor = db.getCursor(True)
@@ -172,6 +188,8 @@ class Product:
     #   true: properties were successfully changed
     #------------------------------------------------------
     def setPropertyValuesFromDict(self, newPropertyValues: dict):
+        raise Exception('Old code')
+
         # validate the field before changing the object property
         if not utilities.areAllKeysValidProperties(newPropertyValues, self):
             return False
@@ -193,6 +211,8 @@ class Product:
     #   relative_image_directory_path - the folder name to save the image to
     #------------------------------------------------------
     def setImagePropertyFromImageFile(self, new_image_file: object, relative_image_directory_path: str):
+        raise Exception('Old code')
+
         # remove the old image
         if self.image:
             os.remove(os.path.join(relative_image_directory_path, self.image))
@@ -212,6 +232,8 @@ class Product:
     #------------------------------------------------------
     @staticmethod
     def getAll(user_id: int) -> set[dict]:
+        raise Exception('Old code')
+
         products = Product._getAllUserProductRecords(user_id)
 
         # prepend the absolute image file path to each image field, if one exists
@@ -234,6 +256,8 @@ class Product:
     #------------------------------------------------------
     @staticmethod
     def _getAllUserProductRecords(user_id: int) -> list[dict]:
+        raise Exception('Old code')
+
         sql = """
         SELECT  *
         FROM    View_Products p
@@ -261,6 +285,9 @@ class Product:
 #   false - user DOES NOT own the product
 #------------------------------------------------------
 def doesUserOwnProduct(product_id: int, user_id: int) -> bool:
+    
+    raise Exception('Old code')
+    
     db = DB()
     db.connect()
     cursor = db.getCursor(True) 

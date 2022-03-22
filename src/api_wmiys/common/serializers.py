@@ -61,7 +61,6 @@ class SerializerBase:
         return result
 
 
-
 #------------------------------------------------------
 # Product domain model serializer
 #------------------------------------------------------
