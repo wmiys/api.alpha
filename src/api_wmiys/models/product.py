@@ -11,6 +11,8 @@ from ..db import DB
 from ..common import user_image
 from .. import common  
 
+import pymysql.commands as sql_engine
+
 
 class Product:
 
@@ -184,10 +186,10 @@ class Product:
         return True
     
     #------------------------------------------------------
-    # takes an raw image file, saves it locally, and sets the image field in the database to the image file name as saved on the server
+    # takes a raw image file, saves it locally, and sets the image field in the database to the image file name as saved on the server
     #
     # parms:
-    #   newImageFile - the raw image file
+    #   new_image_file - the raw image file
     #   relative_image_directory_path - the folder name to save the image to
     #------------------------------------------------------
     def setImagePropertyFromImageFile(self, new_image_file: object, relative_image_directory_path: str):
@@ -195,9 +197,9 @@ class Product:
         if self.image:
             os.remove(os.path.join(relative_image_directory_path, self.image))
 
-        productImage = common.UserImage(new_image_file)
-        newImageFileName = utilities.getUUID(True) + productImage.getFileExtension()
-        self.image = productImage.saveImageFile(relative_image_directory_path, newImageFileName)
+        product_image = common.UserImage(new_image_file)
+        new_image_file_name = utilities.getUUID(True) + product_image.getFileExtension()
+        self.image = product_image.saveImageFile(relative_image_directory_path, new_image_file_name)
 
 
     #------------------------------------------------------
@@ -232,10 +234,6 @@ class Product:
     #------------------------------------------------------
     @staticmethod
     def _getAllUserProductRecords(user_id: int) -> list[dict]:
-        db = DB()
-        db.connect()
-        cursor = db.getCursor(True)
-
         sql = """
         SELECT  *
         FROM    View_Products p
@@ -245,11 +243,9 @@ class Product:
         """
 
         parms = (user_id,)
+        result = sql_engine.selectAll(sql, parms)
 
-        cursor.execute(sql, parms)
-        product_records = cursor.fetchall()
-
-        return product_records
+        return result.data
 
 
 
