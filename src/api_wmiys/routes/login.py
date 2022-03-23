@@ -4,12 +4,15 @@ Url Prefix:     /login
 Description:    Handles all the routing for loggin in.
 """
 
-import flask
 from http import HTTPStatus
-from ..common import security
-from ..models import User
+
+import flask
+
+from api_wmiys.common import security
+from api_wmiys.services import users as user_services
 
 
+# module blueprint
 bp_login = flask.Blueprint('login', __name__)
 
 
@@ -30,7 +33,8 @@ def loginRoute():
     if not user_id:
         return ('', HTTPStatus.NOT_FOUND.value)
 
-    user = User(id=user_id)
-    user.fetch()
 
-    return flask.jsonify(user.as_dict(False))
+    # return the user data to the client
+    user_output_view = user_services.getUserView(user_id)
+    
+    return flask.jsonify(user_output_view)

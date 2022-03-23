@@ -4,11 +4,15 @@ Url Prefix:     /balance-transfers
 Description:    Routing for balance transfers
 """
 
-import flask
-from wmiys_common import utilities
-from ..common import security
-from ..models import BalanceTransfer, User
 from http import HTTPStatus
+
+import flask
+
+from wmiys_common import utilities
+from api_wmiys.common import security
+from api_wmiys.models import BalanceTransfer
+from api_wmiys.services import users as user_services
+
 
 bp_balance_transfers = flask.Blueprint('bp_balance_transfers', __name__)
 
@@ -20,8 +24,7 @@ bp_balance_transfers = flask.Blueprint('bp_balance_transfers', __name__)
 @security.login_required
 def post():
     # make sure that the lender has a balance greater than 1
-    user = User(id=flask.g.client_id)
-    user_stats = user.get()
+    user_stats = user_services.getUserView(flask.g.client_id)
 
     if user_stats.get('lender_balance', 0) < 1:
         return ('Insufficient funds', HTTPStatus.BAD_REQUEST.value)

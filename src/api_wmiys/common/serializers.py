@@ -58,7 +58,7 @@ class SerializerBase:
             if not key in model_keys:
                 result.successful = False
 
-            setattr(result.model, key, value)
+            setattr(result.model, key, value or None)
 
         return result
 
@@ -93,3 +93,10 @@ class PayoutAccountSerializer(SerializerBase):
             serialization_result.model.confirmed = False
 
         return serialization_result
+
+
+#------------------------------------------------------
+# User
+#------------------------------------------------------
+class UserSerializer(SerializerBase):
+    DomainModel = models.User

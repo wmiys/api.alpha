@@ -24,4 +24,4 @@ FROM
         AND (`pr`.`status` = 'accepted'))))
     LEFT JOIN `Payout_Accounts` `pa` ON (((`pa`.`user_id` = `u`.`id`)
         AND (`pa`.`confirmed` = TRUE))))
-GROUP BY `u`.`id`
+GROUP BY `u`.`id`;
