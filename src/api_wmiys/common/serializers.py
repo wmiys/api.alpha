@@ -58,7 +58,7 @@ class SerializerBase:
             if not key in model_keys:
                 result.successful = False
 
-            setattr(result.model, key, value)
+            setattr(result.model, key, value or None)
 
         return result
 

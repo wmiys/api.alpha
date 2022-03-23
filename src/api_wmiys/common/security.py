@@ -25,7 +25,10 @@ def login_required(f):
         if client_id == None:
             flask.abort(403)
         
-        flask.g.client_id = client_id
+        # store the client's data for application's use
+        flask.g.client_id       = client_id
+        flask.g.client_password = flask.request.authorization.password
+        flask.g.client_email    = flask.request.authorization.username
 
         return f(*args, **kwargs)
 
