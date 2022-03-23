@@ -4,6 +4,8 @@ from http import HTTPStatus
 from ..common import security
 from ..models import User
 
+from api_wmiys.services import users as user_services
+
 bp_users = flask.Blueprint('routeUser', __name__)
 
 #------------------------------------------------------
@@ -33,6 +35,14 @@ def usersPost():
 @bp_users.route('<int:user_id>', methods=['GET', 'PUT'])
 @security.login_required
 def userGetPost(user_id):
+
+    if flask.request.method == 'PUT':
+        return user_services.response_PUT(user_id)    
+    else:
+        return user_services.response_GET(user_id)
+
+
+
     # make sure the user is authorized
     if flask.g.client_id != user_id:
         return ('', HTTPStatus.FORBIDDEN.value)

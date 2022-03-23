@@ -93,3 +93,10 @@ class PayoutAccountSerializer(SerializerBase):
             serialization_result.model.confirmed = False
 
         return serialization_result
+
+
+#------------------------------------------------------
+# User
+#------------------------------------------------------
+class UserSerializer(SerializerBase):
+    DomainModel = models.User
