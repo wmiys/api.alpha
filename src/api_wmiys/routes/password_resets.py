@@ -24,34 +24,7 @@ bp_password_resets = flask.Blueprint('bp_password_resets', __name__)
 #----------------------------------------------------------
 @bp_password_resets.post('')
 def post():
-
     return password_reset_services.responses_POST()
-
-    # make sure the request body contains the email field
-    email = flask.request.form.get('email') or None
-
-    if not email:
-        return ('Missing required request body field: email', HTTPStatus.BAD_REQUEST.value)
-    
-    # insert the object into the database
-    reset = PasswordReset(
-        id         = utilities.getUUID(False),
-        email      = email,
-        created_on = datetime.now()
-    )
-    
-    result = reset.insert()
-
-    if not result.successful:
-        return (result.error, HTTPStatus.BAD_REQUEST.value)
-
-    # retrieve the record's full data from the database
-    result = reset.get()
-
-    if result.successful:
-        return (flask.jsonify(result.result), HTTPStatus.CREATED.value)
-    else:
-        return (result.error, HTTPStatus.BAD_REQUEST)
 
 
 #----------------------------------------------------------
