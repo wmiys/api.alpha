@@ -15,7 +15,7 @@ class PasswordReset:
     id          : UUID     = None
     email       : str      = None
     created_on  : datetime = None
-    new_password: str      = None
+    password    : str      = None
     updated_on  : datetime = None
 
 

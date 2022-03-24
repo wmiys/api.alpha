@@ -69,12 +69,23 @@ class SerializerBase:
 class ProductSerializer(SerializerBase):
     DomainModel = models.Product
 
-
 #------------------------------------------------------
 # Location
 #------------------------------------------------------
 class LocationSerializer(SerializerBase):
     DomainModel = models.Location
+
+#------------------------------------------------------
+# User
+#------------------------------------------------------
+class UserSerializer(SerializerBase):
+    DomainModel = models.User
+
+#------------------------------------------------------
+# Password Reset
+#------------------------------------------------------
+class PasswordResetSerializer(SerializerBase):
+    DomainModel = models.PasswordReset
 
 
 #------------------------------------------------------
@@ -93,10 +104,3 @@ class PayoutAccountSerializer(SerializerBase):
             serialization_result.model.confirmed = False
 
         return serialization_result
-
-
-#------------------------------------------------------
-# User
-#------------------------------------------------------
-class UserSerializer(SerializerBase):
-    DomainModel = models.User
