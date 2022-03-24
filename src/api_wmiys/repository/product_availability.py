@@ -1,6 +1,14 @@
+"""
+**********************************************************************************************
+
+All the SQL commands for the Product_Availability table.
+
+The SQL_MODIFY command query is used for both INSERT and UPDATE commands.
+
+**********************************************************************************************
+"""
 
 from __future__ import annotations
-
 import pymysql.commands as sql_engine
 from pymysql.structs import DbOperationResult
 from api_wmiys.domain import models
@@ -44,6 +52,18 @@ def selectAll(product_id) -> DbOperationResult:
 # Insert the product availability into the database
 #------------------------------------------------------
 def insert(product_availability: models.ProductAvailability) -> DbOperationResult:
+    return _modify(product_availability)
+
+#------------------------------------------------------
+# Updates the database record to the current object property values.
+#------------------------------------------------------
+def update(product_availability: models.ProductAvailability) -> DbOperationResult:
+    return _modify(product_availability)
+
+#------------------------------------------------------
+# Executes a modify (INSERT/DELETE) sql command
+#------------------------------------------------------
+def _modify(product_availability: models.ProductAvailability) -> DbOperationResult:
     parms = (
         str(product_availability.id),
         product_availability.product_id,
@@ -53,4 +73,3 @@ def insert(product_availability: models.ProductAvailability) -> DbOperationResul
     )
 
     return sql_engine.modify(SQL_MODIFY, parms)
-
