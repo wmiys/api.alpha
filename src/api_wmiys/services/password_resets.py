@@ -27,7 +27,6 @@ import flask
 
 from api_wmiys.domain import models
 from api_wmiys.repository import password_resets as password_resets_repo
-from api_wmiys.common import serializers
 from api_wmiys.common import responses
 from wmiys_common import utilities
 
@@ -50,9 +49,6 @@ def responses_PUT(password_reset_id: UUID) -> flask.Response:
     # create a PasswordReset model to send to the repository
     new_reset = _createNewModel(password_reset_id)
 
-    # utilities.dumpJson(new_reset)
-
-
     # make sure the client provided the new password
     if not new_reset.password:
         return responses.badRequest(BadRequestErrorMessages.MISSING_PASSWORD)
@@ -60,42 +56,15 @@ def responses_PUT(password_reset_id: UUID) -> flask.Response:
     # record the updated data in the database
     db_result = password_resets_repo.update(new_reset, NUM_MINS_EXPIRED)
 
-    # if not db_result.successful:
-    #     return responses.badRequest(str(db_result.error))
+    if not db_result.successful:
+        return responses.badRequest(str(db_result.error))
 
+    # make sure the password reset record exists and was created at most 30 minutes ago
+    if db_result.data != 1:
+        return responses.notFound()
 
-    utilities.dumpJson(db_result)
+    return responses.updated()
 
-
-    # # make sure the password reset record exists and was created at most 30 minutes ago
-    # if db_result.data != 1:
-    #     return responses.notFound()
-
-
-    # # now, need to update the User's password
-
-    # new_password = new_reset.password
-
-
-
-
-
-
-
-
-
-
-
-    
-
-    # return responses.updated(db_result)
-
-
-    # return the json object
-    return _standardResponse(new_reset, responses.updated)
-
-    
-    return 'password reset: PUT'
 
 
 #----------------------------------------------------------
