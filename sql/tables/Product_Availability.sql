@@ -1,5 +1,5 @@
 CREATE TABLE `Product_Availability` (
-    `id` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+    `id` CHAR(36) NOT NULL,
     `product_id` INT(10) UNSIGNED NOT NULL,
     `starts_on` DATE NOT NULL,
     `ends_on` DATE NOT NULL,

@@ -4,16 +4,22 @@ Url Prefix:     /products/:product_id/availability
 Description:    Handles all the product_availability routing.
 """
 
+from functools import wraps
 import flask
 from http import HTTPStatus
 from ..common import security
 from ..models import ProductAvailability
 
 from api_wmiys.services import products as product_services
-
+from api_wmiys.services import product_availability as product_availability_services
+from api_wmiys.common import responses
 
 
 bp_product_availability = flask.Blueprint('productAvailabilityRoute', __name__)
+
+
+
+
 
 
 #----------------------------------------------------------
@@ -21,10 +27,13 @@ bp_product_availability = flask.Blueprint('productAvailabilityRoute', __name__)
 #----------------------------------------------------------
 @bp_product_availability.get('')
 @security.login_required
-def productAvailabilities(product_id: int):
-    # verify that the user owns the product 
-    if not product_services.doesUserOwnProduct(product_id, flask.g.client_id):
-        return ('', HTTPStatus.FORBIDDEN.value)
+@security.verify_product_owner
+def productAvailabilities(product_id):
+
+    
+    return product_availability_services.responses_GET_ALL(product_id)
+
+
 
     # get the availabilities
     availabilities = ProductAvailability.getProductAvailabilities(product_id)
@@ -36,10 +45,8 @@ def productAvailabilities(product_id: int):
 #----------------------------------------------------------
 @bp_product_availability.post('')
 @security.login_required
-def productAvailabilityPost(product_id: int):
-    # verify that the user owns the product 
-    if not product_services.doesUserOwnProduct(product_id, flask.g.client_id):
-        return ('', HTTPStatus.FORBIDDEN.value)
+@security.verify_product_owner
+def productAvailabilityPost(product_id):
 
     # get the availabilities
     availability = ProductAvailability(product_id=product_id)
@@ -56,10 +63,11 @@ def productAvailabilityPost(product_id: int):
 #------------------------------------------------------
 # Retrieve all the product availabilities of a single product
 #------------------------------------------------------
-@bp_product_availability.route('<int:product_availability_id>', methods=['GET', 'PUT', 'DELETE'])
+@bp_product_availability.route('<uuid:product_availability_id>', methods=['GET', 'PUT', 'DELETE'])
 @security.login_required
-def productAvailability(product_id: int, product_availability_id: int):
-    # verify that the user owns the product 
+@security.verify_product_owner
+def productAvailability(product_id, product_availability_id):
+    
     if not product_services.doesUserOwnProduct(product_id, flask.g.client_id):
         return ('', HTTPStatus.FORBIDDEN.value)
 
@@ -85,3 +93,5 @@ def productAvailability(product_id: int, product_availability_id: int):
             pass    # error something went wrong
         
         return ('', HTTPStatus.NO_CONTENT.value)
+
+
