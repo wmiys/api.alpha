@@ -33,7 +33,7 @@ def post():
 @bp_password_resets.put('<uuid:password_reset_id>')
 def put(password_reset_id: UUID):
 
-    return password_reset_services.responses_PUT()
+    return password_reset_services.responses_PUT(password_reset_id)
 
 
 

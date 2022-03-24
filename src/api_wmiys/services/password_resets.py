@@ -21,6 +21,7 @@ To reset a User's password:
 from __future__ import annotations
 from datetime import datetime
 from enum import Enum
+from uuid import UUID
 
 import flask
 
@@ -36,7 +37,65 @@ class BadRequestErrorMessages(str, Enum):
     MISSING_PASSWORD = 'Missing required request body field: password'
 
 
-PASSWORD_RESET_MODEL_PASSWORD_FIELD = 'new_password'
+PASSWORD_RESET_MODEL_PASSWORD_FIELD = 'password'
+
+
+NUM_MINS_EXPIRED = 30
+
+
+#----------------------------------------------------------
+# Update an existing password reset record
+#----------------------------------------------------------
+def responses_PUT(password_reset_id: UUID) -> flask.Response:
+    # create a PasswordReset model to send to the repository
+    new_reset = _createNewModel(password_reset_id)
+
+    # utilities.dumpJson(new_reset)
+
+
+    # make sure the client provided the new password
+    if not new_reset.password:
+        return responses.badRequest(BadRequestErrorMessages.MISSING_PASSWORD)
+
+    # record the updated data in the database
+    db_result = password_resets_repo.update(new_reset, NUM_MINS_EXPIRED)
+
+    # if not db_result.successful:
+    #     return responses.badRequest(str(db_result.error))
+
+
+    utilities.dumpJson(db_result)
+
+
+    # # make sure the password reset record exists and was created at most 30 minutes ago
+    # if db_result.data != 1:
+    #     return responses.notFound()
+
+
+    # # now, need to update the User's password
+
+    # new_password = new_reset.password
+
+
+
+
+
+
+
+
+
+
+
+    
+
+    # return responses.updated(db_result)
+
+
+    # return the json object
+    return _standardResponse(new_reset, responses.updated)
+
+    
+    return 'password reset: PUT'
 
 
 #----------------------------------------------------------
@@ -44,7 +103,7 @@ PASSWORD_RESET_MODEL_PASSWORD_FIELD = 'new_password'
 #----------------------------------------------------------
 def responses_POST() -> flask.Response:
     # create a new PasswordReset model to send to the repository
-    new_reset = _createNewModel()
+    new_reset = _createNewModel(utilities.getUUID(False))
 
     # make sure the client provided their email
     if not new_reset.email:
@@ -62,15 +121,17 @@ def responses_POST() -> flask.Response:
 
 #----------------------------------------------------------
 # Construct a new PasswordReset model to be inserted into the database
-# The email value is provided in the request's form
+# The email/password values are provided in the request's form
 #----------------------------------------------------------
-def _createNewModel() -> models.PasswordReset:
+def _createNewModel(password_reset_id: UUID) -> models.PasswordReset:
     form = flask.request.form.to_dict()
 
     reset = models.PasswordReset(
-        id         = utilities.getUUID(False),
+        id         = password_reset_id,
         email      = form.get('email') or None,
         created_on = datetime.now(),
+        password   = form.get(PASSWORD_RESET_MODEL_PASSWORD_FIELD) or None,
+        updated_on = datetime.now(),
     )
 
     return reset
@@ -98,13 +159,5 @@ def _toDictNoPassword(password_reset: models.PasswordReset) -> dict:
     reset_dict.pop(PASSWORD_RESET_MODEL_PASSWORD_FIELD)
 
     return reset_dict
-
-
-#----------------------------------------------------------
-# Update an existing password reset record
-#----------------------------------------------------------
-def responses_PUT() -> flask.Response:
-    return 'password reset: PUT'
-
 
 
