@@ -4,7 +4,7 @@ Url Prefix:     /products/:product_id/availability
 Description:    Handles all the product_availability routing.
 """
 
-from functools import wraps
+
 import flask
 from http import HTTPStatus
 from ..common import security
@@ -19,9 +19,6 @@ bp_product_availability = flask.Blueprint('productAvailabilityRoute', __name__)
 
 
 
-
-
-
 #----------------------------------------------------------
 # Retrieve all the product availabilities of a single product
 #----------------------------------------------------------
@@ -29,15 +26,7 @@ bp_product_availability = flask.Blueprint('productAvailabilityRoute', __name__)
 @security.login_required
 @security.verify_product_owner
 def productAvailabilities(product_id):
-
-    
     return product_availability_services.responses_GET_ALL(product_id)
-
-
-
-    # get the availabilities
-    availabilities = ProductAvailability.getProductAvailabilities(product_id)
-    return flask.jsonify(availabilities)
 
 
 #----------------------------------------------------------
@@ -47,17 +36,7 @@ def productAvailabilities(product_id):
 @security.login_required
 @security.verify_product_owner
 def productAvailabilityPost(product_id):
-
-    # get the availabilities
-    availability = ProductAvailability(product_id=product_id)
-    
-    # set the objects properties to the fields in the request body
-    if not availability.setPropertyValuesFromDict(flask.request.form.to_dict()):
-        return ('Invalid request body field.', HTTPStatus.BAD_REQUEST.value)
-    
-    availability.insert()
-
-    return flask.jsonify(availability.get())
+    return product_availability_services.responses_POST(product_id)
 
 
 #------------------------------------------------------
@@ -67,9 +46,6 @@ def productAvailabilityPost(product_id):
 @security.login_required
 @security.verify_product_owner
 def productAvailability(product_id, product_availability_id):
-    
-    if not product_services.doesUserOwnProduct(product_id, flask.g.client_id):
-        return ('', HTTPStatus.FORBIDDEN.value)
 
     availability = ProductAvailability(id=product_availability_id)
     
@@ -77,6 +53,10 @@ def productAvailability(product_id, product_availability_id):
         return flask.jsonify(availability.get())
     
     elif flask.request.method == 'PUT':
+
+        return product_availability_services.responses_PUT(product_id, product_availability_id)
+
+
         availability.loadData() # load the current values into the object properties
 
         # set the objects properties to the fields in the request body

@@ -9,6 +9,7 @@ A serializer transforms a dictionary into a domain model.
 
 from __future__ import annotations
 from dataclasses import dataclass
+import datetime
 
 from api_wmiys.domain import models
 
@@ -62,6 +63,25 @@ class SerializerBase:
 
         return result
 
+    #------------------------------------------------------
+    # Parse the given datetime string into a python datetime/date object
+    #
+    # Args:
+    #   datetime_module: either the datetime.datetime module or the datetime.date module (both have the fromisoformat function)
+    #   date_string: the date string to parse
+    #------------------------------------------------------
+    def _parseIsoDatetime(self, datetime_module, date_string: str=None) -> datetime.datetime | str | None:
+        if not date_string:
+            return date_string
+        
+        try:
+            result = datetime_module.fromisoformat(date_string)
+        except Exception as e:
+            result = date_string
+            print(e)
+        
+        return result
+
 
 #------------------------------------------------------
 # Product
@@ -104,3 +124,28 @@ class PayoutAccountSerializer(SerializerBase):
             serialization_result.model.confirmed = False
 
         return serialization_result
+
+
+#------------------------------------------------------
+# Product Availability
+#------------------------------------------------------
+class ProductAvailabilitySerializer(SerializerBase):
+    DomainModel = models.ProductAvailability
+
+    #------------------------------------------------------
+    # Parse the object's starts_on/ends_on values into date objects
+    #------------------------------------------------------
+    def serialize(self) -> SerializationResult:
+        serialization_result = super().serialize()
+
+        # parse the model's start/end times into date objects
+        new_model: models.ProductAvailability = serialization_result.model
+        new_model.starts_on = self._parseIsoDatetime(datetime.date, new_model.starts_on)
+        new_model.ends_on = self._parseIsoDatetime(datetime.date, new_model.ends_on)
+
+        serialization_result.model = new_model
+
+        return serialization_result
+
+
+
