@@ -6,9 +6,13 @@ Description:    Handles all the product images routing
 
 import flask
 from http import HTTPStatus
-from api_wmiys.common import user_image
-from ..common import security
-from ..models import product_image, ProductImage
+from api_wmiys.common import images as  user_image
+from api_wmiys.common import security
+from api_wmiys.models import product_image, ProductImage
+
+
+from api_wmiys.services import product_images as product_image_services
+
 
 bp_product_images = flask.Blueprint('bpProductImages', __name__)
 
@@ -42,6 +46,9 @@ def delete(product_id):
 @security.login_required
 @security.verify_product_owner
 def post(product_id):    
+
+    return product_image_services.responses_POST(product_id)
+
     images_data: dict = flask.request.files.to_dict()
     directory_path = user_image.getImagesDirectory()
 
@@ -56,10 +63,10 @@ def post(product_id):
 #----------------------------------------------------------
 # Get a single product image
 #----------------------------------------------------------
-@bp_product_images.get('<int:product_image_id>')
+@bp_product_images.get('<uuid:product_image_id>')
 @security.login_required
 @security.verify_product_owner
-def singleImage(product_id, product_image_id: int):
+def singleImage(product_id, product_image_id):
     product_image = ProductImage(newID=product_image_id)    
     
     if not product_image.load():

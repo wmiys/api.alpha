@@ -13,7 +13,8 @@ from __future__ import annotations
 import os
 from wmiys_common import utilities
 from ..db import DB
-from ..common import UserImage, user_image
+from ..common import ImageFile
+from ..common import images
 
 
 #----------------------------------------------------------
@@ -28,7 +29,7 @@ from ..common import UserImage, user_image
 def getAll(product_id: int) -> list[dict]:
     images = _getAllProductImageRecords(product_id)
 
-    prefix = user_image.getImagesUrl()
+    prefix = images.getImagesUrl()
 
     # prepend the absolute url for each image file_name
     for image in images:
@@ -50,7 +51,7 @@ def deleteAll(product_id: int):
 # given product id.
 #----------------------------------------------------------
 def _deleteAllImageFiles(product_id: int):
-    prefix = user_image.getImagesDirectory()
+    prefix = images.getImagesDirectory()
 
     for img in _getAllProductImageRecords(product_id):
         img_file_path = os.path.join(prefix, img.get('file_name'))
@@ -188,13 +189,13 @@ class ProductImage:
         if self.file_name:
             os.remove(os.path.join(image_directory_path, self.file_name))
 
-        image_file = UserImage(newImageFile)
+        image_file = ImageFile(newImageFile)
         
         # create a unique name for the product image (GUID + it's original extension)
         new_image_file_name = utilities.getUUID(True) + image_file.getFileExtension()
 
         # now save the file to the server
-        self.file_name = image_file.saveImageFile(image_directory_path, new_image_file_name)
+        self.file_name = image_file.save(image_directory_path, new_image_file_name)
 
 
     #----------------------------------------------------------

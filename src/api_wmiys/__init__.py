@@ -26,7 +26,7 @@ import wmiys_common
 import pymysql
 
 from .common import CustomJSONEncoder
-from .common import user_image
+from .common import images
 from . import db
 from . import routes
 
@@ -73,7 +73,7 @@ def configureDatabaseConnection(flask_app: Flask):
 def configureAppOldWay(flask_app: Flask):
     # api url
     api_url = flask_app.config.get('URL_API')
-    user_image.STATIC_URL_PREFIX = f'{api_url}/'
+    images.STATIC_URL_PREFIX = f'{api_url}/'
 
     # database connection host
     db.credentials.HOST = flask_app.config.get('DB_HOST')
