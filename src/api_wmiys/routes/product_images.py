@@ -6,22 +6,20 @@ Description:    Handles all the product images routing
 
 import flask
 from http import HTTPStatus
-
 from api_wmiys.common import user_image
 from ..common import security
 from ..models import product_image, ProductImage
-from api_wmiys.services import products as product_services
 
 bp_product_images = flask.Blueprint('bpProductImages', __name__)
 
 
 #-----------------------------------------------------
 # GET the images for a product
+# Just fetch all the product images
 # ----------------------------------------------------
 @bp_product_images.get('')
 @security.login_required
 def get(product_id: int):
-    # all we need to do is fetch all the product images
     return flask.jsonify(product_image.getAll(product_id))
 
 
@@ -30,12 +28,10 @@ def get(product_id: int):
 # ----------------------------------------------------
 @bp_product_images.delete('')
 @security.login_required
-def delete(product_id: int):
-    # make sure the user is authorized
-    if not product_services.doesUserOwnProduct(product_id, flask.g.client_id):
-        return ('', HTTPStatus.FORBIDDEN.value)
-    
+@security.verify_product_owner
+def delete(product_id):    
     product_image.deleteAll(product_id)
+
     return ('', HTTPStatus.NO_CONTENT.value)
 
 
@@ -44,15 +40,12 @@ def delete(product_id: int):
 # ----------------------------------------------------
 @bp_product_images.post('')
 @security.login_required
-def post(product_id: int):
-    # make sure the user is authorized
-    if not product_services.doesUserOwnProduct(product_id, flask.g.client_id):
-        return ('', HTTPStatus.FORBIDDEN.value)
-    
-    imagesData: dict = flask.request.files.to_dict()
+@security.verify_product_owner
+def post(product_id):    
+    images_data: dict = flask.request.files.to_dict()
     directory_path = user_image.getImagesDirectory()
 
-    for img in imagesData.values():
+    for img in images_data.values():
         productImage = ProductImage(product_id=product_id)
         productImage.setImagePropertyFromImageFile(img, directory_path)
         productImage.insert()
@@ -65,16 +58,13 @@ def post(product_id: int):
 #----------------------------------------------------------
 @bp_product_images.get('<int:product_image_id>')
 @security.login_required
-def singleImage(product_id: int, product_image_id: int):
-    # make sure the user is authorized
-    if not product_services.doesUserOwnProduct(product_id, flask.g.client_id):
-        return ('', HTTPStatus.FORBIDDEN.value)
-
-    productImage = ProductImage(newID=product_image_id)    
+@security.verify_product_owner
+def singleImage(product_id, product_image_id: int):
+    product_image = ProductImage(newID=product_image_id)    
     
-    if not productImage.load():
+    if not product_image.load():
         return ('', HTTPStatus.BAD_REQUEST.value)
 
-    return flask.jsonify(productImage.toDict())
+    return flask.jsonify(product_image.toDict())
 
 
