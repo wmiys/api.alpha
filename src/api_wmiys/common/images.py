@@ -2,9 +2,12 @@
 from __future__ import annotations
 import os
 import flask
-from wmiys_common.config_pairs import ApiUrls
+
 
 from werkzeug.datastructures import FileStorage
+from wmiys_common.config_pairs import ApiUrls
+from wmiys_common import utilities
+
 
 IMAGES_DIRECTORY_NAME         = 'product-images'
 PRODUCT_COVERS_DIRECTORY_NAME = 'covers'
@@ -43,6 +46,29 @@ def getImagesUrl() -> str:
     return f'{STATIC_URL_PREFIX}static/{IMAGES_DIRECTORY_NAME}/{PRODUCT_IMAGES_DIRECTORY_NAME}/'
 
 
+# ----------------------------------------------------
+# Get a list of the image files (FileStorage) from the request 
+# ----------------------------------------------------
+def getRequestFiles() -> list[FileStorage]:
+    files_dict = flask.request.files.to_dict(False)
+    image_files = list(*files_dict.values()) or []
+    
+    return image_files
+
+#------------------------------------------------------
+# Generate a unique file name for the given ImageFile
+# A unique file is a new UUID + the original file's extension
+#------------------------------------------------------
+def getUniqueFileName(image_file: ImageFile) -> str:
+    extension = image_file.getFileExtension()
+    prefix = utilities.getUUID(True)
+    
+    new_file_name = f'{prefix}{extension}'
+
+    return new_file_name
+
+
+
 class ImageFile:
 
     #------------------------------------------------------
@@ -70,13 +96,13 @@ class ImageFile:
     #
     # Returns the filename of the local copy of the image
     #------------------------------------------------------
-    def save(self, destination: str, new_file_name: str=None) -> str:
-        if not new_file_name:
-            new_file_name = self.img_file.filename
+    def save(self, destination: str, file_name: str=None) -> str:
+        if not file_name:
+            file_name = self.img_file.filename
 
-        self.img_file.save(os.path.join(destination, new_file_name))     # save the image
+        self.img_file.save(os.path.join(destination, file_name))     # save the image
 
-        return new_file_name
+        return file_name
 
 
 

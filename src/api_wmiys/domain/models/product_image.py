@@ -13,7 +13,7 @@ from uuid import UUID
 
 @dataclass
 class ProductImage:
-    id         : UUID      = None
+    id         : UUID     = None
     product_id : int      = None
     file_name  : str      = None
     created_on : datetime = None
