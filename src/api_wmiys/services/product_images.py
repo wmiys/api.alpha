@@ -7,6 +7,7 @@ This will need to be updated soon.
 **********************************************************************************************
 """
 from __future__ import annotations
+from datetime import datetime
 
 
 import flask
@@ -15,6 +16,8 @@ from wmiys_common import utilities
 from api_wmiys.common import responses
 from api_wmiys.common import images
 from api_wmiys.common import BaseReturn
+from api_wmiys.domain import models
+from api_wmiys.repository import product_images as product_images_repo
 
 #-----------------------------------------------------
 # POST the images for a product
@@ -33,15 +36,43 @@ def responses_POST(product_id) -> flask.Response:
     if not save_result.successful:
         return responses.badRequest(str(save_result.error))
 
-    # get the list of file names to save to the database
-    file_names: list[str] = save_result.data
+
+    # save the list of file names to the database    
+    file_names = save_result.data
+    models     = _getNewProductImageModels(file_names, product_id)
+    db_result  = product_images_repo.insertBatch(models)
+
+    if not db_result.successful:
+        return responses.badRequest(str(db_result.error))
+
+    return responses.created(models)
 
 
-    # save each file name to the database
-    
+#-----------------------------------------------------
+# Create a list of ProductImage models object given a list of file names and their product_id
+#-----------------------------------------------------
+def _getNewProductImageModels(file_names: list[str], product_id) -> list[models.ProductImage]:
+    models = []
+
+    for file_name in file_names:
+        model = _generateNewProductImageModel(file_name, product_id)
+        models.append(model)
+
+    return models
 
 
-    return responses.created('created bitch')
+#-----------------------------------------------------
+# Create a new ProductImage model given its file_name and product_id values
+#-----------------------------------------------------
+def _generateNewProductImageModel(file_name: str, product_id) -> models.ProductImage:
+    model = models.ProductImage(
+        id         = utilities.getUUID(False),
+        product_id = product_id,
+        file_name  = file_name,
+        created_on = datetime.now(),
+    )
+
+    return model
 
 
 #-----------------------------------------------------
