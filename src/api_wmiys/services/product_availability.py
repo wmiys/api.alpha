@@ -76,23 +76,23 @@ def responses_PUT(product_id, product_availability_id) -> flask.Response:
 #----------------------------------------------------------
 def _standardModifyResponse(modify_parms: ModifyRequestParms) -> flask.Response:
     # extract the request's form data into a ProductAvailability model
-    pa = _extractFormData()
+    product_availability = _extractFormData()
 
     # make sure the model is correct and has correct values
-    if not _isModelValid(pa):
+    if not _isModelValid(product_availability):
         return responses.badRequest('Invalid form data.')
 
     # explicitly set the model's new id and it's parent product id
-    pa.id = modify_parms.product_availability_id
-    pa.product_id = modify_parms.product_id
+    product_availability.id         = modify_parms.product_availability_id
+    product_availability.product_id = modify_parms.product_id
 
     # insert the record into the database
-    result = modify_parms.repository_callback(pa)
+    result = modify_parms.repository_callback(product_availability)
 
     if not result.successful:
         return responses.badRequest(str(result.error))
 
-    return modify_parms.responses_callback(pa)
+    return _standardViewReturn(modify_parms.product_availability_id, modify_parms.responses_callback)
 
 #----------------------------------------------------------
 # Extract the request's form data into a ProductAvailability model
@@ -114,25 +114,20 @@ def _extractFormData() -> models.ProductAvailability:
 #
 # Returns false if any of those conditions are false, otherwise true.
 #----------------------------------------------------------
-def _isModelValid(pa: models.ProductAvailability) -> bool:
+def _isModelValid(product_availability: models.ProductAvailability) -> bool:
 
     today = datetime.datetime.now().date()
 
-    if None in [pa.starts_on, pa.ends_on]:
+    if None in [product_availability.starts_on, product_availability.ends_on]:
         return False
-
-    elif not isinstance(pa.starts_on, datetime.date):
+    elif not isinstance(product_availability.starts_on, datetime.date):
         return False
-
-    elif not isinstance(pa.ends_on, datetime.date):
+    elif not isinstance(product_availability.ends_on, datetime.date):
         return False
-
-    elif pa.ends_on <= pa.starts_on:
+    elif product_availability.ends_on <= product_availability.starts_on:
         return False
-
-    elif pa.starts_on < today:
+    elif product_availability.starts_on < today:
         return False
-
     else:
         return True
 
@@ -140,8 +135,23 @@ def _isModelValid(pa: models.ProductAvailability) -> bool:
 #----------------------------------------------------------
 # Respond to a GET request
 #----------------------------------------------------------
-def responses_GET() -> flask.Response:
-    pass
+def responses_GET(product_availability_id) -> flask.Response:
+    return _standardViewReturn(product_availability_id, responses.get)
+
+
+#----------------------------------------------------------
+# Standardized way to fetch the ProductAvailability view response
+#----------------------------------------------------------
+def _standardViewReturn(product_availability_id, responses_callback) -> flask.Response:
+    result = product_availability_repo.select(product_availability_id)
+
+    if not result.successful:
+        return responses.badRequest(str(result.error))
+    elif not result.data:
+        return responses.notFound()
+
+    return responses_callback(result.data)
+
 
 #----------------------------------------------------------
 # Respond to a DELETE request

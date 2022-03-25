@@ -22,6 +22,15 @@ SQL_SELECT_ALL = '''
 '''
 
 
+SQL_SELECT = '''
+    SELECT      *
+    FROM        View_Product_Availability pa
+    WHERE       pa.id = %s
+    ORDER BY    pa.created_on DESC
+    LIMIT       1;
+'''
+
+
 SQL_MODIFY = '''
     INSERT INTO
         Product_Availability (id, product_id, starts_on, ends_on, note)
@@ -47,6 +56,13 @@ def selectAll(product_id) -> DbOperationResult:
     parms = (product_id,)
     return sql_engine.selectAll(SQL_SELECT_ALL, parms)
 
+
+#------------------------------------------------------
+# Retrieve the product availability record from the database
+#------------------------------------------------------
+def select(product_availability_id) -> DbOperationResult:
+    parms = (str(product_availability_id),)
+    return sql_engine.select(SQL_SELECT, parms)
 
 #------------------------------------------------------
 # Insert the product availability into the database

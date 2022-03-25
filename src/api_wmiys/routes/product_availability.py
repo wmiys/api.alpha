@@ -46,8 +46,7 @@ def productAvailability(product_id, product_availability_id):
     availability = ProductAvailability(id=product_availability_id)
     
     if flask.request.method == 'GET':
-        return flask.jsonify(availability.get())
-    
+        return product_availability_services.responses_GET(product_availability_id)
     elif flask.request.method == 'PUT':
         return product_availability_services.responses_PUT(product_id, product_availability_id)
     
