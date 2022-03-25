@@ -43,6 +43,8 @@ SQL_MODIFY = '''
 '''
 
 
+SQL_DELETE = 'DELETE FROM Product_Availability WHERE id = %s'
+
 
 #------------------------------------------------------
 # Returns all product availability records for a single product
@@ -89,3 +91,11 @@ def _modify(product_availability: models.ProductAvailability) -> DbOperationResu
     )
 
     return sql_engine.modify(SQL_MODIFY, parms)
+
+
+#------------------------------------------------------
+# Delete the product availability record
+#------------------------------------------------------
+def delete(product_availability_id) -> DbOperationResult:
+    parms = (str(product_availability_id), )
+    return sql_engine.modify(SQL_DELETE, parms)

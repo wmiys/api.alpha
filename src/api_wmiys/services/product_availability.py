@@ -143,21 +143,28 @@ def responses_GET(product_availability_id) -> flask.Response:
 # Standardized way to fetch the ProductAvailability view response
 #----------------------------------------------------------
 def _standardViewReturn(product_availability_id, responses_callback) -> flask.Response:
-    result = product_availability_repo.select(product_availability_id)
+    db_result = product_availability_repo.select(product_availability_id)
 
-    if not result.successful:
-        return responses.badRequest(str(result.error))
-    elif not result.data:
+    if not db_result.successful:
+        return responses.badRequest(str(db_result.error))
+    elif not db_result.data:
         return responses.notFound()
 
-    return responses_callback(result.data)
+    return responses_callback(db_result.data)
 
 
 #----------------------------------------------------------
 # Respond to a DELETE request
 #----------------------------------------------------------
-def responses_DELETE() -> flask.Response:
-    pass
+def responses_DELETE(product_availability_id) -> flask.Response:
+    db_result = product_availability_repo.delete(product_availability_id)
+    
+    if not db_result.successful:
+        return responses.badRequest(str(db_result.error))
+    elif not db_result.data:
+        return responses.notFound()
+    else:
+        return responses.deleted()
 
 
 
