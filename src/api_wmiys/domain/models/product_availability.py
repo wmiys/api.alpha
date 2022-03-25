@@ -14,13 +14,14 @@ requests from renters if the starts/ends range conflicts.
 from __future__ import annotations
 from dataclasses import dataclass
 from datetime import datetime
-
+from datetime import date
+from uuid import UUID
 
 @dataclass
 class ProductAvailability:
-    id         : int      = None
+    id         : UUID     = None
     product_id : int      = None
-    starts_on  : datetime = None
-    ends_on    : datetime = None
+    starts_on  : date     = None
+    ends_on    : date     = None
     note       : str      = None
     created_on : datetime = None

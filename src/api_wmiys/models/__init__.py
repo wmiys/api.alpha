@@ -7,7 +7,6 @@ from . import payment as payment
 from . import balance_transfer as balance_transfer
 
 # classes
-from .product_availability import ProductAvailability as ProductAvailability
 from .product_image import ProductImage as ProductImage
 from .product_listing_availability import ProductListingAvailability as ProductListingAvailability
 from .product_listing import ProductListing as ProductListing
