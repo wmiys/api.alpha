@@ -5,12 +5,7 @@ Description:    Handles all the product images routing
 """
 
 import flask
-from http import HTTPStatus
-from api_wmiys.common import images as  user_image
 from api_wmiys.common import security
-from api_wmiys.models import product_image, ProductImage
-
-
 from api_wmiys.services import product_images as product_image_services
 
 
@@ -25,7 +20,6 @@ bp_product_images = flask.Blueprint('bpProductImages', __name__)
 @security.login_required
 def get(product_id: int):
     return product_image_services.responses_GET_ALL(product_id)
-    return flask.jsonify(product_image.getAll(product_id))
 
 
 #-----------------------------------------------------
@@ -35,9 +29,7 @@ def get(product_id: int):
 @security.login_required
 @security.verify_product_owner
 def delete(product_id):    
-    product_image.deleteAll(product_id)
-
-    return ('', HTTPStatus.NO_CONTENT.value)
+    return product_image_services.responses_DELETE_ALL(product_id)
 
 
 #-----------------------------------------------------
@@ -47,32 +39,6 @@ def delete(product_id):
 @security.login_required
 @security.verify_product_owner
 def post(product_id):    
-
     return product_image_services.responses_POST(product_id)
-
-    images_data: dict = flask.request.files.to_dict()
-    directory_path = user_image.getImagesDirectory()
-
-    for img in images_data.values():
-        productImage = ProductImage(product_id=product_id)
-        productImage.setImagePropertyFromImageFile(img, directory_path)
-        productImage.insert()
-
-    return flask.jsonify(product_image.getAll(product_id))
-
-
-#----------------------------------------------------------
-# Get a single product image
-#----------------------------------------------------------
-@bp_product_images.get('<uuid:product_image_id>')
-@security.login_required
-@security.verify_product_owner
-def singleImage(product_id, product_image_id):
-    product_image = ProductImage(newID=product_image_id)    
-    
-    if not product_image.load():
-        return ('', HTTPStatus.BAD_REQUEST.value)
-
-    return flask.jsonify(product_image.toDict())
 
 

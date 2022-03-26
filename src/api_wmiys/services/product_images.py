@@ -8,14 +8,13 @@ This will need to be updated soon.
 """
 from __future__ import annotations
 from datetime import datetime
-
-
 import flask
 from werkzeug.datastructures import FileStorage
 from wmiys_common import utilities
 from api_wmiys.common import responses
 from api_wmiys.common import images
 from api_wmiys.common import BaseReturn
+from api_wmiys.common import serializers
 from api_wmiys.domain import models
 from api_wmiys.repository import product_images as product_images_repo
 
@@ -23,6 +22,13 @@ from api_wmiys.repository import product_images as product_images_repo
 # POST the images for a product
 # ----------------------------------------------------
 def responses_POST(product_id) -> flask.Response:
+    # first, delete all existing records/files
+    delete_result = deleteAll(product_id)
+
+    if not delete_result.successful:
+        return responses.badRequest(str(delete_result.error))
+    
+    
     # get list of images provided in the request
     image_files = images.getRequestFiles()
 
@@ -135,25 +141,119 @@ def _saveImageFile(file_storage: FileStorage, destination: str) -> str:
 def responses_GET_ALL(product_id) -> flask.Response:
     
     try:
-        images = getAllView(product_id)
+        product_image_views = getAllViewsWithFileUrl(product_id)
     except Exception as e:
         return responses.badRequest(str(e))
 
-    return responses.get(images)
+    return responses.get(product_image_views)
+
 
 #-----------------------------------------------------
-# Get all the product images for the given product
+# DELETE the images for a product
+# ----------------------------------------------------
+def responses_DELETE_ALL(product_id) -> flask.Response:
+    delete_result = deleteAll(product_id)
+    
+    if not delete_result.successful:
+        return responses.badRequest(str(delete_result.error))
+
+    return responses.deleted()
+
 #-----------------------------------------------------
-def getAllView(product_id) -> list[dict]:
+# Delete all the product images owned by the specified product id
+#-----------------------------------------------------
+def deleteAll(product_id) -> BaseReturn:
+    result = BaseReturn(successful=True)
+
+    try:
+        # get a list of all the current product image models
+        models = getAllModels(product_id)
+
+        # delete the image files from the server
+        deleteImageFiles(models)
+
+        # delete the records from the database
+        db_result = product_images_repo.deleteAll(models)
+
+        if not db_result.successful:
+            result.successful = False
+            result.error = db_result.error
+
+    except Exception as e:
+        result.successful = False
+        result.error = e
+
+    return result
+
+
+#-----------------------------------------------------
+# Get all the product image domain models for the given product
+#-----------------------------------------------------
+def getAllModels(product_id) -> list[models.ProductImage]:
+    # get all the product image view dictionaries from the database
+    views = getAllViews(product_id)
+    
+    # serialize the dicts into domain models
+    models = []
+
+    for view_dict in views:
+        new_model = serializeView(view_dict)
+        models.append(new_model)
+
+    return models
+
+
+#-----------------------------------------------------
+# Get all the product image views for the given product
+# With the product image url prefix to the file name
+#-----------------------------------------------------
+def getAllViewsWithFileUrl(product_id) -> list[dict]:
+    product_image_views = getAllViews(product_id)
+
+    for product_image_view in product_image_views:
+        _prependFileUrl(product_image_view)
+
+    return product_image_views
+
+#-----------------------------------------------------
+# Prepend the url to the file nane of the given product image view
+#-----------------------------------------------------
+def _prependFileUrl(product_image_view: dict):
+    img_url   = images.getImagesUrl()
+    file_name = product_image_view.get('file_name')
+    result    = f'{img_url}{file_name}'
+    
+    product_image_view['file_name'] = result
+
+#-----------------------------------------------------
+# Get all the product image views for the given product
+#-----------------------------------------------------
+def getAllViews(product_id) -> list[dict]:
     db_result = product_images_repo.selectAll(product_id)
 
     if not db_result.successful:
+        print(db_result.error)
         raise db_result.error
-
 
     images = db_result.data or []
 
     return images
 
+#-----------------------------------------------------
+# Serialize the given product image view into a domain model
+#-----------------------------------------------------
+def serializeView(view: dict) -> models.ProductImage:
+    serializer = serializers.ProductImageSerializer(view)
+    new_model  = serializer.serialize().model
+
+    return new_model
 
 
+#-----------------------------------------------------
+# Delete all the image files for the given product image list
+#-----------------------------------------------------
+def deleteImageFiles(product_images: list[models.ProductImage]):
+    directory = images.getImagesDirectory()
+
+    for product_image in product_images:
+        images.deleteFile(directory, product_image.file_name)

@@ -67,6 +67,17 @@ def getUniqueFileName(image_file: ImageFile) -> str:
 
     return new_file_name
 
+#------------------------------------------------------
+# Delete the file from the server
+#
+# Args:
+#     directory: the directory that the file is located
+#     file_name: the name of the file to delete
+#------------------------------------------------------
+def deleteFile(directory: str, file_name: str):
+    absolute_path = os.path.join(directory, file_name)
+    os.remove(absolute_path)
+
 
 
 class ImageFile:
