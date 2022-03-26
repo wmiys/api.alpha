@@ -24,6 +24,7 @@ bp_product_images = flask.Blueprint('bpProductImages', __name__)
 @bp_product_images.get('')
 @security.login_required
 def get(product_id: int):
+    return product_image_services.responses_GET_ALL(product_id)
     return flask.jsonify(product_image.getAll(product_id))
 
 

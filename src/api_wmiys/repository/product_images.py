@@ -20,6 +20,20 @@ SQL_INSERT = '''
         (%s, %s, %s, %s);
 '''
 
+
+
+SQL_SELECT_ALL = '''
+    SELECT   
+        *
+    FROM     
+        Product_Images pi
+    WHERE    
+        pi.product_id = %s;
+'''
+
+
+
+
 #----------------------------------------------------------
 # Insert the product images into the database
 #----------------------------------------------------------
@@ -73,3 +87,10 @@ def _getInsertParmTuple(product_image: models.ProductImage) -> tuple:
     return parms
 
 
+#----------------------------------------------------------
+# Retrieve all the product image database records that belong
+# to the given product.
+#----------------------------------------------------------
+def selectAll(product_id) -> DbOperationResult:
+    parms = (product_id,)
+    return sql_engine.selectAll(SQL_SELECT_ALL, parms)

@@ -128,12 +128,32 @@ def _saveImageFile(file_storage: FileStorage, destination: str) -> str:
     return new_file_name
 
 
-
-
-
-
-
+#-----------------------------------------------------
+# GET the images for a product
+# Just fetch all the product images
+# ----------------------------------------------------
+def responses_GET_ALL(product_id) -> flask.Response:
     
+    try:
+        images = getAllView(product_id)
+    except Exception as e:
+        return responses.badRequest(str(e))
+
+    return responses.get(images)
+
+#-----------------------------------------------------
+# Get all the product images for the given product
+#-----------------------------------------------------
+def getAllView(product_id) -> list[dict]:
+    db_result = product_images_repo.selectAll(product_id)
+
+    if not db_result.successful:
+        raise db_result.error
+
+
+    images = db_result.data or []
+
+    return images
 
 
 
