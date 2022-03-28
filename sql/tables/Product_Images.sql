@@ -1,10 +1,13 @@
 CREATE TABLE `Product_Images` (
-  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `product_id` int(10) unsigned NOT NULL,
-  `file_name` char(40) NOT NULL,
-  `created_on` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `id` (`id`),
-  KEY `product_id` (`product_id`),
-  CONSTRAINT `Product_Images_ibfk_1` FOREIGN KEY (`product_id`) REFERENCES `Products` (`id`) ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+    `id` CHAR(36) NOT NULL,
+    `product_id` INT UNSIGNED NOT NULL,
+    `file_name` CHAR(50) NOT NULL,
+    `created_on` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (`id`),
+    UNIQUE KEY `id` (`id`),
+    UNIQUE KEY `file_name_UNIQUE` (`file_name`),
+    KEY `product_id` (`product_id`),
+    CONSTRAINT `Product_Images_ibfk_1` FOREIGN KEY (`product_id`) REFERENCES `Products` (`id`) ON
+    UPDATE
+        CASCADE
+) ENGINE = INNODB DEFAULT CHARSET = UTF8MB3;

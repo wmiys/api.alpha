@@ -136,7 +136,7 @@ def _standardSingleProductReturn(product_id, responses_callback) -> flask.Respon
 #------------------------------------------------------
 def _setImageUrlPrefix(product_dict: dict):
     if product_dict['image']:
-        prefix = common.user_image.getCoverUrl()
+        prefix = common.images.getCoverUrl()
         product_dict['image'] = prefix + product_dict['image']
 
 #------------------------------------------------------
@@ -162,7 +162,7 @@ def _updateImage(product: models.Product) -> bool:
         return False
 
     # get the cover photos directory on the server
-    cover_photos_directory = common.user_image.getCoverDirectory()
+    cover_photos_directory = common.images.getCoverDirectory()
 
     product.image = _setImagePropertyFromImageFile(product_image_file, cover_photos_directory)
 
@@ -239,11 +239,11 @@ def _setImagePropertyFromImageFile(new_image_file: object, relative_image_direct
         # os.remove(os.path.join(relative_image_directory_path, self.image))
 
     # take the client provided cover photo and rename it using a unique UUID file name
-    product_image = common.UserImage(new_image_file)
+    product_image = common.ImageFile(new_image_file)
     new_image_file_name = utilities.getUUID(True) + product_image.getFileExtension()
 
     # save the renamed file onto the server and fetch the new file's name
-    return product_image.saveImageFile(relative_image_directory_path, new_image_file_name)
+    return product_image.save(relative_image_directory_path, new_image_file_name)
 
 
 

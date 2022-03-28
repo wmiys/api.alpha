@@ -1,13 +1,10 @@
 # modules
 from . import product_categories as product_categories
-from . import product_image as product_image
-
 from . import product_request as product_request
 from . import payment as payment
 from . import balance_transfer as balance_transfer
 
 # classes
-from .product_image import ProductImage as ProductImage
 from .product_listing_availability import ProductListingAvailability as ProductListingAvailability
 from .product_listing import ProductListing as ProductListing
 from .product_search_request import ProductSearchRequest as ProductSearchRequest

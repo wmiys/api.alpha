@@ -10,6 +10,7 @@ A serializer transforms a dictionary into a domain model.
 from __future__ import annotations
 from dataclasses import dataclass
 import datetime
+from uuid import UUID
 
 from api_wmiys.domain import models
 
@@ -148,4 +149,9 @@ class ProductAvailabilitySerializer(SerializerBase):
         return serialization_result
 
 
+#------------------------------------------------------
+# Product Images
+#------------------------------------------------------
+class ProductImageSerializer(SerializerBase):
+    DomainModel = models.ProductImage
 

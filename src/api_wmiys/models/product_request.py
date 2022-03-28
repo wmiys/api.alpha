@@ -17,7 +17,7 @@ from __future__ import annotations
 from enum import Enum
 from uuid import UUID
 from ..db import DB
-from ..common import user_image
+from ..common import images as user_image
 
 
 # database table views

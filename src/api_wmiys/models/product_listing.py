@@ -10,7 +10,7 @@ I just thought it would be a good idea to seperate out the views for security...
 """
 
 from ..db import DB
-from ..common import user_image
+from ..common import images as user_image
 
 class ProductListing:
 
