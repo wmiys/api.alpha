@@ -137,13 +137,14 @@ class Pagination:
         return math.ceil(totalRecords / self.per_page)
 
 
-
-
+#----------------------------------------------------------
+# Generate a Pagination object from the current request's url parms
+#----------------------------------------------------------
 def getRequestPaginationParms() -> Pagination:
-    pagination = Pagination()
-
-    pagination.page = flask.request.args.get('page') or Pagination.DEFAULT_PAGE
-    pagination.per_page = flask.request.args.get('per_page') or Pagination.DEFAULT_PER_PAGE
+    pagination = Pagination(
+        page     = flask.request.args.get('page') or Pagination.DEFAULT_PAGE,
+        per_page = flask.request.args.get('per_page') or Pagination.DEFAULT_PER_PAGE
+    )
 
     return pagination
 
