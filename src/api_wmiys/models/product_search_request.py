@@ -49,7 +49,7 @@ class ProductSearchRequest:
     #   starts_on: starts on
     #   ends_on: ends on
     #   sorting: sorting object
-    #   oPaginpaginationation: pagination object
+    #   pagination: pagination object
     #----------------------------------------------------------
     def __init__(self, location_id=None, starts_on=None, ends_on=None, sorting: sorting.SortingSearchProducts=None, pagination: Pagination=None):
         self.location_id = location_id
@@ -139,18 +139,18 @@ class ProductSearchRequest:
         cursor = db.getCursor(True)
         
         # create the sql statement for fetching the records
-        stmtWithLimit = self.pagination.getSqlStmtLimitOffset(sql_stmt_prefix)
+        stmt_with_limit = self.pagination.getSqlStmtLimitOffset(sql_stmt_prefix)
         
         # create the sql statement to calculate the count
-        stmtTotalCount = self.pagination.getSqlStmtTotalCount(sql_stmt_prefix)
+        stmt_total_count = self.pagination.getSqlStmtTotalCount(sql_stmt_prefix)
 
         try:
             # fetch the records
-            cursor.execute(stmtWithLimit, parms)
+            cursor.execute(stmt_with_limit, parms)
             search_result_records = cursor.fetchall()
 
             # fetch the count
-            cursor.execute(stmtTotalCount, parms)
+            cursor.execute(stmt_total_count, parms)
 
             record_count = cursor.fetchone()
         except Exception as e:

@@ -9,6 +9,11 @@ The 2 main data members are:
 """
 
 import math
+import flask
+
+
+
+
 
 
 class Pagination:
@@ -21,9 +26,9 @@ class Pagination:
     #----------------------------------------------------------
     # Constructor
     #----------------------------------------------------------
-    def __init__(self, a_iPage: int=None, a_iPerPage: int=None):
-        self._page = a_iPage or self.DEFAULT_PAGE
-        self._per_page = a_iPerPage or self.DEFAULT_PER_PAGE
+    def __init__(self, page: int=None, per_page: int=None):
+        self._page = page or self.DEFAULT_PAGE
+        self._per_page = per_page or self.DEFAULT_PER_PAGE
     
     @property
     def page(self): 
@@ -113,9 +118,9 @@ class Pagination:
     # Returns a dict:
     #     dictionary format of the total records and total pages
     #----------------------------------------------------------
-    def getPaginationResponse(self, totalRecords: int) -> dict:
-        totalPages = self.totalPages(totalRecords)
-        return dict(total_records=totalRecords, total_pages=totalPages)
+    def getPaginationResponse(self, total_records: int) -> dict:
+        totalPages = self.totalPages(total_records)
+        return dict(total_records=total_records, total_pages=totalPages)
 
     #----------------------------------------------------------
     # Calculate the total number of pages given the total
@@ -130,4 +135,15 @@ class Pagination:
     #----------------------------------------------------------
     def totalPages(self, totalRecords: int) -> int:
         return math.ceil(totalRecords / self.per_page)
+
+
+
+
+def getRequestPaginationParms() -> Pagination:
+    pagination = Pagination()
+
+    pagination.page = flask.request.args.get('page') or Pagination.DEFAULT_PAGE
+    pagination.per_page = flask.request.args.get('per_page') or Pagination.DEFAULT_PER_PAGE
+
+    return pagination
 

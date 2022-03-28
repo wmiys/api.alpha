@@ -9,6 +9,10 @@ from http import HTTPStatus
 from ..common import security, SortingSearchProducts, Pagination
 from ..models import ProductSearchRequest, FilterCategories
 
+
+from api_wmiys.services import search_products as search_products_services
+
+
 # Flask blueprint
 bp_search_products = flask.Blueprint('searchProducts', __name__)
 
@@ -45,8 +49,9 @@ def init_module_members(f):
 @security.login_required
 @init_module_members
 def searchAll():
-    searchResults, totalRows = m_requestParms.searchAll()
+    return search_products_services.respones_GET_ALL()
 
+    searchResults, totalRows = m_requestParms.searchAll()
     return paginationReturnTemplate(searchResults, totalRows)
 
 
@@ -115,7 +120,7 @@ def initSorting():
 # Setup the pagination module object fields
 # ----------------------------------------------------
 def initPagination():
-    global m_pagination        
+    global m_pagination
     m_pagination.page = flask.request.args.get('page') or Pagination.DEFAULT_PAGE
     m_pagination.per_page = flask.request.args.get('per_page') or Pagination.DEFAULT_PER_PAGE
 
