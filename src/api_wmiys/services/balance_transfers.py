@@ -6,16 +6,17 @@ Lenders need to have a balance greater than 1 in order to successfully transfer 
 
 **********************************************************************************************
 """
+
 from __future__ import annotations
 from datetime import datetime
 import flask
 
 from wmiys_common import utilities
-from api_wmiys.services import users as user_services
+from api_wmiys import payments
 from api_wmiys.common import responses
 from api_wmiys.domain import models
-from api_wmiys import payments
 from api_wmiys.repository import balance_transfers as balance_transfers_repo
+from api_wmiys.services import users as user_services
 
 
 #------------------------------------------------------

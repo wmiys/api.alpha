@@ -1,3 +1,11 @@
+"""
+**********************************************************************************************
+
+Balance transfers sql commands.
+
+**********************************************************************************************
+"""
+
 from __future__ import annotations
 import pymysql.commands as sql_engine
 from pymysql.structs import DbOperationResult
@@ -19,8 +27,9 @@ def insert(bt: models.BalanceTransfer) -> DbOperationResult:
     parms = _getInsertParms(bt)
     return sql_engine.modify(SQL_INSERT, parms)
 
-
+#------------------------------------------------------
 # Get the insert command parms tuple
+#------------------------------------------------------
 def _getInsertParms(balance_transfer: models.BalanceTransfer) -> tuple:
     parms = (
         str(balance_transfer.id),
