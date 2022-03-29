@@ -11,7 +11,9 @@ import flask
 from wmiys_common import utilities
 from api_wmiys.common import security
 from api_wmiys.models import BalanceTransfer
-from api_wmiys.services import users as user_services
+
+from api_wmiys.services import balance_transfers as balance_transfer_services
+# from api_wmiys.services import users as user_services
 
 
 bp_balance_transfers = flask.Blueprint('bp_balance_transfers', __name__)
@@ -23,6 +25,10 @@ bp_balance_transfers = flask.Blueprint('bp_balance_transfers', __name__)
 @bp_balance_transfers.post('')
 @security.login_required
 def post():
+
+    return balance_transfer_services.responses_POST()
+
+
     # make sure that the lender has a balance greater than 1
     user_stats = user_services.getUserView(flask.g.client_id)
 
