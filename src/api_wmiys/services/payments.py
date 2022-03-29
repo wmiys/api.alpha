@@ -6,6 +6,13 @@ payment_session_id represents the session_id generated from the stripe API.
 
 A payment occurs when a renter finds a product that they want to rent, and they have successfully
 gave stripe their card information and it was successfully charged.
+
+Required incoming request form fields:
+    - ends_on
+    - location_id
+    - product_id
+    - starts_on
+    
 **********************************************************************************************
 """
 
@@ -19,13 +26,13 @@ from uuid import UUID
 import flask
 
 from wmiys_common import utilities
-
 from api_wmiys.domain import models
 from api_wmiys.domain.enums.payments import DefaultFees
 from api_wmiys.common import serializers
 from api_wmiys.common import responses
 from api_wmiys.common import base_return
 from api_wmiys.repository import payments as payments_repo
+
 
 #------------------------------------------------------
 # Possible validation errors
