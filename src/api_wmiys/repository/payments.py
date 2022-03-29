@@ -8,6 +8,7 @@ Any interaction with the Password_Resets database table should go through here.
 """
 
 from __future__ import annotations
+from uuid import UUID
 import pymysql.commands as sql_engine
 from pymysql.structs import DbOperationResult
 from api_wmiys.domain import models
@@ -44,6 +45,18 @@ SQL_INSERT = '''
         1;
 '''
 
+SQL_SELECT = '''
+    SELECT 
+        * 
+    FROM 
+        View_Payments_Internal 
+    WHERE 
+        id = %s 
+    LIMIT 1;
+'''
+
+
+
 #------------------------------------------------------
 # Insert the payment model into the database
 #------------------------------------------------------
@@ -68,3 +81,11 @@ def _getInsertParms(payment: models.Payment) -> tuple:
     )
 
     return parms
+
+
+#------------------------------------------------------
+# Select a single payment record from the view
+#------------------------------------------------------
+def select(payment_id: UUID) -> DbOperationResult:
+    parms = (str(payment_id),)
+    return sql_engine.select(SQL_SELECT, parms)

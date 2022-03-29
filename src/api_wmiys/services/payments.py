@@ -14,6 +14,7 @@ from dataclasses import dataclass
 from datetime import date
 from datetime import datetime
 from enum import Enum
+from uuid import UUID
 
 import flask
 
@@ -57,24 +58,18 @@ def responses_POST() -> flask.Response:
     if not validation_result.successful:
         return responses.badRequest(validation_result.data.value)
 
-    # insert the model into the database
     try:
+        # insert the model into the database
         saveNewModel(payment_model)
+
+        # fetch/return the payment view dictionary
+        payment_view = getView(payment_model.id)
+
     except Exception as ex:
         return responses.badRequest(str(ex))
 
-    return responses.created(payment_model)
+    return responses.created(payment_view)
 
-#------------------------------------------------------
-# Save the given Payment object to the database
-#------------------------------------------------------
-def saveNewModel(payment: models.Payment) -> int:
-    result = payments_repo.insert(payment)
-
-    if not result.successful:
-        raise result.error
-    
-    return result.data
 
 #----------------------------------------------------------
 # Create a new Payment model from the form data and explicitly set some attribute values:
@@ -162,8 +157,27 @@ def _areRequiredAttributesSet(payment: models.Payment) -> bool:
     return True
 
 
+#------------------------------------------------------
+# Save the given Payment object to the database
+#------------------------------------------------------
+def saveNewModel(payment: models.Payment) -> int:
+    result = payments_repo.insert(payment)
+
+    if not result.successful:
+        raise result.error
+    
+    return result.data
 
 
+#------------------------------------------------------
+# Get the view for the given payment_id
+#------------------------------------------------------
+def getView(payment_id: UUID) -> dict:
+    result = payments_repo.select(payment_id)
 
+    if not result.successful:
+        raise result.error
+
+    return result.data
 
 
