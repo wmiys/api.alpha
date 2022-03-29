@@ -79,6 +79,7 @@ class SortingSearchProducts(Sorting):
     
 
     DEFAULT_FIELD = 'name'
+    
     ACCEPTABLE_FIELDS = ['id', 'name', 'description', 'product_categories_sub_id', 'product_categories_sub_name', 
         'product_categories_minor_id', 'product_categories_minor_name', 'product_categories_major_id', 
         'product_categories_major_name', 'dropoff_distance', 'price_full', 'price_half', 'image', 

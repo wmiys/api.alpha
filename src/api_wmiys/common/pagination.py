@@ -9,7 +9,7 @@ The 2 main data members are:
 """
 
 import math
-
+import flask
 
 class Pagination:
 
@@ -21,9 +21,11 @@ class Pagination:
     #----------------------------------------------------------
     # Constructor
     #----------------------------------------------------------
-    def __init__(self, a_iPage: int=None, a_iPerPage: int=None):
-        self._page = a_iPage or self.DEFAULT_PAGE
-        self._per_page = a_iPerPage or self.DEFAULT_PER_PAGE
+    def __init__(self, page: int=None, per_page: int=None):
+        
+        
+        self._page = page or self.DEFAULT_PAGE
+        self._per_page = per_page or self.DEFAULT_PER_PAGE
     
     @property
     def page(self): 
@@ -83,8 +85,8 @@ class Pagination:
     # Returns a str:
     #   an sql statement that when executed will give the caller a count of the total records.
     #----------------------------------------------------------
-    def getSqlStmtTotalCount(self, originalSqlStmt: str) -> str:
-        return f"SELECT COUNT(*) AS count FROM ({originalSqlStmt}) t"
+    def getSqlStmtTotalCount(self, original_sql_stmt: str) -> str:
+        return f"SELECT COUNT(*) AS count FROM ({original_sql_stmt}) t"
     
 
     #----------------------------------------------------------
@@ -113,9 +115,9 @@ class Pagination:
     # Returns a dict:
     #     dictionary format of the total records and total pages
     #----------------------------------------------------------
-    def getPaginationResponse(self, totalRecords: int) -> dict:
-        totalPages = self.totalPages(totalRecords)
-        return dict(total_records=totalRecords, total_pages=totalPages)
+    def getPaginationResponse(self, total_records: int) -> dict:
+        totalPages = self.totalPages(total_records)
+        return dict(total_records=total_records, total_pages=totalPages)
 
     #----------------------------------------------------------
     # Calculate the total number of pages given the total
@@ -130,4 +132,23 @@ class Pagination:
     #----------------------------------------------------------
     def totalPages(self, totalRecords: int) -> int:
         return math.ceil(totalRecords / self.per_page)
+
+
+#----------------------------------------------------------
+# Generate a Pagination object from the current request's url parms
+#----------------------------------------------------------
+def getRequestPaginationParms() -> Pagination:
+    pagination = Pagination()
+    
+    try:
+        pagination.page = int(flask.request.args.get('page'))
+    except Exception:
+        pagination.page = Pagination.DEFAULT_PAGE
+
+    try:
+        pagination.per_page = int(flask.request.args.get('per_page'))
+    except Exception:
+        pagination.per_page = Pagination.DEFAULT_PER_PAGE
+
+    return pagination
 

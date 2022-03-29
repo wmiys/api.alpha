@@ -10,5 +10,6 @@ from .product_listing import ProductListing as ProductListing
 from .product_request import ProductRequest as ProductRequest
 from .product_request import RequestStatus as RequestStatus
 from .product_search_request import ProductSearchRequest as ProductSearchRequest
+from .product_search_request import ProductSearchRequestCategory as ProductSearchRequestCategory
 from .product import Product as Product
 from .user import User as User
