@@ -18,16 +18,22 @@ from ..common import security
 from ..models import Payment
 from http import HTTPStatus
 
+
+from api_wmiys.services import payments as payment_services
+
+
 bp_payments = flask.Blueprint('bp_payments', __name__)
 
 
 #------------------------------------------------------
-# Create a new payment route
+# Create a new payment record
 #------------------------------------------------------
 @bp_payments.post('')
-@security.no_external_requests
+# @security.no_external_requests
 @security.login_required
 def insertPayment():
+    return payment_services.responses_POST()
+
     payment = Payment(
         id        = utilities.getUUID(True),
         renter_id = flask.g.client_id,

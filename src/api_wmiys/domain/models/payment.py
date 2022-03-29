@@ -13,6 +13,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from datetime import datetime
 from uuid import UUID
+from api_wmiys.domain.enums.payments import DefaultFees
 
 @dataclass
 class Payment:
@@ -23,9 +24,11 @@ class Payment:
     starts_on           : datetime = None
     ends_on             : datetime = None
     price_full          : float    = None
-    fee_renter          : float    = None
-    fee_lender          : float    = None
-    created_on          : datetime = None
+    fee_renter          : float    = float(DefaultFees.RENTER.value)
+    fee_lender          : float    = float(DefaultFees.LENDER.value)
+    created_on          : datetime = datetime.now()
+
+    
 
 
 
