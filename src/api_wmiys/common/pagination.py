@@ -11,11 +11,6 @@ The 2 main data members are:
 import math
 import flask
 
-
-
-
-
-
 class Pagination:
 
     # static properties
@@ -27,6 +22,8 @@ class Pagination:
     # Constructor
     #----------------------------------------------------------
     def __init__(self, page: int=None, per_page: int=None):
+        
+        
         self._page = page or self.DEFAULT_PAGE
         self._per_page = per_page or self.DEFAULT_PER_PAGE
     
@@ -88,8 +85,8 @@ class Pagination:
     # Returns a str:
     #   an sql statement that when executed will give the caller a count of the total records.
     #----------------------------------------------------------
-    def getSqlStmtTotalCount(self, originalSqlStmt: str) -> str:
-        return f"SELECT COUNT(*) AS count FROM ({originalSqlStmt}) t"
+    def getSqlStmtTotalCount(self, original_sql_stmt: str) -> str:
+        return f"SELECT COUNT(*) AS count FROM ({original_sql_stmt}) t"
     
 
     #----------------------------------------------------------
@@ -141,10 +138,17 @@ class Pagination:
 # Generate a Pagination object from the current request's url parms
 #----------------------------------------------------------
 def getRequestPaginationParms() -> Pagination:
-    pagination = Pagination(
-        page     = flask.request.args.get('page') or Pagination.DEFAULT_PAGE,
-        per_page = flask.request.args.get('per_page') or Pagination.DEFAULT_PER_PAGE
-    )
+    pagination = Pagination()
+    
+    try:
+        pagination.page = int(flask.request.args.get('page'))
+    except Exception:
+        pagination.page = Pagination.DEFAULT_PAGE
+
+    try:
+        pagination.per_page = int(flask.request.args.get('per_page'))
+    except Exception:
+        pagination.per_page = Pagination.DEFAULT_PER_PAGE
 
     return pagination
 
