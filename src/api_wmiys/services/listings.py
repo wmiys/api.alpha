@@ -15,6 +15,7 @@ import flask
 from api_wmiys.repository import listings as listing_repo
 from api_wmiys.common import responses
 from api_wmiys.views import listings as listing_views
+from api_wmiys.common import images as user_image
 
 #----------------------------------------------------------
 # Get a product's listing information for a single product
@@ -74,6 +75,12 @@ def _getViewMeta(view_dict: dict) -> listing_views.Meta:
         minimum_age = view_dict.get('minimum_age') or None,
         image       = view_dict.get('image') or None,
     )
+
+    # prefix the image with the cover photo url
+    if meta.image:
+        directory = user_image.getCoverUrl()
+        meta.image = f'{directory}{meta.image}'
+
 
     return meta
 
