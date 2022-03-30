@@ -26,7 +26,6 @@ def responses_GET(product_id) -> flask.Response:
     except Exception as ex:
         return responses.badRequest(str(ex))
 
-
     if not view:
         return responses.notFound()
 
@@ -48,7 +47,6 @@ def getView(product_id) -> listing_views.Listing | None:
         categories = _getViewCategories(view_dict),
         lender     = _getViewLender(view_dict),
     )
-
 
     return listing_view
 

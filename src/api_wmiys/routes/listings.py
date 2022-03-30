@@ -6,8 +6,8 @@ Description:    Handles all the product listings routing.
 
 import flask
 from http import HTTPStatus
-from ..common import security
-from ..models import ProductListing, ProductListingAvailability
+from api_wmiys.common import security
+from ..models import ProductListingAvailability
 
 from api_wmiys.services import listings as listing_services
 
@@ -22,9 +22,6 @@ bp_listings = flask.Blueprint('productListings', __name__)
 @security.login_required
 def getProductListings(product_id: int):
     return listing_services.responses_GET(product_id)
-
-    listing = ProductListing(product_id)
-    return flask.jsonify(listing.get())
 
 
 #----------------------------------------------------------
