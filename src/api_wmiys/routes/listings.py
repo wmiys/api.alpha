@@ -9,6 +9,9 @@ from http import HTTPStatus
 from ..common import security
 from ..models import ProductListing, ProductListingAvailability
 
+from api_wmiys.services import listings as listing_services
+
+
 bp_listings = flask.Blueprint('productListings', __name__)
 
 
@@ -18,6 +21,8 @@ bp_listings = flask.Blueprint('productListings', __name__)
 @bp_listings.get('')
 @security.login_required
 def getProductListings(product_id: int):
+    return listing_services.responses_GET(product_id)
+
     listing = ProductListing(product_id)
     return flask.jsonify(listing.get())
 
