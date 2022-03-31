@@ -1,27 +1,27 @@
 """
 **********************************************************************************************
+
 A product listing availability has 1 responsibility: checking if the product is available to rent given the parms.
+
 **********************************************************************************************
 """
 
-
 import flask
-
-from wmiys_common.utilities import dumpJson, lineBreak
-
 from api_wmiys.domain import models
+from api_wmiys.domain.enums.sql import SqlBool
 from api_wmiys.common import serializers
 from api_wmiys.common import responses
 from api_wmiys.common import DateRangeValidator
 from api_wmiys.common import ValidationReturnCodes
 from api_wmiys.common.base_return import BaseReturn
+from api_wmiys.repository import listing_availability as listing_availability_repo
 
 #----------------------------------------------------------
 # Check if a product is available for rent
 #----------------------------------------------------------
 def responses_GET(product_id) -> flask.Response:
     # serialize the request url arguments into a ProductListingAvailability domain model
-    model = _serializeRequestArgs()
+    model = _serializeRequestUrlParms()
     model.product_id = product_id
 
     # perform some validation
@@ -30,14 +30,15 @@ def responses_GET(product_id) -> flask.Response:
     if not validation_result.successful:
         return responses.badRequest(str(validation_result.error))
 
-    
+    # run the model through the mysql algorithm to see if it is available
+    is_available = _isProductAvailable(model)
 
-    return responses.get(model)
+    return responses.get(dict(available=is_available))
 
 #----------------------------------------------------------
 # Serialize the request form data into a domain model
 #----------------------------------------------------------
-def _serializeRequestArgs() -> models.ProductListingAvailability:
+def _serializeRequestUrlParms() -> models.ProductListingAvailability:
     form       = flask.request.args.to_dict()
     serializer = serializers.ProductListingAvailabilitySerializer(form)
     result     = serializer.serialize()
@@ -105,13 +106,30 @@ def _validateModelDates(listing_availability: models.ProductListingAvailability)
     
     return result
 
+#----------------------------------------------------------
+# Check if a product is available for rent
+#----------------------------------------------------------
+def _isProductAvailable(model: models.ProductListingAvailability) -> bool:
+    db_result = listing_availability_repo.select(model)
 
+    if not db_result.successful:
+        raise db_result.error
 
+    record_set: dict = db_result.data or dict()
 
-    
+    if not 'result' in record_set.keys():
+        return False
 
+    sql_bool = record_set.get('result') or SqlBool.FALSE
 
-    
+    try:
+        result = SqlBool(sql_bool)
+    except Exception as e:
+        print(e)
+        result = SqlBool.FALSE
+
+    return result == SqlBool.TRUE
+
 
 
 
