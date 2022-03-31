@@ -11,6 +11,8 @@ from ..models import ProductListingAvailability
 
 from api_wmiys.services import listings as listing_services
 
+from api_wmiys.services import listing_availability as listing_availability_services
+
 
 bp_listings = flask.Blueprint('productListings', __name__)
 
@@ -30,6 +32,9 @@ def getProductListings(product_id: int):
 @bp_listings.get('availability')
 @security.login_required
 def getProductListingAvailability(product_id: int):
+    return listing_availability_services.responses_GET(product_id)
+
+
     listingAvailability = ProductListingAvailability(
         product_id  = product_id,
         location_id = flask.request.args.get('location_id'),

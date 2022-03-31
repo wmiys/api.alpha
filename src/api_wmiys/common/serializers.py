@@ -179,3 +179,29 @@ class PaymentSerializer(SerializerBase):
         serialization_result.model = new_model
 
         return serialization_result
+
+
+#------------------------------------------------------
+# Product Listing Availability
+#------------------------------------------------------
+class ProductListingAvailabilitySerializer(SerializerBase):
+    DomainModel = models.ProductListingAvailability
+
+    #------------------------------------------------------
+    # Parse the object's starts_on/ends_on values into date objects
+    #------------------------------------------------------
+    def serialize(self) -> SerializationResult:
+        serialization_result = super().serialize()
+
+        new_model: models.ProductListingAvailability = serialization_result.model
+
+        # parse the model's start/end times into date objects
+        new_model.starts_on = self._parseIsoDatetime(datetime.date, new_model.starts_on)
+        new_model.ends_on = self._parseIsoDatetime(datetime.date, new_model.ends_on)
+
+        if new_model.location_id:
+            new_model.location_id = int(new_model.location_id)
+
+        serialization_result.model = new_model
+
+        return serialization_result
