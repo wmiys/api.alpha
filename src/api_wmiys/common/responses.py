@@ -57,11 +57,20 @@ def forbidden(output=None) -> flask.Response:
 # The standard return logic for all the methods
 #----------------------------------------------------------
 def _standardReturn(output, response_code: HTTPStatus) -> flask.Response:
-    
-    if not output:
-        return ('', response_code)
-    else:
-        return (flask.jsonify(output), response_code)
+
+    try:
+        output_string = flask.jsonify(output)
+    except Exception as ex:
+        print(ex)
+        output_string = ''
+
+    return (output_string, response_code)
+
+    ## Old way of doing it
+    # if not output:
+    #     return ('', response_code)
+    # else:
+    #     return (flask.jsonify(output), response_code)
 
 
 

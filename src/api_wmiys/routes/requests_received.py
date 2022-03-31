@@ -1,6 +1,6 @@
 """
 Package:        requests
-Url Prefix:     /requests
+Url Prefix:     /requests/received
 Description:    Handles all the pproduct requests.
 """
 import flask
@@ -11,8 +11,12 @@ from ..common import security
 from ..models import ProductRequest, RequestStatus, product_request
 from .. import payments
 
+
+from api_wmiys.services import requests_received as requests_received_services
+
+
 # route blueprint
-bp_requests = flask.Blueprint('bp_requests', __name__)
+bp_requests_received = flask.Blueprint('bp_requests_received', __name__)
 
 LENDER_RESPONSE_ACCEPT = 'accept'
 LENDER_RESPONSE_DECLINE = 'decline'
@@ -27,7 +31,7 @@ m_product_request: ProductRequest = None
 # This get's called from the front-end ONLY!!
 # Normal users are NOT allowed to do this themselves.
 # ----------------------------------------------------
-@bp_requests.post('/received')
+@bp_requests_received.post('')
 @security.no_external_requests
 @security.login_required
 def newRequest():
@@ -59,9 +63,13 @@ def newRequest():
 #-----------------------------------------------------
 # Get all received product requests
 # ----------------------------------------------------
-@bp_requests.get('/received')
+@bp_requests_received.get('')
 @security.login_required
 def getLenderRequests():
+
+    return requests_received_services.responses_GET_ALL()
+
+
     status_arg = flask.request.args.get('status')
 
     try:
@@ -77,7 +85,7 @@ def getLenderRequests():
 #-----------------------------------------------------
 # Retrieve a single received request
 # ----------------------------------------------------
-@bp_requests.get('/received/<uuid:request_id>')
+@bp_requests_received.get('<uuid:request_id>')
 @security.login_required
 def getSingleRequest(request_id: UUID):
     request = ProductRequest(id=request_id)
@@ -87,7 +95,7 @@ def getSingleRequest(request_id: UUID):
 #-----------------------------------------------------
 # Lender responds to a request with either accept or decline
 # ----------------------------------------------------
-@bp_requests.post('/received/<uuid:request_id>/<string:status>')
+@bp_requests_received.post('<uuid:request_id>/<string:status>')
 @security.login_required
 def respondToRequest(request_id: UUID, status: str):
     # response url should be either accept or decline
@@ -121,51 +129,12 @@ def respondToRequest(request_id: UUID, status: str):
 
 
 #-----------------------------------------------------
-# Get all SUBMITTED requests
-# ----------------------------------------------------
-@bp_requests.get('submitted')
-@security.login_required
-def getSubmittedAll():
-    status_arg = flask.request.args.get('status')
-
-    try:
-        # try to parse the status url query parm
-        request_status = RequestStatus(status_arg)
-        
-        requests = product_request.getSubmittedFilterByStatus(
-            renter_id = flask.g.client_id,
-            status    = RequestStatus(request_status)
-        )
-
-    except ValueError:
-        # client provided an invalid status value... so return all of them
-        requests = product_request.getSubmitted(flask.g.client_id)
-
-    return flask.jsonify(requests)
-
-
-#-----------------------------------------------------
-# Get a single SUBMITTED request
-# ----------------------------------------------------
-@bp_requests.get('submitted/<uuid:request_id>')
-@security.login_required
-def getSubmitted(request_id: UUID):
-    request = ProductRequest(id=request_id)
-    request_dict = request.getRenter()
-
-    if request_dict.get('renter_id') != flask.g.client_id:
-        return ('', HTTPStatus.FORBIDDEN.value)
-
-    return flask.jsonify(request_dict)
-
-
-#-----------------------------------------------------
 # Code to run after the request.
 #
 # This code is responsible for capturing the payment funds
 # from the lender once the lender accepts a pending product request.
 # ----------------------------------------------------
-@bp_requests.after_request
+@bp_requests_received.after_request
 def afterLenderResponse(response: flask.Response):
     global m_product_request
 
