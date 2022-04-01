@@ -15,12 +15,22 @@ Once a request status is either responded to or it expires, lenders cannot updat
 
 from __future__ import annotations
 from uuid import UUID
+from enum import Enum
 import flask
 from api_wmiys.domain import models
 from api_wmiys.domain.enums.requests import RequestStatus
+from api_wmiys.domain.enums.requests import LenderRequestResponse
 from api_wmiys.repository import requests_received as requests_received_repo
 from api_wmiys.repository import requests as requests_repo
 from api_wmiys.common import responses
+
+
+
+class ErrorMessages(str, Enum):
+    INVALID_RESPONSE_STATUS = "Status needs to be either 'accept' or 'decline'."
+
+
+
 
 
 #-----------------------------------------------------
@@ -86,14 +96,20 @@ def _getAllViewsByStatus(user_id, status: RequestStatus) -> list[dict]:
 # Retrieve a single received request
 # ----------------------------------------------------
 def responses_GET(request_id: UUID) -> flask.Response:
-    result = requests_received_repo.select(request_id, flask.g.client_id)
 
-    if not result.successful:
-        return responses.internal_error(str(result.error))
-    elif not result.data:
+    try:
+        request_view = _getView(request_id)
+    except Exception as e:
+        return responses.internal_error(str(e))
+    
+    if not request_view:
         return responses.notFound()
     
-    return responses.get(result.data)
+    return responses.get(request_view)
+
+
+
+
 
 
 """
@@ -108,14 +124,49 @@ Steps:
 """
 def responses_POST_STATUS(request_id: UUID, status: str) -> flask.Response:
 
+    # Check if the status is either 'accept' or 'decline'
+    try:
+        lender_response = _getLenderRequestResponse(status.lower())
+    except ValueError:
+        return responses.badRequest(ErrorMessages.INVALID_RESPONSE_STATUS)
+    
+
+    try:
+        request_view = _getView(request_id)
+    except Exception as e:
+        print(e)
+        return responses.internal_error()
+    
+    if not request_view:
+        return responses.notFound()
+    
+    # need to make a new domain model: ProductRequestInternal
+    # this would be to do some checking and validation
+
+
+    
+    
 
     return 'post response'
 
 
 
+def _getLenderRequestResponse(status: str) -> LenderRequestResponse:
+    return LenderRequestResponse(status)
 
-def getRequestModel(request_id: UUID) -> models.ProductRequest:
-    pass
+
+#-----------------------------------------------------
+# Get the request view from the repository
+#-----------------------------------------------------
+def _getView(request_id) -> dict:
+    result = requests_received_repo.select(request_id, flask.g.client_id)
+
+    if not result.successful:
+        raise result.error
+    
+    return result.data
+
+
 
 
 

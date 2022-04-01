@@ -17,3 +17,9 @@ class RequestStatus(str, Enum):
     ACCEPTED = 'accepted'
     DENIED   = 'denied'
     EXPIRED  = 'expired'
+
+
+
+class LenderRequestResponse(str, Enum):
+    ACCEPT = 'accept'
+    DECLINE = 'decline'
