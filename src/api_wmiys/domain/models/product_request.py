@@ -12,6 +12,7 @@ from datetime import datetime
 from uuid import UUID
 from api_wmiys.domain.enums.product_requests import RequestStatus
 from api_wmiys.domain.models.user import User
+from api_wmiys.domain.models.payment import Payment
 
 
 #-----------------------------------------------------
@@ -35,6 +36,6 @@ class ProductRequest:
 #-----------------------------------------------------
 @dataclass
 class ProductRequestInternal(ProductRequest):
-    renter    : User = None
-    lender    : User = None
-    product_id: id   = None
+    renter     : User    = None
+    lender     : User    = None
+    payment    : Payment = None

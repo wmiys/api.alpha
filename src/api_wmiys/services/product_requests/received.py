@@ -23,6 +23,10 @@ from api_wmiys.domain.enums.product_requests import LenderRequestResponse
 from api_wmiys.repository.product_requests import received as requests_received_repo
 from api_wmiys.common import responses
 
+from api_wmiys.services.product_requests import requests as requests_services
+
+
+
 class ErrorMessages(str, Enum):
     INVALID_RESPONSE_STATUS = "Status needs to be either 'accept' or 'decline'."
 
@@ -134,6 +138,11 @@ Steps:
 """
 def responses_POST_STATUS(request_id: UUID, status: str) -> flask.Response:
 
+    requests_services.getInternal(request_id)
+
+    return 'hey'
+
+
     # Check if the status is either 'accept' or 'decline'
     try:
         lender_response = _getLenderRequestResponse(status.lower())
@@ -152,6 +161,9 @@ def responses_POST_STATUS(request_id: UUID, status: str) -> flask.Response:
     
     # need to make a new domain model: ProductRequestInternal
     # this would be to do some checking and validation
+
+
+    requests_services.getInternal(request_id)
 
 
 
