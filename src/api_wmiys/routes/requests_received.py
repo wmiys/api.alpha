@@ -84,6 +84,9 @@ def getSingleRequest(request_id: UUID):
 @bp_requests_received.post('<uuid:request_id>/<string:status>')
 @security.login_required
 def respondToRequest(request_id: UUID, status: str):
+
+    return requests_received_services.responses_POST_STATUS(request_id, status)
+
     # response url should be either accept or decline
     if status not in [LENDER_RESPONSE_ACCEPT, LENDER_RESPONSE_DECLINE]:
         return ("Status needs to be either 'accept' or 'decline'.", HTTPStatus.BAD_REQUEST.value)

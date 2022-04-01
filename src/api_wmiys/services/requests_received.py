@@ -19,6 +19,7 @@ import flask
 from api_wmiys.domain import models
 from api_wmiys.domain.enums.requests import RequestStatus
 from api_wmiys.repository import requests_received as requests_received_repo
+from api_wmiys.repository import requests as requests_repo
 from api_wmiys.common import responses
 
 
@@ -93,4 +94,30 @@ def responses_GET(request_id: UUID) -> flask.Response:
         return responses.notFound()
     
     return responses.get(result.data)
+
+
+"""
+Steps:
+    - Check if the status is either 'accept' or 'decline'
+    - Load the request data model
+    - Check if it has already been responded to
+    - check if request exists
+    - check if lender has authorization
+    - update the database record
+    - capture/cancel the payment
+"""
+def responses_POST_STATUS(request_id: UUID, status: str) -> flask.Response:
+
+
+    return 'post response'
+
+
+
+
+def getRequestModel(request_id: UUID) -> models.ProductRequest:
+    pass
+
+
+
+
 
