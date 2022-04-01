@@ -37,6 +37,31 @@ SQL_SELECT_ALL = _SQL_SELECT_ALL_TEMPLATE.format(status_clause='')
 SQL_SELECT_ALL_BY_STATUS = _SQL_SELECT_ALL_TEMPLATE.format(status_clause=' AND v.status = %s ')
 
 
+SQL_SELECT = '''
+    SELECT
+        *
+    FROM
+        View_Requests_Lender vl
+    WHERE
+        EXISTS (
+            SELECT
+                1
+            FROM
+                Products p
+            WHERE
+                vl.id = %s 
+                AND p.id = vl.product_id
+                AND p.user_id = %s
+        )
+    LIMIT
+        1;
+'''
+
+
+
+
+
+
 #-----------------------------------------------------
 # Retrieve all the requests that a lender has received.
 # 
@@ -63,3 +88,15 @@ def selectAllByStatus(lender_id, status: RequestStatus) -> DbOperationResult:
     )
 
     return sql_engine.selectAll(SQL_SELECT_ALL_BY_STATUS, parms)
+
+
+
+def select(request_id, lender_id) -> DbOperationResult:
+    parms = (
+        str(request_id),
+        lender_id,
+    )
+
+    return sql_engine.select(SQL_SELECT, parms)
+
+

@@ -14,6 +14,7 @@ Once a request status is either responded to or it expires, lenders cannot updat
 """
 
 from __future__ import annotations
+from uuid import UUID
 import flask
 from api_wmiys.domain import models
 from api_wmiys.domain.enums.requests import RequestStatus
@@ -80,5 +81,16 @@ def _getAllViewsByStatus(user_id, status: RequestStatus) -> list[dict]:
 
     return views
 
+#-----------------------------------------------------
+# Retrieve a single received request
+# ----------------------------------------------------
+def responses_GET(request_id: UUID) -> flask.Response:
+    result = requests_received_repo.select(request_id, flask.g.client_id)
 
+    if not result.successful:
+        return responses.internal_error(str(result.error))
+    elif not result.data:
+        return responses.notFound()
+    
+    return responses.get(result.data)
 

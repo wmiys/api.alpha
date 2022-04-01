@@ -66,20 +66,7 @@ def newRequest():
 @bp_requests_received.get('')
 @security.login_required
 def getLenderRequests():
-
     return requests_received_services.responses_GET_ALL()
-
-
-    status_arg = flask.request.args.get('status')
-
-    try:
-        request_status = RequestStatus(status_arg)
-        requests = product_request.getReceivedFilterByStatus(flask.g.client_id, request_status)
-    except ValueError:
-        # client provided an invalid status value, so return all of them... dipshit
-        requests = product_request.getReceivedAll(flask.g.client_id)
-    
-    return flask.jsonify(requests)
 
 
 #-----------------------------------------------------
@@ -88,8 +75,7 @@ def getLenderRequests():
 @bp_requests_received.get('<uuid:request_id>')
 @security.login_required
 def getSingleRequest(request_id: UUID):
-    request = ProductRequest(id=request_id)
-    return flask.jsonify(request.getLender())
+    return requests_received_services.responses_GET(request_id)
 
 
 #-----------------------------------------------------

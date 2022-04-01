@@ -50,19 +50,37 @@ def badRequest(output=None) -> flask.Response:
 def notFound(output=None) -> flask.Response:
     return _standardReturn(output, HTTPStatus.NOT_FOUND)
 
+#----------------------------------------------------------
+# Forbidden
+#----------------------------------------------------------
 def forbidden(output=None) -> flask.Response:
     return _standardReturn(output, HTTPStatus.FORBIDDEN)
+
+#----------------------------------------------------------
+# Forbidden
+#----------------------------------------------------------
+def internal_error(output=None) -> flask.Response:
+    return _standardReturn(output, HTTPStatus.INTERNAL_SERVER_ERROR)
+
 
 #----------------------------------------------------------
 # The standard return logic for all the methods
 #----------------------------------------------------------
 def _standardReturn(output, response_code: HTTPStatus) -> flask.Response:
 
+    empty = type(None)
+
+    if isinstance(output, empty):
+        return ('', response_code)
+    
+
     try:
         output_string = flask.jsonify(output)
     except Exception as ex:
         print(ex)
         output_string = ''
+
+    print(output_string)
 
     return (output_string, response_code)
 
