@@ -10,7 +10,8 @@ from __future__ import annotations
 from dataclasses import dataclass
 from datetime import datetime
 from uuid import UUID
-from api_wmiys.domain.enums.requests import RequestStatus
+from api_wmiys.domain.enums.product_requests import RequestStatus
+from api_wmiys.domain.models.user import User
 
 
 #-----------------------------------------------------
@@ -24,3 +25,16 @@ class ProductRequest:
     status       : RequestStatus = RequestStatus.PENDING
     responded_on : datetime      = None
     created_on   : datetime      = datetime.now()
+
+
+#-----------------------------------------------------
+# Internal product request model
+#
+# It has everything that the ProductRequest model has, 
+# plus all the info about the lender and renter.
+#-----------------------------------------------------
+@dataclass
+class ProductRequestInternal(ProductRequest):
+    renter    : User = None
+    lender    : User = None
+    product_id: id   = None

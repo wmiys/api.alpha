@@ -8,10 +8,8 @@ SQL commands for received product requests received.
 
 from __future__ import annotations
 import pymysql.commands as sql_engine
-from pymysql.connection import ConnectionPrepared
 from pymysql.structs import DbOperationResult
-from api_wmiys.domain import models
-from api_wmiys.domain.enums.requests import RequestStatus
+from api_wmiys.domain.enums.product_requests import RequestStatus
 
 _SQL_SELECT_ALL_TEMPLATE = '''
     SELECT

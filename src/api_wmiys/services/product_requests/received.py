@@ -18,19 +18,13 @@ from uuid import UUID
 from enum import Enum
 import flask
 from api_wmiys.domain import models
-from api_wmiys.domain.enums.requests import RequestStatus
-from api_wmiys.domain.enums.requests import LenderRequestResponse
-from api_wmiys.repository import requests_received as requests_received_repo
-from api_wmiys.repository import requests as requests_repo
+from api_wmiys.domain.enums.product_requests import RequestStatus
+from api_wmiys.domain.enums.product_requests import LenderRequestResponse
+from api_wmiys.repository.product_requests import received as requests_received_repo
 from api_wmiys.common import responses
-
-
 
 class ErrorMessages(str, Enum):
     INVALID_RESPONSE_STATUS = "Status needs to be either 'accept' or 'decline'."
-
-
-
 
 
 #-----------------------------------------------------
@@ -108,6 +102,22 @@ def responses_GET(request_id: UUID) -> flask.Response:
     return responses.get(request_view)
 
 
+#-----------------------------------------------------
+# Get the request view from the repository
+#-----------------------------------------------------
+def _getView(request_id) -> dict:
+    result = requests_received_repo.select(request_id, flask.g.client_id)
+
+    if not result.successful:
+        raise result.error
+    
+    return result.data
+
+
+
+
+
+
 
 
 
@@ -144,8 +154,6 @@ def responses_POST_STATUS(request_id: UUID, status: str) -> flask.Response:
     # this would be to do some checking and validation
 
 
-    
-    
 
     return 'post response'
 
@@ -155,16 +163,7 @@ def _getLenderRequestResponse(status: str) -> LenderRequestResponse:
     return LenderRequestResponse(status)
 
 
-#-----------------------------------------------------
-# Get the request view from the repository
-#-----------------------------------------------------
-def _getView(request_id) -> dict:
-    result = requests_received_repo.select(request_id, flask.g.client_id)
 
-    if not result.successful:
-        raise result.error
-    
-    return result.data
 
 
 

@@ -11,7 +11,7 @@ from uuid import UUID
 import pymysql.commands as sql_engine
 from pymysql.structs import DbOperationResult
 from api_wmiys.domain import models
-from api_wmiys.domain.enums.requests import RequestStatus
+from api_wmiys.domain.enums.product_requests import RequestStatus
 
 
 SQL_SELECT = '''

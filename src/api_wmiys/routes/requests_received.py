@@ -12,7 +12,7 @@ from ..models import ProductRequest, RequestStatus, product_request
 from .. import payments
 
 
-from api_wmiys.services import requests_received as requests_received_services
+from api_wmiys.services.product_requests import received as requests_received_services
 
 
 # route blueprint
