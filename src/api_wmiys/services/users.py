@@ -9,6 +9,7 @@ from __future__ import annotations
 from enum import Enum
 
 import flask
+from prettytable import DOUBLE_BORDER
 from pymysql.structs import DbOperationResult
 
 from api_wmiys.repository import users as users_repo
@@ -16,15 +17,12 @@ from api_wmiys.domain import models
 from api_wmiys.common import responses
 from api_wmiys.common import serializers
 
-
-
 SQL_ERROR_DUPLICATE_KEY = 1062
 
 #------------------------------------------------------
 # Bad request error messages returned in the response
 #------------------------------------------------------
 class BadResponseErrorMessages(str, Enum):
-
     MISSING_REQUIRED_FIELD = 'Missing one or more required fields.'
     EMAIL_IN_USE           = 'The email is already in use'
 
@@ -146,13 +144,10 @@ def generateUpdatedUserModelFromForm(user_id) -> models.User:
 #------------------------------------------------------
 def getUserModel(user_id) -> models.User:
     user_view = getUserView(user_id)
-    serializer = serializers.UserSerializer(user_view)
-    user_model: models.User = serializer.serialize().model
-
+    user_model = _serializeView(user_view)
     user_model.id = user_id
 
     return user_model
-
 
 #------------------------------------------------------
 # Get the user view dict from the database
@@ -162,6 +157,8 @@ def getUserView(user_id) -> dict | None:
     result = users_repo.select(user_model)
 
     return result.data
+    
+
 
 #------------------------------------------------------
 # Standard response for returning a single User record
@@ -183,9 +180,32 @@ def _standardResponseWithView(user_id, responses_callback) -> flask.Response:
 # handle some of the database errors
 #------------------------------------------------------
 def _handleDbError(db_result: DbOperationResult) -> flask.Response:
-
     if db_result.error.errno == SQL_ERROR_DUPLICATE_KEY:
         return responses.badRequest(BadResponseErrorMessages.EMAIL_IN_USE)
 
     return responses.badRequest(str(db_result.error))
+
+#------------------------------------------------------
+# Get a user by their email/password combination
+#------------------------------------------------------
+def getUserByEmailAndPassword(email, password) -> models.User | None:
+    db_result = users_repo.selectByEmailAndPassword(email, password)
+
+    if not db_result.successful:
+        raise db_result.error
+
+    if not db_result.data:
+        return None
+    
+    return _serializeView(db_result.data)
+
+
+#------------------------------------------------------
+# Serialize the given user view into a User domain model
+#------------------------------------------------------
+def _serializeView(user_view: dict) -> models.User:
+    serializer = serializers.UserSerializer(user_view)
+    user_model = serializer.serialize().model
+
+    return user_model
 

@@ -13,3 +13,4 @@ from .product_search_request import ProductSearchRequest as ProductSearchRequest
 from .product_search_request import ProductSearchRequestCategory as ProductSearchRequestCategory
 from .product import Product as Product
 from .user import User as User
+from .search_locations import SearchLocations as SearchLocations
