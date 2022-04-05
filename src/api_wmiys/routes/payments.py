@@ -1,50 +1,20 @@
 """
 Package:        payments
 Url Prefix:     /payments/
-Description:    Routing for locations
-
-
-Required form fields:
-    - ends_on
-    - location_id
-    - product_id
-    - starts_on
-
+Description:    Routing for payments
 """
 
 import flask
-from wmiys_common import utilities
-from ..common import security
-from ..models import Payment
-from http import HTTPStatus
+from api_wmiys.common import security
+from api_wmiys.services import payments as payment_services
 
 bp_payments = flask.Blueprint('bp_payments', __name__)
 
-
 #------------------------------------------------------
-# Create a new payment route
+# Create a new payment record
 #------------------------------------------------------
 @bp_payments.post('')
 @security.no_external_requests
 @security.login_required
 def insertPayment():
-    payment = Payment(
-        id        = utilities.getUUID(True),
-        renter_id = flask.g.client_id,
-    )
-
-    # set the object's property values from the request form data
-    request_data = flask.request.form.to_dict()
-
-    if utilities.areAllKeysValidProperties(request_data, payment):
-        utilities.setPropertyValuesFromDict(request_data, payment)
-    else:
-        return ('Invalid request body field.', HTTPStatus.BAD_REQUEST.value)
-    
-
-    # insert the object into the database
-    if not payment.insert():
-        return ('Server error.', HTTPStatus.INTERNAL_SERVER_ERROR.value)
-    
-    # return the url to the newly created resource
-    return flask.jsonify(payment.get())
+    return payment_services.responses_POST()

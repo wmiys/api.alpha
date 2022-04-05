@@ -1,10 +1,24 @@
 from __future__ import annotations
+from http.client import responses
 import flask
 from functools import wraps
 from wmiys_common import keys
 from ..db import DB
+from api_wmiys.services import products as product_services
+from api_wmiys.common import responses
 
 CLIENT_CUSTOM_HEADER_KEY = 'x-client-key'
+
+
+#------------------------------------------------------
+# Decorator for verify_authorization_credentials
+#------------------------------------------------------
+def login_required(f):
+    @wraps(f)
+    def wrap(*args, **kwargs):
+        verify_authorization_credentials()
+        return f(*args, **kwargs)
+    return wrap
 
 
 #------------------------------------------------------
@@ -12,24 +26,21 @@ CLIENT_CUSTOM_HEADER_KEY = 'x-client-key'
 #   - client request has basic authentication header fields
 #   - the credentials are correct
 #------------------------------------------------------
-def login_required(f):
-    @wraps(f)
-    def wrap(*args, **kwargs):
-        # if user is not logged in, redirect to login page
-        if not flask.request.authorization:
-            flask.abort(401)
-        
-        # make sure the user is authorized
-        client_id = getUserID(flask.request.authorization.username, flask.request.authorization.password)
+def verify_authorization_credentials():
+    # if user is not logged in, redirect to login page
+    if not flask.request.authorization:
+        flask.abort(401)
+    
+    # make sure the user is authorized
+    client_id = getUserID(flask.request.authorization.username, flask.request.authorization.password)
 
-        if client_id == None:
-            flask.abort(403)
-        
-        flask.g.client_id = client_id
-
-        return f(*args, **kwargs)
-
-    return wrap
+    if client_id == None:
+        flask.abort(403)
+    
+    # store the client's data for application's use
+    flask.g.client_id       = client_id
+    flask.g.client_password = flask.request.authorization.password
+    flask.g.client_email    = flask.request.authorization.username
 
 
 #------------------------------------------------------
@@ -81,3 +92,25 @@ def no_external_requests(f):
         return f(*args, **kwargs)
 
     return wrap
+
+
+#------------------------------------------------------
+# Wrapper for client_owns_product
+#------------------------------------------------------
+def verify_product_owner(f):
+    @wraps(f)
+    def wrap(*args, **kwargs):
+        product_id = flask.request.view_args.get('product_id') or None
+        
+        if not client_owns_product(product_id):
+            return responses.forbidden()
+        
+        return f(*args, **kwargs)
+
+    return wrap
+
+#------------------------------------------------------
+# Verify that the user owns the product 
+#------------------------------------------------------
+def client_owns_product(product_id=None) -> bool:
+    return product_services.doesUserOwnProduct(product_id, flask.g.client_id)
