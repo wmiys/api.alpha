@@ -3,8 +3,8 @@ from http.client import responses
 import flask
 from functools import wraps
 from wmiys_common import keys
-from ..db import DB
 from api_wmiys.services import products as product_services
+from api_wmiys.services import users as user_services
 from api_wmiys.common import responses
 
 CLIENT_CUSTOM_HEADER_KEY = 'x-client-key'
@@ -55,25 +55,16 @@ def verify_authorization_credentials():
 #   None - (INCORRECT email/password combo)
 #------------------------------------------------------
 def getUserID(email: str, password: str) -> int | None:
-    db = DB()
-    db.connect()
-
-    cursor = db.getCursor(True)
-
-    sql = 'SELECT u.id as id FROM Users u WHERE u.email = %s AND u.password = %s LIMIT 1'
-    parms = (email, password)
-
     try:
-        cursor.execute(sql, parms)
-        rs: dict = cursor.fetchone()
-        user_id = rs.get('id', None)
-    except:
-        user_id = None
-    finally:
-        db.close()
-
-    return user_id   
-
+        user = user_services.getUserByEmailAndPassword(email, password)
+    except Exception as ex:
+        print(ex)
+        return None
+    
+    if not user:
+        return None
+    
+    return user.id
 
 #------------------------------------------------------
 # Verify that the incoming request was made from the website

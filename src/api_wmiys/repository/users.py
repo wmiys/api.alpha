@@ -12,8 +12,8 @@ from pymysql.connection import ConnectionPrepared
 from api_wmiys.domain import models
 
 
-
 SQL_SELECT = 'SELECT * FROM View_Users WHERE id=%s LIMIT 1;'
+
 
 
 SQL_UPDATE = '''
@@ -27,8 +27,6 @@ SQL_UPDATE = '''
     WHERE
         id =         %s;
 '''
-
-
 
 SQL_INSERT = '''
     INSERT INTO 
@@ -94,7 +92,9 @@ def insert(new_user: models.User) -> DbOperationResult:
     return result
 
 
-
+#------------------------------------------------------
+# Get the parms tuple for inserting a new user
+#------------------------------------------------------
 def _getInsertParms(user: models.User) -> tuple:
     parms = (
         user.email,
@@ -105,3 +105,21 @@ def _getInsertParms(user: models.User) -> tuple:
     )
 
     return parms
+
+
+
+SQL_SELECT_BY_EMAIL_PASSWORD = '''
+    SELECT 
+        *
+    FROM 
+        Users u 
+    WHERE 
+        u.email = %s 
+        AND u.password = %s 
+    LIMIT 
+        1;
+'''
+
+def selectByEmailAndPassword(email, password) -> DbOperationResult:
+    parms = (email, password)
+    return sql_engine.select(SQL_SELECT_BY_EMAIL_PASSWORD, parms)

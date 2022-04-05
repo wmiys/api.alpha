@@ -10,10 +10,7 @@
 from __future__ import annotations
 from dataclasses import dataclass
 from datetime import datetime
-
-from ...common import sorting
-from ...common import pagination
-
+from api_wmiys.common import sorting, pagination
 from api_wmiys.domain.enums.product_categories import ColumnNames
 
     
@@ -28,5 +25,5 @@ class ProductSearchRequest:
 
 @dataclass
 class ProductSearchRequestCategory(ProductSearchRequest):
-    category_type: ColumnNames = None
-    category_id  : int                        = None
+    category_type : ColumnNames = None
+    category_id   : int         = None
