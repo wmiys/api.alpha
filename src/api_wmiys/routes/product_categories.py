@@ -5,7 +5,8 @@ Description:    Handles all the product category routing.
 """
 
 import flask
-from ..models import product_categories
+
+from api_wmiys.services import product_categories as product_categories_services
 
 bp_product_categories = flask.Blueprint('product_categories', __name__)
 
@@ -18,10 +19,10 @@ def productCatgories():
     seperateFlag = flask.request.args.get('seperate')
 
     if not seperateFlag:
-        return flask.jsonify(product_categories.getAll())
+        return flask.jsonify(product_categories_services.getAll())
 
     
-    seperateCategories = product_categories.getAllSeperate()
+    seperateCategories = product_categories_services.getAllSeperate()
     return flask.jsonify(seperateCategories)
 
 
@@ -30,7 +31,7 @@ def productCatgories():
 #------------------------------------------------------
 @bp_product_categories.get('major')
 def product_categoriesMajors():
-    return flask.jsonify(product_categories.getMajors())
+    return flask.jsonify(product_categories_services.getMajors())
 
 
 #------------------------------------------------------
@@ -38,7 +39,7 @@ def product_categoriesMajors():
 #------------------------------------------------------
 @bp_product_categories.get('major/<int:major_id>')
 def product_categoriesMajor(major_id: int):
-    return flask.jsonify(product_categories.getMajor(major_id))
+    return flask.jsonify(product_categories_services.getMajor(major_id))
 
 
 #------------------------------------------------------
@@ -46,7 +47,7 @@ def product_categoriesMajor(major_id: int):
 #------------------------------------------------------
 @bp_product_categories.get('major/<int:major_id>/minor')
 def product_categoriesMinors(major_id: int):
-    return flask.jsonify(product_categories.getMinors(major_id))
+    return flask.jsonify(product_categories_services.getMinors(major_id))
 
 
 #------------------------------------------------------
@@ -54,7 +55,7 @@ def product_categoriesMinors(major_id: int):
 #------------------------------------------------------
 @bp_product_categories.get('major/<int:major_id>/minor/<int:minor_id>')
 def product_categoriesMinor(major_id: int, minor_id: int):    
-    return flask.jsonify(product_categories.getMinor(minor_id))
+    return flask.jsonify(product_categories_services.getMinor(minor_id))
 
 
 #------------------------------------------------------
@@ -62,7 +63,7 @@ def product_categoriesMinor(major_id: int, minor_id: int):
 #------------------------------------------------------
 @bp_product_categories.get('major/<int:major_id>/minor/<int:minor_id>/sub')
 def product_categoriesSubs(major_id: int, minor_id: int):
-    return flask.jsonify(product_categories.getSubs(minor_id))
+    return flask.jsonify(product_categories_services.getSubs(minor_id))
 
 
 #------------------------------------------------------
@@ -70,4 +71,4 @@ def product_categoriesSubs(major_id: int, minor_id: int):
 #------------------------------------------------------
 @bp_product_categories.get('major/<int:major_id>/minor/<int:minor_id>/sub/<int:sub_id>')
 def product_categoriesSub(major_id: int, minor_id: int, sub_id: int):
-    return flask.jsonify(product_categories.getSub(sub_id))
+    return flask.jsonify(product_categories_services.getSub(sub_id))
