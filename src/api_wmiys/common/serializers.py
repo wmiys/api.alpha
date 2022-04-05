@@ -13,6 +13,7 @@ import datetime
 from uuid import UUID
 
 from api_wmiys.domain import models
+from api_wmiys.domain.enums.product_requests import RequestStatus
 
 #------------------------------------------------------
 # Result of the serialize method
@@ -201,6 +202,31 @@ class ProductListingAvailabilitySerializer(SerializerBase):
 
         if new_model.location_id:
             new_model.location_id = int(new_model.location_id)
+
+        serialization_result.model = new_model
+
+        return serialization_result
+
+
+#------------------------------------------------------
+# Product Images
+#------------------------------------------------------
+class ProductRequestSerializer(SerializerBase):
+    DomainModel = models.ProductRequest
+
+    #------------------------------------------------------
+    # Parse the object's id into a UUID and status into a RequestStatus enum
+    #------------------------------------------------------
+    def serialize(self) -> SerializationResult:
+        serialization_result = super().serialize()
+
+        new_model = serialization_result.model
+        
+        if new_model.id:
+            new_model.id = UUID(new_model.id)
+        
+        if new_model.status:
+            new_model.status = RequestStatus(new_model.status)
 
         serialization_result.model = new_model
 

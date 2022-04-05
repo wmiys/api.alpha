@@ -14,7 +14,8 @@ Login                | /login
 Locations            | /locations/:location_id
 Search Locations     | /search/locations
 Search Products      | /search/products
-Requests             | /requests
+Requests Received    | /requests/received/:request_id/:status
+Requests Submitted   | /requests/submitted/:request_id
 Payments             | /payments
 
 """
@@ -94,11 +95,13 @@ def registerBlueprints(flask_app: Flask):
     flask_app.register_blueprint(routes.search_products.bp_search_products, url_prefix='/search/products')
     flask_app.register_blueprint(routes.listings.bp_listings, url_prefix='/listings/<int:product_id>')
     flask_app.register_blueprint(routes.locations.bp_locations, url_prefix='/locations')
-    flask_app.register_blueprint(routes.requests.bp_requests, url_prefix='/requests')
+    flask_app.register_blueprint(routes.requests_received.bp_requests_received, url_prefix='/requests/received')
+    flask_app.register_blueprint(routes.requests_submitted.bp_requests_submitted, url_prefix='/requests/submitted')
     flask_app.register_blueprint(routes.payments.bp_payments, url_prefix='/payments')
     flask_app.register_blueprint(routes.payout_accounts.bp_payout_accounts, url_prefix='/payout-accounts')
     flask_app.register_blueprint(routes.balance_transfers.bp_balance_transfers, url_prefix='/balance-transfers')
     flask_app.register_blueprint(routes.password_resets.bp_password_resets, url_prefix='/password-resets')
+    
 
 app = Flask(__name__)
 

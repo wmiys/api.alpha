@@ -8,7 +8,7 @@ from .product_image import ProductImage as ProductImage
 from .product_listing_availability import ProductListingAvailability as ProductListingAvailability
 from .product_listing import ProductListing as ProductListing
 from .product_request import ProductRequest as ProductRequest
-from .product_request import RequestStatus as RequestStatus
+from .product_request import ProductRequestInternal as ProductRequestInternal
 from .product_search_request import ProductSearchRequest as ProductSearchRequest
 from .product_search_request import ProductSearchRequestCategory as ProductSearchRequestCategory
 from .product import Product as Product

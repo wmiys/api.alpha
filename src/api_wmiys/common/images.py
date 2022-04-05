@@ -18,20 +18,36 @@ STATIC_URL_PREFIX = f'{ApiUrls.PRODUCTION}/'
 
 #----------------------------------------------------------
 # Retrieve the absolute directory product covers path:
+#
 # C:\xampp\htdocs\files\api.wmiys\src\api_wmiys\static/product-images/covers/
 #----------------------------------------------------------
 def getCoverDirectory() -> str:
-    return os.path.join(flask.current_app.static_folder, IMAGES_DIRECTORY_NAME, PRODUCT_COVERS_DIRECTORY_NAME)
+    path = os.path.join(
+        flask.current_app.static_folder, 
+        IMAGES_DIRECTORY_NAME, 
+        PRODUCT_COVERS_DIRECTORY_NAME
+    )
+
+    return path
 
 #----------------------------------------------------------
 # Retrieve the absolute directory product images path:
+#
 # C:\xampp\htdocs\files\api.wmiys\src\api_wmiys\static/product-images/images/
 #----------------------------------------------------------
 def getImagesDirectory() -> str:
-    return os.path.join(flask.current_app.static_folder, IMAGES_DIRECTORY_NAME, PRODUCT_IMAGES_DIRECTORY_NAME)
+    path = os.path.join(
+        flask.current_app.static_folder, 
+        IMAGES_DIRECTORY_NAME, 
+        PRODUCT_IMAGES_DIRECTORY_NAME
+    )
+
+    return path
+
 
 #----------------------------------------------------------
 # Retrieve the url for cover images
+#
 # http://api.wmiys.com/static/product-images/covers/
 #----------------------------------------------------------
 def getCoverUrl() -> str:
@@ -40,6 +56,7 @@ def getCoverUrl() -> str:
 
 #----------------------------------------------------------
 # Retrieve the url for product images
+#
 # http://api.wmiys.com/static/product-images/images/
 #----------------------------------------------------------
 def getImagesUrl() -> str:
@@ -57,6 +74,7 @@ def getRequestFiles() -> list[FileStorage]:
 
 #------------------------------------------------------
 # Generate a unique file name for the given ImageFile
+#
 # A unique file is a new UUID + the original file's extension
 #------------------------------------------------------
 def getUniqueFileName(image_file: ImageFile) -> str:
