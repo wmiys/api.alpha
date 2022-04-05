@@ -12,9 +12,6 @@ from ..models import ProductRequest, RequestStatus, product_request
 # route blueprint
 bp_requests_submitted = flask.Blueprint('bp_requests_submitted', __name__)
 
-LENDER_RESPONSE_ACCEPT = 'accept'
-LENDER_RESPONSE_DECLINE = 'decline'
-
 #-----------------------------------------------------
 # Get all SUBMITTED requests
 # ----------------------------------------------------
