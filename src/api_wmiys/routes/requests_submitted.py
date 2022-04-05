@@ -9,6 +9,8 @@ from uuid import UUID
 from ..common import security
 from ..models import ProductRequest, RequestStatus, product_request
 
+from api_wmiys.services.product_requests import submitted as product_requests_submitted_services
+
 # route blueprint
 bp_requests_submitted = flask.Blueprint('bp_requests_submitted', __name__)
 
@@ -18,6 +20,9 @@ bp_requests_submitted = flask.Blueprint('bp_requests_submitted', __name__)
 @bp_requests_submitted.get('')
 @security.login_required
 def getSubmittedAll():
+
+    return product_requests_submitted_services.responses_GET_ALL()
+
     status_arg = flask.request.args.get('status')
 
     try:
