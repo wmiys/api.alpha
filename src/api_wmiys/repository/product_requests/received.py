@@ -56,10 +56,6 @@ SQL_SELECT = '''
 '''
 
 
-
-
-
-
 #-----------------------------------------------------
 # Retrieve all the requests that a lender has received.
 # 
@@ -98,5 +94,4 @@ def select(request_id, lender_id) -> DbOperationResult:
     )
 
     return sql_engine.select(SQL_SELECT, parms)
-
 

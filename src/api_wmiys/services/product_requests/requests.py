@@ -10,9 +10,12 @@ Product Request routines
 from __future__ import annotations
 from uuid import UUID
 from enum import Enum
+
+import flask
 from api_wmiys.domain import models
 from api_wmiys.repository.product_requests import requests as requests_repo
 from api_wmiys.common import serializers
+from api_wmiys.common import responses
 from api_wmiys.common.base_return import BaseReturn
 
 
@@ -26,7 +29,7 @@ class DbColumnPrefix(str, Enum):
 # Get the internal ProductRequest model.
 # Returns None if it does not exist
 #------------------------------------------------------
-def getInternal(product_request_id: UUID) -> models.ProductRequestInternal | None:
+def getInternalModel(product_request_id: UUID) -> models.ProductRequestInternal | None:
     db_result = requests_repo.select(product_request_id)
 
     if not db_result.successful:
@@ -37,22 +40,22 @@ def getInternal(product_request_id: UUID) -> models.ProductRequestInternal | Non
     pr_internal = models.ProductRequestInternal()
 
     # get a normal ProductRequest model
-    product_request_model = _getModel(db_result.data, DbColumnPrefix.PRODUCT_REQUEST, serializers.ProductRequestSerializer)
+    product_request_model = _serializeModel(db_result.data, DbColumnPrefix.PRODUCT_REQUEST, serializers.ProductRequestSerializer)
 
     # move over its attribute values into the internal product request object
     pr_internal.__dict__.update(vars(product_request_model))
 
     # add all the data models
-    pr_internal.renter  = _getModel(db_result.data, DbColumnPrefix.RENTER, serializers.UserSerializer)
-    pr_internal.lender  = _getModel(db_result.data, DbColumnPrefix.LENDER, serializers.UserSerializer)
-    pr_internal.payment = _getModel(db_result.data, DbColumnPrefix.PAYMENT, serializers.PaymentSerializer)
+    pr_internal.renter  = _serializeModel(db_result.data, DbColumnPrefix.RENTER, serializers.UserSerializer)
+    pr_internal.lender  = _serializeModel(db_result.data, DbColumnPrefix.LENDER, serializers.UserSerializer)
+    pr_internal.payment = _serializeModel(db_result.data, DbColumnPrefix.PAYMENT, serializers.PaymentSerializer)
 
     return pr_internal
 
 #------------------------------------------------------
 # Serialzie the dictionary using the specified serializer
 #------------------------------------------------------
-def _getModel(data: dict, prefix: DbColumnPrefix, SerializerClass: serializers.SerializerBase):
+def _serializeModel(data: dict, prefix: DbColumnPrefix, SerializerClass: serializers.SerializerBase):
     # get the subset of key/values that have the specified prefix
     namespace_dict = _getNamespace(data, prefix.value)
 
@@ -95,19 +98,33 @@ def _getNamespace(data: dict, namespace: str, lowercase: bool=True, trim: bool=T
     return return_value
 
 
-
+#-----------------------------------------------------
+# Update the given product request's data in the database
+#-----------------------------------------------------
 def update(product_request: models.ProductRequest) -> BaseReturn:
     return _modify(product_request)
 
+#-----------------------------------------------------
+# Insert the given product request's data in the database
+#-----------------------------------------------------
+def insert(product_request: models.ProductRequest) -> BaseReturn:
+    return _modify(product_request)
 
-
+#-----------------------------------------------------
+# Update or insert the given product request in the database
+#-----------------------------------------------------
 def _modify(product_request: models.ProductRequest) -> BaseReturn:
     db_result = requests_repo.update(product_request)
 
+    # copy over the DbOperationResult's values into the base return
     result = BaseReturn()
     result.__dict__.update(vars(db_result))
 
     return result
+
+
+    
+
 
 
 

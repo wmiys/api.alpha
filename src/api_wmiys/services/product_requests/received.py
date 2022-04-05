@@ -15,22 +15,19 @@ Once a request status is either responded to or it expires, lenders cannot updat
 
 from __future__ import annotations
 from datetime import datetime
-from urllib import request
 from uuid import UUID
 from enum import Enum, auto
+
 import flask
-from wmiys_common.config.configurations import Base
-from api_wmiys.domain import models
-from api_wmiys.domain.enums.product_requests import RequestStatus
-from api_wmiys.domain.enums.product_requests import LenderRequestResponse
-from api_wmiys.repository.product_requests import received as requests_received_repo
-from api_wmiys.common import responses
+
+from wmiys_common import utilities
 from api_wmiys import payments
+from api_wmiys.domain import models
+from api_wmiys.domain.enums.product_requests import RequestStatus, LenderRequestResponse
+from api_wmiys.common import responses, serializers
 from api_wmiys.common.base_return import BaseReturn
-
 from api_wmiys.services.product_requests import requests as requests_services
-
-
+from api_wmiys.repository.product_requests import received as requests_received_repo
 
 
 # Validation return codes for validating a request response from the lender
@@ -40,6 +37,54 @@ class RequestResponseValidation(Enum):
     UNAUTHORIZED       = auto()
     ALREADY_RESPONDED  = auto()
     INVALID_STATUS_URL = auto()
+
+
+#-----------------------------------------------------
+# Create a new product request for the lender.
+# ----------------------------------------------------
+def responses_POST() -> flask.Response:
+    pr = _generateNewModelFromRequest()
+
+    if not _validateNewRequestAttributes(pr):
+        return responses.badRequest('Missing a required key')
+
+    
+    db_result = requests_services.insert(pr)
+
+    if not db_result.successful:
+        return responses.badRequest(str(db_result.error))
+
+    output = _getView(pr.id)
+
+    return responses.created(output)
+
+
+# Create a new product request model from the request's form data and assign it a new id
+def _generateNewModelFromRequest() -> models.ProductRequest:
+    # extract the form data
+    form = flask.request.form.to_dict()
+    serializer = serializers.ProductRequestSerializer(form)
+    pr = serializer.serialize().model
+
+    # generate a new UUID for the product request
+    pr.id = utilities.getUUID(False)
+    pr.created_on = datetime.now()  
+
+    return pr
+
+
+# Make sure the given product request's required attributes (for insertion) have values
+def _validateNewRequestAttributes(pr: models.ProductRequest) -> bool:
+    required_attributes = [
+        pr.id,
+        pr.payment_id,
+        pr.session_id,
+    ]
+
+    if None in required_attributes:
+        return False
+    else:
+        return True
 
 
 #-----------------------------------------------------
@@ -133,7 +178,7 @@ def _getView(request_id) -> dict:
 #-----------------------------------------------------
 def responses_POST_STATUS(request_id: UUID, status: str) -> flask.Response:
     # get a product request model
-    pr_internal = requests_services.getInternal(request_id)
+    pr_internal = requests_services.getInternalModel(request_id)
 
     # validate it
     validation_result = _validateRequestResponse(pr_internal, status)

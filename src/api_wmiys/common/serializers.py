@@ -220,9 +220,13 @@ class ProductRequestSerializer(SerializerBase):
     def serialize(self) -> SerializationResult:
         serialization_result = super().serialize()
 
-        new_model: models.ProductRequest = serialization_result.model
-        new_model.id = UUID(new_model.id)
-        new_model.status = RequestStatus(new_model.status)
+        new_model = serialization_result.model
+        
+        if new_model.id:
+            new_model.id = UUID(new_model.id)
+        
+        if new_model.status:
+            new_model.status = RequestStatus(new_model.status)
 
         serialization_result.model = new_model
 

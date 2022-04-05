@@ -31,9 +31,9 @@ SQL_SELECT = f'''
 
 SQL_MODIFY = '''
     INSERT INTO
-        Product_Requests (id, payment_id, session_id, status, responded_on)
+        Product_Requests (id, payment_id, session_id, status, responded_on, created_on)
     VALUES
-        (%s, %s, %s, %s, %s) AS new_values 
+        (%s, %s, %s, %s, %s, %s) AS new_values 
     ON DUPLICATE KEY UPDATE
         status       = new_values.status,
         responded_on = new_values.responded_on;
@@ -75,6 +75,7 @@ def _getModifyParms(product_request: models.ProductRequest) -> tuple:
         product_request.session_id,
         product_request.status.value,
         product_request.responded_on,
+        product_request.created_on,
     ) 
 
     return parms
