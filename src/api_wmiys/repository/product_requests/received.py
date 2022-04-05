@@ -88,7 +88,9 @@ def selectAllByStatus(lender_id, status: RequestStatus) -> DbOperationResult:
     return sql_engine.selectAll(SQL_SELECT_ALL_BY_STATUS, parms)
 
 
-
+#-----------------------------------------------------
+# Retrieve a single request
+# ----------------------------------------------------
 def select(request_id, lender_id) -> DbOperationResult:
     parms = (
         str(request_id),

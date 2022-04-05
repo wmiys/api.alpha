@@ -14,21 +14,32 @@ Once a request status is either responded to or it expires, lenders cannot updat
 """
 
 from __future__ import annotations
+from datetime import datetime
+from urllib import request
 from uuid import UUID
-from enum import Enum
+from enum import Enum, auto
 import flask
+from wmiys_common.config.configurations import Base
 from api_wmiys.domain import models
 from api_wmiys.domain.enums.product_requests import RequestStatus
 from api_wmiys.domain.enums.product_requests import LenderRequestResponse
 from api_wmiys.repository.product_requests import received as requests_received_repo
 from api_wmiys.common import responses
+from api_wmiys import payments
+from api_wmiys.common.base_return import BaseReturn
 
 from api_wmiys.services.product_requests import requests as requests_services
 
 
 
-class ErrorMessages(str, Enum):
-    INVALID_RESPONSE_STATUS = "Status needs to be either 'accept' or 'decline'."
+
+# Validation return codes for validating a request response from the lender
+class RequestResponseValidation(Enum):
+    VALID              = auto()
+    NOT_FOUND          = auto()
+    UNAUTHORIZED       = auto()
+    ALREADY_RESPONDED  = auto()
+    INVALID_STATUS_URL = auto()
 
 
 #-----------------------------------------------------
@@ -117,69 +128,127 @@ def _getView(request_id) -> dict:
     
     return result.data
 
-
-
-
-
-
-
-
-
-
-"""
-Steps:
-    - Check if the status is either 'accept' or 'decline'
-    - Load the request data model
-    - Check if it has already been responded to
-    - check if request exists
-    - check if lender has authorization
-    - update the database record
-    - capture/cancel the payment
-"""
+#-----------------------------------------------------
+# Lender responds to an existing product request
+#-----------------------------------------------------
 def responses_POST_STATUS(request_id: UUID, status: str) -> flask.Response:
+    # get a product request model
+    pr_internal = requests_services.getInternal(request_id)
 
-    requests_services.getInternal(request_id)
+    # validate it
+    validation_result = _validateRequestResponse(pr_internal, status)
 
-    return 'hey'
+    if validation_result != RequestResponseValidation.VALID:
+        return _invalidPost(validation_result)
 
+
+    # turn the internal model into a ProductRequest domain model
+    new_status = _getRequestStatusFromResponse(LenderRequestResponse(status))
+    pr = _getBaselineModelResponsed(pr_internal, new_status)
+
+    # process the payment
+    payment_result = _processPayment(pr)
+
+    # if not payment_result.successful:
+        # return responses.badRequest(str(payment_result.error))
+
+    # update the database
+    update_db_result = requests_services.update(pr)
+
+    if not update_db_result.successful:
+        return responses.badRequest(str(update_db_result.error))
+
+    # return the view
+    view = requests_received_repo.select(pr.id, flask.g.client_id).data
+    
+    return responses.updated(view)
+
+
+#-----------------------------------------------------
+# Do some validation for request responses:
+#   - check if request exists
+#   - check if lender has authorization
+#   - Check if it has already been responded to
+#   - Check if the status is either 'accept' or 'decline'
+#-----------------------------------------------------
+def _validateRequestResponse(pr_internal: models.ProductRequestInternal, new_status: str) -> RequestResponseValidation:
+    # make sure the request exists
+    if not pr_internal:
+        return RequestResponseValidation.NOT_FOUND
+
+    # make sure the client's user_id matches the request's lender id
+    if pr_internal.lender.id != flask.g.client_id:
+        return RequestResponseValidation.UNAUTHORIZED
+
+    # Check if it has already been responded to
+    if pr_internal.status != RequestStatus.PENDING:
+        return RequestResponseValidation.ALREADY_RESPONDED
 
     # Check if the status is either 'accept' or 'decline'
     try:
-        lender_response = _getLenderRequestResponse(status.lower())
-    except ValueError:
-        return responses.badRequest(ErrorMessages.INVALID_RESPONSE_STATUS)
-    
+        LenderRequestResponse(new_status)
+    except Exception as ex:
+        return RequestResponseValidation.INVALID_STATUS_URL
 
-    try:
-        request_view = _getView(request_id)
-    except Exception as e:
-        print(e)
-        return responses.internal_error()
-    
-    if not request_view:
+    return RequestResponseValidation.VALID
+
+
+#-----------------------------------------------------
+# Handle an invalid post request
+#-----------------------------------------------------
+def _invalidPost(validation_error: RequestResponseValidation) -> flask.Response:
+    if validation_error == RequestResponseValidation.NOT_FOUND:
         return responses.notFound()
-    
-    # need to make a new domain model: ProductRequestInternal
-    # this would be to do some checking and validation
+    elif validation_error == RequestResponseValidation.UNAUTHORIZED:
+        return responses.notFound()
+    elif validation_error == RequestResponseValidation.ALREADY_RESPONDED:
+        return responses.badRequest('Already responded to this request')
+    elif validation_error == RequestResponseValidation.INVALID_STATUS_URL:
+        return responses.badRequest("Status needs to be either 'accept' or 'decline'.")
+    else:
+        return responses.badRequest((validation_error.name, validation_error.value))
+
+#-----------------------------------------------------
+# turn the internal model into a ProductRequest domain model
+#-----------------------------------------------------
+def _getBaselineModelResponsed(internal_product_request: models.ProductRequestInternal, status: RequestStatus) -> models.ProductRequest:
+    product_request = models.ProductRequest(
+        id           = internal_product_request.id,
+        payment_id   = internal_product_request.payment.id,
+        session_id   = internal_product_request.session_id,
+        status       = status,
+        responded_on = datetime.now(),
+        created_on   = internal_product_request.created_on
+    )
+
+    return product_request
 
 
-    requests_services.getInternal(request_id)
+def _getRequestStatusFromResponse(reply: LenderRequestResponse) -> RequestStatus:
+    if LenderRequestResponse(reply) == LenderRequestResponse.ACCEPT:
+        return RequestStatus.ACCEPTED
+    else:
+        return RequestStatus.DENIED
 
 
+#-----------------------------------------------------
+# Capture or cancel the given request's payment
+#-----------------------------------------------------
+def _processPayment(product_request: models.ProductRequest) -> BaseReturn:
+    result = BaseReturn(successful=True)
 
-    return 'post response'
+    # determine which payment method to utilize
+    if product_request.status == RequestStatus.ACCEPTED:
+        payment_capture_method = payments.capturePayment
+    else:
+        payment_capture_method = payments.cancelPayment
 
+    # try executing it
+    try:
+        result.data = payment_capture_method(product_request.session_id)
+    except Exception as e:
+        result.successful = False
+        result.error = e
 
-
-def _getLenderRequestResponse(status: str) -> LenderRequestResponse:
-    return LenderRequestResponse(status)
-
-
-
-
-
-
-
-
-
+    return result
 
