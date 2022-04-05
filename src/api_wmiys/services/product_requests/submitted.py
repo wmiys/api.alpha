@@ -1,27 +1,22 @@
 """
 **********************************************************************************************
-Product requests are what the name implies... a renter has found a listing that is available
-during the given start/end range, the renter has successfully paid for the product rental with stripe
-and we have collected the funds. Now, the lender needs to finally approve the product rental with 
-the renter.
 
-Initially, a request status is set to 'pending'. The lender has 24 hours to respond to the 
-request before being marked as 'expired' and the renter is fully refunded (and the request
-cannot be responded to). Lenders can respond to a requests by either accepting or denying them.
+Submitted product request services.
 
-Once a request status is either responded to or it expires, lenders cannot update a request.
+This is for retrieving all submitted product requests. Or, the client is the renter.
+
 **********************************************************************************************
 """
 
-
 from __future__ import annotations
-from urllib.request import Request
-import flask
-from api_wmiys.domain import models
-from api_wmiys.domain.enums.product_requests import RequestStatus
+from uuid import UUID
 
-from api_wmiys.repository.product_requests import submitted as product_requests_submitted_repo
+import flask
+
 from api_wmiys.common import responses
+from api_wmiys.domain.enums.product_requests import RequestStatus
+from api_wmiys.repository.product_requests import submitted as product_requests_submitted_repo
+from api_wmiys.services.product_requests import requests as product_request_services
 
 
 #-----------------------------------------------------
@@ -51,8 +46,9 @@ def _getStatusUrlParm() -> RequestStatus | None:
     
     return request_status
 
-
+#-----------------------------------------------------
 # Get all request views submitted by the given renter
+#-----------------------------------------------------
 def _getAllViews(renter_id) -> list[dict]:
     db_result = product_requests_submitted_repo.selectAll(renter_id)
 
@@ -77,3 +73,50 @@ def _getAllViewsByStatus(renter_id, status: RequestStatus) -> list[dict]:
         raise db_result.error
     
     return db_result.data or []
+
+
+#-----------------------------------------------------
+# Get a single SUBMITTED request
+# ----------------------------------------------------
+def responses_GET(product_request_id: UUID) -> flask.Response:
+    # make sure the client is authorized to view the request
+    try:
+        if not _isClientAuthorized(product_request_id):
+            return responses.notFound()
+    except Exception as ex:
+        return responses.badRequest(str(ex))
+    
+    # now get the view from the database
+    try:
+        request_view = _getView(product_request_id)
+    except Exception as ex:
+        return responses.badRequest(str(ex))
+
+    return responses.get(request_view)
+
+
+#-----------------------------------------------------
+# make sure the request exists and the client is authorized to view it
+#-----------------------------------------------------
+def _isClientAuthorized(product_request_id) -> bool:
+    # fetch an internal product request model
+    pr_internal = product_request_services.getInternalModel(product_request_id)
+    
+    # make sure the request exists and the client is authorized to view it
+    if not pr_internal:
+        return False
+    elif pr_internal.renter.id != flask.g.client_id:
+        return False
+    
+    return True
+
+#-----------------------------------------------------
+# Get the database view of the specified product request
+#-----------------------------------------------------
+def _getView(product_request_id) -> dict | None:
+    db_result = product_requests_submitted_repo.select(product_request_id)
+
+    if not db_result.successful:
+        raise db_result.error
+
+    return db_result.data
