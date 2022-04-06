@@ -22,13 +22,11 @@ Payments             | /payments
 
 from flask import Flask
 from flask_cors import CORS
-import wmiys_common
 
+import wmiys_common
 import pymysql
 
-from .common import CustomJSONEncoder
-from .common import images
-from . import db
+from api_wmiys.common import CustomJSONEncoder, images
 from . import routes
 
 
@@ -53,32 +51,32 @@ def configureApp(flask_app: Flask):
     else:
         flask_app.config.from_object(wmiys_common.config.Dev)
 
-    # setup the custom encoder for dates
-    flask_app.json_encoder = CustomJSONEncoder
-
     # setup the CORS policy
     CORS(flask_app)
 
-    configureAppOldWay(flask_app)
+    # setup the custom encoder for dates
+    flask_app.json_encoder = CustomJSONEncoder
 
+    configureStaticUrl(flask_app)
     configureDatabaseConnection(flask_app)
-    
 
-def configureDatabaseConnection(flask_app: Flask):
-    pymysql.credentials.USER     = db.credentials.USER
-    pymysql.credentials.PASSWORD = db.credentials.PASSWORD
-    pymysql.credentials.DATABASE = db.credentials.DATABASE
-    pymysql.credentials.HOST     = db.credentials.HOST
-
-
-def configureAppOldWay(flask_app: Flask):
-    # api url
+#----------------------------------------------------------
+# Set some static url prefix values
+#----------------------------------------------------------
+def configureStaticUrl(flask_app: Flask):
     api_url = flask_app.config.get('URL_API')
     images.STATIC_URL_PREFIX = f'{api_url}/'
 
-    # database connection host
-    db.credentials.HOST = flask_app.config.get('DB_HOST')
+#----------------------------------------------------------
+# set the database credentials
+#----------------------------------------------------------
+def configureDatabaseConnection(flask_app: Flask):
+    db_config = flask_app.config.get_namespace('DB_', lowercase=False)
 
+    pymysql.credentials.USER     = db_config.get('USER')
+    pymysql.credentials.PASSWORD = db_config.get('PASSWORD')
+    pymysql.credentials.DATABASE = db_config.get('NAME')
+    pymysql.credentials.HOST     = db_config.get('HOST')
 
 
 #----------------------------------------------------------
@@ -102,10 +100,12 @@ def registerBlueprints(flask_app: Flask):
     flask_app.register_blueprint(routes.balance_transfers.bp_balance_transfers, url_prefix='/balance-transfers')
     flask_app.register_blueprint(routes.password_resets.bp_password_resets, url_prefix='/password-resets')
     
+    
 
+#----------------------------------------------------------
+# Main logic
+#----------------------------------------------------------
 app = Flask(__name__)
 
-# initApp(app)
 configureApp(app)
-
 registerBlueprints(app)

@@ -1,19 +1,29 @@
+"""
+**********************************************************************************************
+
+This module contains some related functions that handle image files.
+
+**********************************************************************************************
+"""
 
 from __future__ import annotations
 import os
+
 import flask
-
-
 from werkzeug.datastructures import FileStorage
-from wmiys_common.config_pairs import ApiUrls
+
 from wmiys_common import utilities
+from wmiys_common.config import Production as ProductionConfig
 
 
-IMAGES_DIRECTORY_NAME         = 'product-images'
-PRODUCT_COVERS_DIRECTORY_NAME = 'covers'
-PRODUCT_IMAGES_DIRECTORY_NAME = 'images'
+STATIC_URL_PREFIX = f'{ProductionConfig.URL_API}/'
 
-STATIC_URL_PREFIX = f'{ApiUrls.PRODUCTION}/'
+
+# Image directories
+class FileDirectories:
+    PRODUCT_IMAGES = 'product-images'
+    COVERS         = 'covers'
+    IMAGES         = 'images'
 
 
 #----------------------------------------------------------
@@ -24,8 +34,8 @@ STATIC_URL_PREFIX = f'{ApiUrls.PRODUCTION}/'
 def getCoverDirectory() -> str:
     path = os.path.join(
         flask.current_app.static_folder, 
-        IMAGES_DIRECTORY_NAME, 
-        PRODUCT_COVERS_DIRECTORY_NAME
+        FileDirectories.PRODUCT_IMAGES, 
+        FileDirectories.COVERS
     )
 
     return path
@@ -38,8 +48,8 @@ def getCoverDirectory() -> str:
 def getImagesDirectory() -> str:
     path = os.path.join(
         flask.current_app.static_folder, 
-        IMAGES_DIRECTORY_NAME, 
-        PRODUCT_IMAGES_DIRECTORY_NAME
+        FileDirectories.PRODUCT_IMAGES, 
+        FileDirectories.IMAGES
     )
 
     return path
@@ -51,7 +61,7 @@ def getImagesDirectory() -> str:
 # http://api.wmiys.com/static/product-images/covers/
 #----------------------------------------------------------
 def getCoverUrl() -> str:
-    return f'{STATIC_URL_PREFIX}static/{IMAGES_DIRECTORY_NAME}/{PRODUCT_COVERS_DIRECTORY_NAME}/'
+    return f'{STATIC_URL_PREFIX}static/{FileDirectories.PRODUCT_IMAGES}/{FileDirectories.COVERS}/'
 
 
 #----------------------------------------------------------
@@ -60,7 +70,7 @@ def getCoverUrl() -> str:
 # http://api.wmiys.com/static/product-images/images/
 #----------------------------------------------------------
 def getImagesUrl() -> str:
-    return f'{STATIC_URL_PREFIX}static/{IMAGES_DIRECTORY_NAME}/{PRODUCT_IMAGES_DIRECTORY_NAME}/'
+    return f'{STATIC_URL_PREFIX}static/{FileDirectories.PRODUCT_IMAGES}/{FileDirectories.IMAGES}/'
 
 
 # ----------------------------------------------------
