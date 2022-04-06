@@ -99,6 +99,8 @@ def registerBlueprints(flask_app: Flask):
     flask_app.register_blueprint(routes.payout_accounts.bp_payout_accounts, url_prefix='/payout-accounts')
     flask_app.register_blueprint(routes.balance_transfers.bp_balance_transfers, url_prefix='/balance-transfers')
     flask_app.register_blueprint(routes.password_resets.bp_password_resets, url_prefix='/password-resets')
+
+    flask_app.register_blueprint(routes.test.bp_test, url_prefix='/test')
     
     
 

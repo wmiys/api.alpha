@@ -14,3 +14,4 @@ from . import balance_transfers as balance_transfers
 from . import password_resets as password_resets
 from . import requests_received as requests_received
 from . import requests_submitted as requests_submitted
+from . import test as test
