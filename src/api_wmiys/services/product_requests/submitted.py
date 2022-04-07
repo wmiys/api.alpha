@@ -14,6 +14,7 @@ from uuid import UUID
 import flask
 
 from api_wmiys.common import responses
+from api_wmiys.common import images
 from api_wmiys.domain.enums.product_requests import RequestStatus
 from api_wmiys.repository.product_requests import submitted as product_requests_submitted_repo
 from api_wmiys.services.product_requests import requests as product_request_services
@@ -29,8 +30,10 @@ def responses_GET_ALL() -> flask.Response:
         requests = _getAllViewsByStatus(flask.g.client_id, status_filter)
     else:
         requests = _getAllViews(flask.g.client_id)
-        
-    return responses.get(requests)
+
+    requests_prefixed = _prefixImageValuesUrl(requests)
+
+    return responses.get(requests_prefixed)
 
 # ----------------------------------------------------
 # If a 'status' url query parm was given in the request, transform it into a RequestStatus object
@@ -120,3 +123,21 @@ def _getView(product_request_id) -> dict | None:
         raise db_result.error
 
     return db_result.data
+
+
+#-----------------------------------------------------
+# prefix the product image value with the server static url
+#-----------------------------------------------------
+def _prefixImageValuesUrl(requests: list[dict]) -> list[dict]:
+    # prefix the image values with the url
+    url_prefix = images.getCoverUrl()
+
+    for request in requests:
+        original_image_value = request.get('product_image') or None
+
+        if not original_image_value:
+            continue
+
+        request['product_image'] = f'{url_prefix}{original_image_value}'
+
+    return requests

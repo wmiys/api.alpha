@@ -22,23 +22,10 @@ Payments             | /payments
 
 from flask import Flask
 from flask_cors import CORS
-
 import wmiys_common
 import pymysql
-
 from api_wmiys.common import CustomJSONEncoder, images
 from . import routes
-
-
-#----------------------------------------------------------
-# Sets up and initializes the flask application
-#----------------------------------------------------------
-def initApp(flask_app: Flask):    
-    flask_app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0        # remove cacheing
-    flask_app.config['JSON_SORT_KEYS'] = False               # don't sort the json keys
-    flask_app.config['JSONIFY_PRETTYPRINT_REGULAR'] = False  # print the json pretty
-    flask_app.json_encoder = CustomJSONEncoder               # setup the custom encoder for dates
-    CORS(flask_app)                                          # setup the CORS policy
 
 
 #----------------------------------------------------------
