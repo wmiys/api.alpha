@@ -44,7 +44,7 @@ def getAllSeperate() -> dict:
 # Get all the product categories
 #------------------------------------------------------
 def _getProductCategories() -> list[dict]:
-    return repo.selectAll()
+    return repo.selectAll().data
 
 #------------------------------------------------------
 # Retrieve all major categories

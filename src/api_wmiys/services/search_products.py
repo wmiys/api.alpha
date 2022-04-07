@@ -26,6 +26,7 @@ from api_wmiys.domain import models
 from api_wmiys.domain.enums.product_categories import ColumnNames
 from api_wmiys.domain.enums.product_categories import UrlCategoryNames
 from api_wmiys.repository import search_products as search_products_repo
+from api_wmiys.common import images
 
 #-----------------------------------------------------
 # Seach all major categories
@@ -229,13 +230,30 @@ def _returnFilteredDataResult(filtered_data: FilteredDataReturn) -> flask.Respon
         total_pages   = filtered_data.count_pages,
     )
 
+    products_img_prefixed = _prefixImageUrls(filtered_data.data)
+
     output = dict(
         pagination = pagination_dict,
-        results    = filtered_data.data,
+        results    = products_img_prefixed,
     )
 
     return responses.get(output)
 
+#------------------------------------------------------
+# Prefix the product image values with the static url
+#------------------------------------------------------
+def _prefixImageUrls(products: list[dict]) -> list[dict]:
+    url_prefix = images.getCoverUrl()
+    
+    for product in products:
+        image_val = product.get('image') or None
+        
+        if not image_val:
+            continue
+        
+        product['image'] = f'{url_prefix}{image_val}'
+
+    return products
 
 
 #------------------------------------------------------
