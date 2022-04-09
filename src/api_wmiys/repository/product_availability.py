@@ -15,10 +15,15 @@ from api_wmiys.domain import models
 
 
 SQL_SELECT_ALL = '''
-    SELECT   *
-    FROM     View_Product_Availability pa
-    WHERE    pa.product_id = %s
-    ORDER BY pa.created_on DESC;
+    SELECT   
+        pa.*
+    FROM     
+        View_Product_Availability pa
+    WHERE    
+        pa.product_id = %s
+        AND pa.ends_on >= NOW()
+    ORDER BY 
+        pa.created_on DESC;
 '''
 
 

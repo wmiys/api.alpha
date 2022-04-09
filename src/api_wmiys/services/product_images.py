@@ -22,13 +22,6 @@ from api_wmiys.repository import product_images as product_images_repo
 # POST the images for a product
 # ----------------------------------------------------
 def responses_POST(product_id) -> flask.Response:
-    # first, delete all existing records/files
-    delete_result = deleteAll(product_id)
-
-    if not delete_result.successful:
-        return responses.badRequest(str(delete_result.error))
-    
-    
     # get list of images provided in the request
     image_files = images.getRequestFiles()
 

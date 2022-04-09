@@ -77,8 +77,8 @@ def getImagesUrl() -> str:
 # Get a list of the image files (FileStorage) from the request 
 # ----------------------------------------------------
 def getRequestFiles() -> list[FileStorage]:
-    files_dict = flask.request.files.to_dict(False)
-    image_files = list(*files_dict.values()) or []
+    files_dict = flask.request.files.to_dict(True)
+    image_files = list(files_dict.values()) or []
     
     return image_files
 
