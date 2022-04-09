@@ -47,6 +47,8 @@ def responses_POST() -> flask.Response:
 #------------------------------------------------------
 def _createNewModel() -> models.BalanceTransfer:
     user_stats = _getUserStats()
+
+    print(user_stats)
     
     balance_transfer = models.BalanceTransfer(
         id                     = utilities.getUUID(False),
