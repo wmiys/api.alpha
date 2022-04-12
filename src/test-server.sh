@@ -5,10 +5,8 @@ mod_wsgi-express start-server \
 --port 81   \
 --access-log  \
 --log-level info   \
---compress-responses \
 --server-root /etc/api.wmiys.com \
---host 104.225.208.116 \
+--host 104.225.208.163 \
 --log-to-terminal \
---document-root /var/www/wmiys/api/api_wmiys/static \
-/var/www/wmiys/api/api_wmiys.wsgi
-
+--document-root /var/www/wmiys/api.wmiys/src/api_wmiys/static \
+/var/www/wmiys/api.wmiys/src/api_wmiys.wsgi
