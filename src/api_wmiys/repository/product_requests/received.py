@@ -28,7 +28,7 @@ _SQL_SELECT_ALL_TEMPLATE = '''
                 {status_clause}
         )
     ORDER BY
-        v.created_on DESC;
+        v.starts_on DESC;
 '''
 
 SQL_SELECT_ALL = _SQL_SELECT_ALL_TEMPLATE.format(status_clause='')
