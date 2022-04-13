@@ -256,6 +256,9 @@ class ProductRequestSerializer(SerializerBase):
         if new_model.status:
             new_model.status = RequestStatus(new_model.status)
 
+        if new_model.review_score:
+            new_model.review_score = int(new_model.review_score)
+
         serialization_result.model = new_model
 
         return serialization_result

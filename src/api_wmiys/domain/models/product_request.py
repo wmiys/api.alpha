@@ -20,12 +20,14 @@ from api_wmiys.domain.models.payment import Payment
 # ----------------------------------------------------
 @dataclass
 class ProductRequest:
-    id           : UUID          = None
-    payment_id   : UUID          = None
-    session_id   : str           = None
-    status       : RequestStatus = RequestStatus.PENDING
-    responded_on : datetime      = None
-    created_on   : datetime      = datetime.now()
+    id             : UUID          = None
+    payment_id     : UUID          = None
+    session_id     : str           = None
+    status         : RequestStatus = RequestStatus.PENDING
+    responded_on   : datetime      = None
+    review_score   : int           = None
+    review_comment : str           = None
+    created_on     : datetime      = datetime.now()
 
 
 #-----------------------------------------------------
