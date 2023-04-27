@@ -11,6 +11,7 @@ from uuid import UUID
 import pymysql.commands as sql_engine
 from pymysql.structs import DbOperationResult
 from api_wmiys.domain.enums.product_requests import RequestStatus
+from api_wmiys.domain import models
 
 
 
@@ -39,6 +40,17 @@ SQL_SELECT = '''
         v.id = %s
     LIMIT 
         1;
+'''
+
+
+SQL_UPDATE = '''
+    UPDATE 
+        Product_Requests
+    SET 
+        review_score = %s,
+        review_comment = %s
+    WHERE
+        id = %s;
 '''
 
 
@@ -82,3 +94,14 @@ def select(product_request_id: UUID) -> DbOperationResult:
         str(product_request_id),
     )
     return sql_engine.select(SQL_SELECT, parms)
+
+
+
+def update(request: models.ProductRequest) -> DbOperationResult:
+    parms = (
+        request.review_score,
+        request.review_comment,
+        str(request.id),
+    )
+
+    return sql_engine.modify(SQL_UPDATE, parms)

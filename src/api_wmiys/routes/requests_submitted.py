@@ -32,3 +32,13 @@ def getSubmittedAll():
 @security.login_required
 def getSubmitted(request_id: UUID):
     return product_requests_submitted_services.responses_GET(request_id)
+
+
+
+#-----------------------------------------------------
+# Get a single SUBMITTED request
+# ----------------------------------------------------
+@bp_requests_submitted.patch('<uuid:request_id>')
+@security.login_required
+def patchSubmitted(request_id: UUID):
+    return product_requests_submitted_services.responses_PATCH(request_id)
